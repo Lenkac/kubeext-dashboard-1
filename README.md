@@ -126,5 +126,3 @@ Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/gui
 ## License
 
 [MIT](https://github.com/PanJiaChen/vue-element-admin/blob/master/LICENSE)
-
-Copyright (c) 2017-present PanJiaChen
