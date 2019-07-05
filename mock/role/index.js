@@ -32,6 +32,12 @@ const roles = [
         }
       ]
     }]
+  },
+  {
+    key: 'ladder',
+    name: 'ladder',
+    description: 'ladder can see some pages.',
+    routes: routes
   }
 ]
 
