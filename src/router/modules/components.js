@@ -13,6 +13,24 @@ const componentsRouter = {
   },
   children: [
     {
+      path: 'count-to',
+      component: () => import('@/views/components-demo/count-to'),
+      name: 'CountToDemo',
+      meta: { title: '调度模型配置' }
+    },
+    {
+      path: 'drag-kanban',
+      component: () => import('@/views/components-demo/drag-kanban'),
+      name: 'DragKanbanDemo',
+      meta: { title: 'Drag Kanban' }
+    },
+    {
+      path: 'mixin',
+      component: () => import('@/views/components-demo/mixin'),
+      name: 'ComponentMixinDemo',
+      meta: { title: 'Component Mixin' }
+    },
+    {
       path: 'tinymce',
       component: () => import('@/views/components-demo/tinymce'),
       name: 'TinymceDemo',
@@ -55,18 +73,6 @@ const componentsRouter = {
       meta: { title: 'Sticky' }
     },
     {
-      path: 'count-to',
-      component: () => import('@/views/components-demo/count-to'),
-      name: 'CountToDemo',
-      meta: { title: 'Count To' }
-    },
-    {
-      path: 'mixin',
-      component: () => import('@/views/components-demo/mixin'),
-      name: 'ComponentMixinDemo',
-      meta: { title: 'Component Mixin' }
-    },
-    {
       path: 'back-to-top',
       component: () => import('@/views/components-demo/back-to-top'),
       name: 'BackToTopDemo',
@@ -89,12 +95,6 @@ const componentsRouter = {
       component: () => import('@/views/components-demo/dnd-list'),
       name: 'DndListDemo',
       meta: { title: 'Dnd List' }
-    },
-    {
-      path: 'drag-kanban',
-      component: () => import('@/views/components-demo/drag-kanban'),
-      name: 'DragKanbanDemo',
-      meta: { title: 'Drag Kanban' }
     }
   ]
 }

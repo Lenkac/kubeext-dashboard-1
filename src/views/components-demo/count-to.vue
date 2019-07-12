@@ -1,128 +1,80 @@
 <template>
   <div class="components-container">
+    <el-row style="margin-bottom:20px;">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>当前模型选择：
+            <p style="color:red;display:inline;font-size:20px;"> <strong>{{ schedulingType }}</strong></p>
+          </span>
+        </div>
+        <div style="margin-bottom:50px;">
+          <el-col :span="12" class="text-center">
+            <el-button type="primary" @click.native="clickA">队列模型</el-button>
+          </el-col>
+          <el-col :span="12" class="text-center">
+              <el-button type="primary" @click.native="clickB">最小费用最大流（MCMF）模型</el-button>
+          </el-col>
+        </div>
+      </el-card>
+    </el-row>
     <aside>
-      <a href="https://github.com/PanJiaChen/vue-countTo" target="_blank">countTo-component</a>
+      <a href="javascript:void(0)" target="_blank">队列模型</a>
     </aside>
-    <count-to
-      ref="example"
-      :start-val="_startVal"
-      :end-val="_endVal"
-      :duration="_duration"
-      :decimals="_decimals"
-      :separator="_separator"
-      :prefix="_prefix"
-      :suffix="_suffix"
-      :autoplay="false"
-      class="example"
-    />
-    <div style="margin-left: 25%;margin-top: 40px;">
-      <label class="label" for="startValInput">startVal:
-        <input v-model.number="setStartVal" type="number" name="startValInput">
-      </label>
-      <label class="label" for="endValInput">endVal:
-        <input v-model.number="setEndVal" type="number" name="endVaInput">
-      </label>
-      <label class="label" for="durationInput">duration:
-        <input v-model.number="setDuration" type="number" name="durationInput">
-      </label>
-      <div class="startBtn example-btn" @click="start">
-        Start
-      </div>
-      <div class="pause-resume-btn example-btn" @click="pauseResume">
-        pause/resume
-      </div>
-      <br>
-      <label class="label" for="decimalsInput">decimals:
-        <input v-model.number="setDecimals" type="number" name="decimalsInput">
-      </label>
-      <label class="label" for="separatorInput">separator:
-        <input v-model="setSeparator" name="separatorInput">
-      </label>
-      <label class="label" for="prefixInput">prefix:
-        <input v-model="setPrefix" name="prefixInput">
-      </label>
-      <label class="label" for="suffixInput">suffix:
-        <input v-model="setSuffix" name="suffixInput">
-      </label>
+    <div class="components-container board">
+      <Kanban :key="1" :list="list1" :group="group" class="kanban todo" header-text="Todo" />
+      <Kanban :key="2" :list="list2" :group="group" class="kanban working" header-text="Working" />
+      <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="Done" />
     </div>
-    <aside>&lt;count-to :start-val=&#x27;{{ _startVal }}&#x27; :end-val=&#x27;{{ _endVal }}&#x27; :duration=&#x27;{{ _duration }}&#x27;
-      :decimals=&#x27;{{ _decimals }}&#x27; :separator=&#x27;{{ _separator }}&#x27; :prefix=&#x27;{{ _prefix }}&#x27; :suffix=&#x27;{{ _suffix }}&#x27;
-      :autoplay=false&gt;</aside>
+    <aside>
+      <a href="javascript:void(0)" target="_blank">最小费用最大流（MCMF）模型</a>
+    </aside>
+
   </div>
 </template>
 
 <script>
-import countTo from 'vue-count-to'
+
+import Kanban from '@/components/Kanban'
 
 export default {
   name: 'CountToDemo',
-  components: { countTo },
+  components: {
+    Kanban
+  },
   data() {
     return {
-      setStartVal: 0,
-      setEndVal: 2017,
-      setDuration: 4000,
-      setDecimals: 0,
-      setSeparator: ',',
-      setSuffix: ' rmb',
-      setPrefix: '¥ '
-    }
-  },
-  computed: {
-    _startVal() {
-      if (this.setStartVal) {
-        return this.setStartVal
-      } else {
-        return 0
-      }
-    },
-    _endVal() {
-      if (this.setEndVal) {
-        return this.setEndVal
-      } else {
-        return 0
-      }
-    },
-    _duration() {
-      if (this.setDuration) {
-        return this.setDuration
-      } else {
-        return 100
-      }
-    },
-    _decimals() {
-      if (this.setDecimals) {
-        if (this.setDecimals < 0 || this.setDecimals > 20) {
-          alert('digits argument must be between 0 and 20')
-          return 0
-        }
-        return this.setDecimals
-      } else {
-        return 0
-      }
-    },
-    _separator() {
-      return this.setSeparator
-    },
-    _suffix() {
-      return this.setSuffix
-    },
-    _prefix() {
-      return this.setPrefix
+      schedulingType: '队列模型',
+      group: 'mission',
+      list1: [
+        { name: 'Mission', id: 1 },
+        { name: 'Mission', id: 2 },
+        { name: 'Mission', id: 3 },
+        { name: 'Mission', id: 4 }
+      ],
+      list2: [
+        { name: 'Mission', id: 5 },
+        { name: 'Mission', id: 6 },
+        { name: 'Mission', id: 7 }
+      ],
+      list3: [
+        { name: 'Mission', id: 8 },
+        { name: 'Mission', id: 9 },
+        { name: 'Mission', id: 10 }
+      ]
     }
   },
   methods: {
-    start() {
-      this.$refs.example.start()
+    clickA() {
+      this.schedulingType = '队列模型'
     },
-    pauseResume() {
-      this.$refs.example.pauseResume()
+    clickB() {
+      this.schedulingType = '最小费用最大流（MCMF）模型'
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .example-btn {
   display: inline-block;
   margin-bottom: 0;
@@ -213,6 +165,32 @@ input {
   background-color: #E65D6E;
   color: #fff;
   border-color: #E65D6E;
+}
+
+.board {
+  width: 1000px;
+  margin-left: 20px;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.kanban {
+  &.todo {
+    .board-column-header {
+      background: #4A9FF9;
+    }
+  }
+  &.working {
+    .board-column-header {
+      background: #f9944a;
+    }
+  }
+  &.done {
+    .board-column-header {
+      background: #2ac06d;
+    }
+  }
 }
 </style>
 
