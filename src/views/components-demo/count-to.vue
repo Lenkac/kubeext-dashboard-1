@@ -12,7 +12,7 @@
             <el-button type="primary" @click.native="clickA">队列模型</el-button>
           </el-col>
           <el-col :span="12" class="text-center">
-              <el-button type="primary" @click.native="clickB">最小费用最大流（MCMF）模型</el-button>
+            <el-button type="primary" @click.native="clickB">最小费用最大流（MCMF）模型</el-button>
           </el-col>
         </div>
       </el-card>
@@ -20,15 +20,15 @@
     <aside>
       <a href="javascript:void(0)" target="_blank">队列模型</a>
     </aside>
-    <div class="components-container board">
-      <Kanban :key="1" :list="list1" :group="group" class="kanban todo" header-text="Todo" />
-      <Kanban :key="2" :list="list2" :group="group" class="kanban working" header-text="Working" />
-      <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="Done" />
+    <div class="board">
+      <Kanban :key="1" :list="list1" :group="group" class="kanban todo" header-text="任务情况" />
+      <Kanban :key="2" :list="list2" :group="group" class="kanban working" header-text="机器情况" />
+      <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="任务部署情况" />
     </div>
     <aside>
       <a href="javascript:void(0)" target="_blank">最小费用最大流（MCMF）模型</a>
     </aside>
-
+    <canvas id="test-canvas" style="width:100%;height:300px"></canvas>
   </div>
 </template>
 
@@ -46,22 +46,38 @@ export default {
       schedulingType: '队列模型',
       group: 'mission',
       list1: [
-        { name: 'Mission', id: 1 },
-        { name: 'Mission', id: 2 },
-        { name: 'Mission', id: 3 },
-        { name: 'Mission', id: 4 }
+        { name: '任务2：（4 Core，4 Ram）', id: 2 },
+        { name: '任务2：（4 Core，4 Ram）', id: 2 },
+        { name: '任务3：（4 Core，4 Ram）', id: 3 }
       ],
       list2: [
-        { name: 'Mission', id: 5 },
-        { name: 'Mission', id: 6 },
-        { name: 'Mission', id: 7 }
+        { name: '机器1：（4 Core，4 Ram）', id: 5 },
+        { name: '机器2：（4 Core，4 Ram）', id: 6 },
+        { name: '机器3：（4 Core，4 Ram）', id: 7 }
       ],
       list3: [
-        { name: 'Mission', id: 8 },
-        { name: 'Mission', id: 9 },
-        { name: 'Mission', id: 10 }
+        { name: '任务1-机器2' },
+        { name: '任务1-机器2' },
+        { name: '任务1-机器2' }
       ]
     }
+  },
+  mounted() {
+    var can = document.getElementById('test-canvas')
+    var ctx = can.getContext('2d')
+    ctx.clearRect(0, 0, 200, 200)
+    ctx.fillStyle = '#dddddd'
+    ctx.fillRect(10, 10, 130, 130)
+    var path = new Path2D()
+    path.arc(75, 75, 50, 0, Math.PI * 2, true)
+    path.moveTo(110, 75)
+    path.arc(75, 75, 35, 0, Math.PI, false)
+    path.moveTo(65, 65)
+    path.arc(60, 65, 5, 0, Math.PI * 2, true)
+    path.moveTo(95, 65)
+    path.arc(90, 65, 5, 0, Math.PI * 2, true)
+    ctx.strokeStyle = '#0000ff'
+    ctx.stroke(path)
   },
   methods: {
     clickA() {
@@ -74,102 +90,11 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.example-btn {
-  display: inline-block;
-  margin-bottom: 0;
-  font-weight: 500;
-  text-align: center;
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
-  cursor: pointer;
-  background-image: none;
-  border: 1px solid transparent;
-  white-space: nowrap;
-  line-height: 1.5;
-  padding: 4px 15px;
-  font-size: 12px;
-  border-radius: 4px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
-  transition: all .3s cubic-bezier(.645, .045, .355, 1);
-  position: relative;
-  color: rgba(0, 0, 0, .65);
-  background-color: #fff;
-  border-color: #d9d9d9;
-}
-
-.example-btn:hover {
-  color: #4AB7BD;
-  background-color: #fff;
-  border-color: #4AB7BD;
-}
-.example {
-  font-size: 50px;
-  color: #F6416C;
-  display: block;
-  margin: 10px 0;
-  text-align: center;
-  font-size: 80px;
-  font-weight: 500;
-}
-
-.label {
-  color: #2f4f4f;
-  font-size: 16px;
-  display: inline-block;
-  margin: 15px 30px 15px 0;
-}
-
-input {
-  position: relative;
-  display: inline-block;
-  padding: 4px 7px;
-  width: 70px;
-  height: 28px;
-  cursor: text;
-  font-size: 12px;
-  line-height: 1.5;
-  color: rgba(0, 0, 0, .65);
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  -webkit-transition: all .3s;
-  transition: all .3s;
-}
-
-.startBtn {
-  margin-left: 20px;
-  font-size: 20px;
-  color: #30B08F;
-  background-color: #fff;
-}
-
-.startBtn:hover {
-  background-color: #30B08F;
-  color: #fff;
-  border-color: #30B08F;
-}
-
-.pause-resume-btn {
-  font-size: 20px;
-  color: #E65D6E;
-  background-color: #fff;
-}
-
-.pause-resume-btn:hover {
-  background-color: #E65D6E;
-  color: #fff;
-  border-color: #E65D6E;
-}
+<style lang="scss">
 
 .board {
-  width: 1000px;
   margin-left: 20px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-around;
   flex-direction: row;
