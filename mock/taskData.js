@@ -9,9 +9,9 @@ export default [
         page: 1,
         count: 10,
         data: [
-          { name: '任务2：（4 Core，4 Ram）', id: 2 },
-          { name: '任务2：（4 Core，4 Ram）', id: 9 },
-          { name: '任务3：（4 Core，4 Ram）', id: 3 }
+          { name: '逗比，这是从后台拿到的数据', id: 2 },
+          { name: '逗比，这是从后台拿到的数据', id: 9 },
+          { name: '逗比，这是从后台拿到的数据', id: 3 }
         ]
       }
     }

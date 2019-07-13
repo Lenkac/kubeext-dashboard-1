@@ -1,21 +1,17 @@
 <template>
   <div class="components-container">
-    <el-row style="margin-bottom:20px;">
-      <el-card class="box-card">
-        <div slot="header" class="clearfix">
-          <span>当前模型选择：
-            <p style="color:red;display:inline;font-size:20px;"> <strong>{{ schedulingType }}</strong></p>
-          </span>
-        </div>
-        <div style="margin-bottom:50px;">
-          <el-col :span="12" class="text-center">
-            <el-button type="primary" @click.native="clickA">队列模型</el-button>
-          </el-col>
-          <el-col :span="12" class="text-center">
-            <el-button type="primary" @click.native="clickB">最小费用最大流（MCMF）模型</el-button>
-          </el-col>
-        </div>
-      </el-card>
+    <el-row :gutter="20" style="margin:30px;">
+      <el-col :span="6">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>当前模型选择：
+              <p style="color:red;display:inline;font-size:18px;"> <strong>{{ schedulingType }}</strong></p>
+            </span>
+          </div>
+          <p style="font-size:12px;">此处配置项用于设置Kubernetes scheduler使用的具体模型，当前支持队列和MCMF两种调度模型</p>
+          <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA">模型选择</el-button>
+        </el-card>
+      </el-col>
     </el-row>
     <aside>
       <a href="javascript:void(0)" target="_blank">队列模型</a>
@@ -29,37 +25,63 @@
       <a href="javascript:void(0)" target="_blank">最小费用最大流（MCMF）模型</a>
     </aside>
     <canvas id="test-canvas" style="width:100%;height:300px"></canvas>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="调度模型" @dragDialog="handleDrag">
+      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+      <div class="card-editor-container">
+        <json-editor ref="jsonEditor" v-model="value" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-
+import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 import Kanban from '@/components/Kanban'
+import JsonEditor from '@/components/JsonEditor'
+
+const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
 export default {
   name: 'CountToDemo',
+  directives: { elDragDialog },
   components: {
-    Kanban
+    Kanban,
+    JsonEditor
   },
   data() {
     return {
       schedulingType: '队列模型',
       group: 'mission',
-      list1: [
-        { name: '任务2：（4 Core，4 Ram）', id: 2 },
-        { name: '任务2：（4 Core，4 Ram）', id: 9 },
-        { name: '任务3：（4 Core，4 Ram）', id: 3 }
+      list1: [],
+      list2: [],
+      list3: [],
+      dialogTableVisible: false,
+      options: [
+        { value: '选项1', label: '队列模型' },
+        { value: '选项2', label: '最小费用最大流模型' }
       ],
-      list2: [
-        { name: '机器1：（4 Core，4 Ram）', id: 5 },
-        { name: '机器2：（4 Core，4 Ram）', id: 6 },
-        { name: '机器3：（4 Core，4 Ram）', id: 7 }
-      ],
-      list3: [
-        { name: '任务1-机器2' },
-        { name: '任务1-机器2' },
-        { name: '任务1-机器2' }
-      ]
+      modelType: '',
+      gridData: [{
+        date: '2016-05-02',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District'
+      }, {
+        date: '2016-05-04',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District'
+      }, {
+        date: '2016-05-01',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District'
+      }, {
+        date: '2016-05-03',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District'
+      }],
+      value: JSON.parse(jsonData)
     }
   },
   mounted() {
@@ -81,17 +103,19 @@ export default {
 
     this.$store.dispatch('taskData/getAllTaskData').then((resolve, reject) => {
       console.log('resolve:', resolve)
-      console.log('reject:', reject)
+      this.list1 = resolve['data']
     }).catch((resolve, reject) => {
       console.log('reject:', reject)
     })
   },
   methods: {
     clickA() {
-      this.schedulingType = '队列模型'
+      this.schedulingType = '你选择过了'
+      this.dialogTableVisible = true
     },
-    clickB() {
-      this.schedulingType = '最小费用最大流（MCMF）模型'
+    // v-el-drag-dialog onDrag callback function
+    handleDrag() {
+      this.$refs.select.blur()
     }
   }
 }
@@ -123,6 +147,12 @@ export default {
       background: #2ac06d;
     }
   }
+}
+
+.card-editor-container{
+  position: relative;
+  width: 100%;
+  height: 70%;
 }
 </style>
 
