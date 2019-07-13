@@ -47,7 +47,7 @@ export default {
       group: 'mission',
       list1: [
         { name: '任务2：（4 Core，4 Ram）', id: 2 },
-        { name: '任务2：（4 Core，4 Ram）', id: 2 },
+        { name: '任务2：（4 Core，4 Ram）', id: 9 },
         { name: '任务3：（4 Core，4 Ram）', id: 3 }
       ],
       list2: [
@@ -78,6 +78,13 @@ export default {
     path.arc(90, 65, 5, 0, Math.PI * 2, true)
     ctx.strokeStyle = '#0000ff'
     ctx.stroke(path)
+
+    this.$store.dispatch('taskData/getAllTaskData').then((resolve, reject) => {
+      console.log('resolve:', resolve)
+      console.log('reject:', reject)
+    }).catch((resolve, reject) => {
+      console.log('reject:', reject)
+    })
   },
   methods: {
     clickA() {
