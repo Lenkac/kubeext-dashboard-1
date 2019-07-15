@@ -35,9 +35,14 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
+      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row[item.row] }}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row['id'] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="Date" width="150px" align="center">
@@ -78,10 +83,13 @@
             {{ row.status }}
           </el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
+            {{ item.name }}
+          </el-button>
+          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
           <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
@@ -92,7 +100,7 @@
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
             Delete
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -223,8 +231,27 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      columns: [],
+      actions: []
     }
+  },
+  mounted() {
+    this.columns = [
+      { key: 1, width: '258', label: '名称', row: 'name' },
+      { key: 2, width: '130', label: '类型', row: 'type' },
+      { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
+      { key: 4, width: '110', label: '运行状态', row: 'status' },
+      { key: 9, width: '110', label: '重启次数', row: 'cpuMem' },
+      { key: 5, width: '120', label: '创建时长', row: 'runningLength' },
+      { key: 6, width: '120', label: 'IP', row: 'ip' },
+      { key: 7, width: '120', label: '所在主机', row: 'host' },
+      { key: 8, width: '120', label: 'CPU/内存', row: 'cpuMem' }
+    ]
+    this.actions = [
+      { key: 1, name: '编辑任务', event: 'update', type: 'primary' },
+      { key: 2, name: '删除任务', event: 'delete', type: 'danger' }
+    ]
   },
   created() {
     this.getList()
@@ -304,14 +331,15 @@ export default {
         }
       })
     },
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+    handleUpdate(row, event) {
+      // this.temp = Object.assign({}, row) // copy obj
+      // this.temp.timestamp = new Date(this.temp.timestamp)
+      // this.dialogStatus = 'update'
+      // this.dialogFormVisible = true
+      // this.$nextTick(() => {
+      //   this.$refs['dataForm'].clearValidate()
+      // })
+      alert(event)
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
