@@ -1,8 +1,9 @@
 import request from '@/utils/request'
+import { getUrlPerfix } from '@/utils/url-setter'
 
 export function login(data) {
   return request({
-    url: '/user/login',
+    url: getUrlPerfix() + 'user/login',
     method: 'post',
     data
   })

@@ -167,6 +167,7 @@ export default {
           console.log('ready to commit URL: user/login')
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
+              console.log('八大 to commit URL: user/login')
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
