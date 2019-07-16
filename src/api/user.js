@@ -11,7 +11,7 @@ export function login(data) {
 
 export function getInfo(token) {
   var res = request({
-    url: '/user/info',
+    url: getUrlPerfix() + 'user/info',
     method: 'get',
     params: { token }
   })
