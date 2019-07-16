@@ -64,6 +64,11 @@ export default {
     SizeSelect,
     Search
   },
+  data() {
+    return {
+      role: this.$store.dispatch('user/getInfo')
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -76,8 +81,8 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
+      console.log('Going to logout:', this.$store.getters.roles)
       await this.$store.dispatch('user/logout')
-      console.log(roles)
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
