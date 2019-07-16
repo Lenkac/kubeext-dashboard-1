@@ -1,28 +1,24 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
-      </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
+      <span v-for="ff in filterForm" :key="ff.key">
+        <el-input v-if="ff.type == 'input'" v-model="listQuery[ff.prop]" :placeholder="ff.ph" :prop="ff.prop" style="width:200px;margin-left:20px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-select v-if="ff.type == 'select'" v-model="listQuery[ff.prop]" :prop="ff.prop" :placeholder="ff.ph" :width="ff.width" class="filter-item" @change="handleFilter">
+          <el-option v-for="item in littleDataSource[ff.dataSource]" :key="item.key" :label="item.label" :value="item.value" />
+        </el-select>
+      </span>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
+        查找
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        Add
+        添加
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
+        导出excel
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+      <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         reviewer
-      </el-checkbox>
+      </el-checkbox> -->
     </div>
 
     <el-table
@@ -196,14 +192,6 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 20,
-        importance: undefined,
-        title: undefined,
-        type: undefined,
-        sort: '+id'
-      },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
@@ -233,7 +221,10 @@ export default {
       },
       downloadLoading: false,
       columns: [],
-      actions: []
+      actions: [],
+      littleDataSource: {},
+      filterForm: [],
+      listQuery: {}
     }
   },
   mounted() {
@@ -252,6 +243,24 @@ export default {
       { key: 1, name: '编辑任务', event: 'update', type: 'primary' },
       { key: 2, name: '删除任务', event: 'delete', type: 'danger' }
     ]
+    this.filterForm = [
+      { type: 'select', key: 1, label: '选择主机', dataSource: 'hosts', ph: '选择主机', width: 200, prop: 'host' },
+      { type: 'input', key: 2, label: '任务名称', ph: '输入任务', width: 200, prop: 'name' }
+    ]
+    this.littleDataSource = {
+      hosts: [
+        { key: 1, label: 'node1', value: 'node1' },
+        { key: 2, label: 'node2', value: 'node2' }
+      ]
+    }
+    this.listQuery = {
+      page: 1,
+      limit: 20,
+      importance: undefined,
+      title: undefined,
+      type: undefined,
+      name: ''
+    }
   },
   created() {
     this.getList()
@@ -407,3 +416,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+div>input{
+  display: inline;
+  width: 200px;
+}
+</style>
