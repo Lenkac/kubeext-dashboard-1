@@ -1,9 +1,9 @@
 import request from '@/utils/request'
-import { getUrlPerfix } from '@/utils/url-setter'
+import { getUrlPrefix } from '@/utils/url-setter'
 
 export function login(data) {
   return request({
-    url: getUrlPerfix() + 'user/login',
+    url: getUrlPrefix() + 'user/login',
     method: 'post',
     data
   })
@@ -11,7 +11,7 @@ export function login(data) {
 
 export function getInfo(token) {
   var res = request({
-    url: getUrlPerfix() + 'user/info',
+    url: getUrlPrefix() + 'user/info',
     method: 'get',
     params: { token }
   })
