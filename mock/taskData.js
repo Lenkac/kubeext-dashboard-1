@@ -2,6 +2,7 @@ import Mock from 'mockjs'
 
 const taskList = []
 
+//生成模拟的任务数据
 for (let i = 0; i < 3; i++) {
   taskList.push(Mock.mock({
     id: '@increment',
@@ -9,7 +10,6 @@ for (let i = 0; i < 3; i++) {
     // author: '@first',
     // reviewer: '@first',
     name: 'pod'+'@title(5, 10)',
-    //piuoiy9iy9iy9ysdfsdfsdfsdfsdfdsfds
     // content_short: 'mock data',
     // content: baseContent,
     // forecast: '@float(0, 100, 2, 2)',
@@ -30,7 +30,7 @@ for (let i = 0; i < 3; i++) {
 }
 
 export default [
-  // user taskData
+  //模拟返回所有任务list
   {
     url: '/list/getList',
     type: 'get',
@@ -47,6 +47,7 @@ export default [
   },
 
   {
+    //返回任务所有的表头
     url: '/list/getColumns',
     type: 'get',
     response: config => {
@@ -55,6 +56,7 @@ export default [
         page: 1,
         count: 10,
         data: [
+          //key：自增整数 width：每列初始宽度 label：表头 row：key值 style：表单样式 type：表单控件类型 
           { key: 1, width: '259', label: '名称', row: 'name', style: 'width:150px;', type: 'input' },
           { key: 2, width: '130', label: '类型', row: 'type', style: 'width:250px;', type: 'select', dataSource: 'types' },
           { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
@@ -70,6 +72,7 @@ export default [
   },
 
   {
+    //组件的数据源
     url: '/list/getLittleDataSource',
     type: 'get',
     response: config => {
@@ -95,6 +98,7 @@ export default [
   },
 
   {
+    //表单组件的查询参数
     url: '/list/getQueryParameter',
     type: 'get',
     response: config => {
@@ -114,6 +118,7 @@ export default [
   },
 
   {
+    //更新或插入记录时的校验规则，与columns中的row属性对应
     url: '/list/getRules',
     type: 'get',
     response: config => {
@@ -132,6 +137,7 @@ export default [
   },
 
   {
+    //更新或插入记录时的对象，key值与cols的row对应
     url: '/list/getTemp',
     type: 'get',
     response: config => {
@@ -157,6 +163,7 @@ export default [
   },
 
   {
+    //每列最后的操作按钮，一般是删除和编辑
     url: '/list/getActions',
     type: 'get',
     response: config => {
@@ -174,6 +181,7 @@ export default [
   },
   
   {
+    //每个表格上部的查询框，更新时（自动更新listquery参数）触发查询操作
     url: '/list/getFilterForm',
     type: 'get',
     response: config => {
