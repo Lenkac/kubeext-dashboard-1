@@ -153,7 +153,8 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/taskData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp } from '@/api/taskData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -195,7 +196,6 @@ export default {
       listLoading: true,
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       dialogFormVisible: false,
@@ -216,66 +216,34 @@ export default {
       textMap: {
         update: '更新数据',
         create: '创建新记录'
-      }
+      },
+      viewer: 'tasks'
     }
   },
   mounted() {
-    this.columns = [
-      { key: 1, width: '258', label: '名称', row: 'name', style: 'width:150px;', type: 'input' },
-      { key: 2, width: '130', label: '类型', row: 'type', style: 'width:250px;', type: 'select', dataSource: 'types' },
-      { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
-      { key: 4, width: '110', label: '运行状态', row: 'status' },
-      { key: 9, width: '110', label: '重启次数', row: 'restartCounts' },
-      { key: 5, width: '120', label: '创建时长', row: 'runningLength' },
-      { key: 6, width: '120', label: 'IP', row: 'ip', itemStyle: 'display:none;' },
-      { key: 7, width: '120', label: '所在主机', row: 'host', style: 'width:150px;', type: 'input', dataSource: 'host' },
-      { key: 8, width: '120', label: 'CPU/内存', row: 'cpuMem' }
-    ]
-    this.actions = [
-      { key: 1, name: '编辑任务', event: 'update', type: 'primary' },
-      { key: 2, name: '删除任务', event: 'delete', type: 'danger' }
-    ]
-    this.filterForm = [
-      { type: 'select', key: 1, label: '选择主机', dataSource: 'hosts', ph: '选择主机', width: 200, prop: 'host' },
-      { type: 'input', key: 2, label: '任务名称', ph: '输入任务', width: 200, prop: 'name', style: 'width:200px;margin-left:20px;margin-right:20px;' }
-    ]
-    this.littleDataSource = {
-      hosts: [
-        { key: 1, label: 'node1', value: 'node1' },
-        { key: 2, label: 'node2', value: 'node2' }
-      ],
-      types: [
-        { key: 1, label: 'Deployment', value: 'Deployment' },
-        { key: 2, label: 'ReplicationController', value: 'ReplicationController' },
-        { key: 3, label: 'ReplicationSet', value: 'ReplicationSet' },
-        { key: 4, label: 'DaemonSet', value: 'DaemonSet' },
-        { key: 5, label: 'StatefulSet', value: 'StatefulSet' }
-      ]
-    }
-    this.listQuery = {
-      page: 1,
-      limit: 20,
-      importance: undefined,
-      title: undefined,
-      type: undefined,
-      name: ''
-    }
-    this.rules = {
-      name: [{ required: true, message: '必须要填写任务名称', trigger: 'change' }, { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }],
-      timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-      title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-    }
-    this.temp ={
-      name: '',
-      type: '',
-      ready: '',
-      status: '',
-      cpuMem: '',
-      runningLength: '',
-      ip: '',
-      host: '',
-      restartCounts: 0
-    }
+    //getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp
+    getColumns({viewer: this.viewer}).then(response => {
+      this.columns = response.data
+    })
+    getLittleDataSource({viewer: this.viewer}).then(response => {
+      this.littleDataSource = response.data
+    })
+    getActions({viewer: this.viewer}).then(response => {
+      this.actions = response.data
+    })
+    getFilterForm({viewer: this.viewer}).then(response => {
+      this.filterForm = response.data
+    })
+    getListQuery({viewer: this.viewer}).then(response => {
+      this.listQuery = response.data
+      console.log( this.listQuery)
+    })
+    getRules({viewer: this.viewer}).then(response => {
+      this.rules = response.data
+    })
+    getTemp({viewer: this.viewer}).then(response => {
+      this.temp = response.data
+    })
   },
   created() {
     this.getList()
@@ -283,15 +251,14 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+      getListAllData(this.listQuery).then(response => {
+        this.list = response.data
+        this.total = response.total
+        this.listLoading = false
       })
+    },
+    getTest(){
+      alert('good');
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -299,7 +266,7 @@ export default {
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: '操作Success',
+        message: '操作成功',
         type: 'success'
       })
       row.status = status
@@ -347,7 +314,7 @@ export default {
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
-              message: 'Created Successfully',
+              message: '创建成功',
               type: 'success',
               duration: 2000
             })
@@ -358,7 +325,7 @@ export default {
     handleUpdate(row, event) {
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
-        this.temp.timestamp = new Date(this.temp.timestamp)
+        //this.temp.timestamp = new Date(this.temp.timestamp)
         this.dialogStatus = 'update'
         this.dialogFormVisible = true
         this.$nextTick(() => {
@@ -385,7 +352,7 @@ export default {
             this.dialogFormVisible = false
             this.$notify({
               title: 'Success',
-              message: 'Update Successfully',
+              message: '更新成功',
               type: 'success',
               duration: 2000
             })
@@ -396,7 +363,7 @@ export default {
     handleDelete(row) {
       this.$notify({
         title: 'Success',
-        message: 'Delete Successfully',
+        message: '删除成功',
         type: 'success',
         duration: 2000
       })
@@ -439,10 +406,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-div>input{
-  display: inline;
-  width: 200px;
-}
-</style>

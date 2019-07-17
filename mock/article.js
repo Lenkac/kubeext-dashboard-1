@@ -17,7 +17,7 @@ for (let i = 0; i < count; i++) {
     content: baseContent,
     forecast: '@float(0, 100, 2, 2)',
     importance: '@integer(1, 3)',
-    'type|1': ['CN', 'US', 'JP', 'EU'],
+    'type|1': ['CN', "<a href=\"www.baidu.com\">US</a>", 'JP', 'EU'],
     'status|1': ['published', 'draft', 'deleted'],
     display_time: '@datetime',
     comment_disabled: true,
