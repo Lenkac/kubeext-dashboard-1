@@ -104,13 +104,15 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form-item v-for="efi in columns" :key="efi.key" :label="efi.label" :prop="efi.row" :style="efi.style">
+          <el-input v-if="efi.type == 'input'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
+          <el-select v-if="efi.type == 'select'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style">
+            <el-option v-for="lds in littleDataSource[efi.dataSource]" :key="lds.key" :label="lds.label" :value="lds.value" />
           </el-select>
+          <el-input v-if="efi.type == undefined" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
         </el-form-item>
-        <el-form-item label="Date" prop="timestamp">
+        <!-- <el-form-item label="Date" prop="timestamp">
           <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
         </el-form-item>
         <el-form-item label="Title" prop="title">
@@ -126,14 +128,14 @@
         </el-form-item>
         <el-form-item label="Remark">
           <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
+          确认
         </el-button>
       </div>
     </el-dialog>
@@ -190,53 +192,43 @@ export default {
     return {
       tableKey: 0,
       list: null,
-      total: 0,
       listLoading: true,
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
       dialogFormVisible: false,
       dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
       dialogPvVisible: false,
       pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
-      },
       downloadLoading: false,
       columns: [],
       actions: [],
       littleDataSource: {},
       filterForm: [],
-      listQuery: {}
+      listQuery: {},
+      total: 0,
+      rules: {
+      },
+      temp: {
+      },
+      textMap: {
+        update: '更新数据',
+        create: '创建新记录'
+      }
     }
   },
   mounted() {
     this.columns = [
-      { key: 1, width: '258', label: '名称', row: 'name' },
-      { key: 2, width: '130', label: '类型', row: 'type' },
+      { key: 1, width: '258', label: '名称', row: 'name', style: 'width:150px;', type: 'input' },
+      { key: 2, width: '130', label: '类型', row: 'type', style: 'width:250px;', type: 'select', dataSource: 'types' },
       { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
       { key: 4, width: '110', label: '运行状态', row: 'status' },
-      { key: 9, width: '110', label: '重启次数', row: 'cpuMem' },
+      { key: 9, width: '110', label: '重启次数', row: 'restartCounts' },
       { key: 5, width: '120', label: '创建时长', row: 'runningLength' },
-      { key: 6, width: '120', label: 'IP', row: 'ip' },
-      { key: 7, width: '120', label: '所在主机', row: 'host' },
+      { key: 6, width: '120', label: 'IP', row: 'ip', style: 'display:none;' },
+      { key: 7, width: '120', label: '所在主机', row: 'host', style: 'width:150px;', type: 'input', dataSource: 'host' },
       { key: 8, width: '120', label: 'CPU/内存', row: 'cpuMem' }
     ]
     this.actions = [
@@ -251,6 +243,13 @@ export default {
       hosts: [
         { key: 1, label: 'node1', value: 'node1' },
         { key: 2, label: 'node2', value: 'node2' }
+      ],
+      types: [
+        { key: 1, label: 'Deployment', value: 'Deployment' },
+        { key: 2, label: 'ReplicationController', value: 'ReplicationController' },
+        { key: 3, label: 'ReplicationSet', value: 'ReplicationSet' },
+        { key: 4, label: 'DaemonSet', value: 'DaemonSet' },
+        { key: 4, label: 'StatefulSet', value: 'StatefulSet' }
       ]
     }
     this.listQuery = {
@@ -260,6 +259,22 @@ export default {
       title: undefined,
       type: undefined,
       name: ''
+    }
+    this.rules = {
+      type: [{ required: true, message: 'type is required', trigger: 'change' }],
+      timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
+      title: [{ required: true, message: 'title is required', trigger: 'blur' }]
+    }
+    this.temp = {
+      name: '',
+      type: '',
+      ready: '',
+      status: '',
+      cpuMem: '',
+      runningLength: '',
+      ip: '',
+      host: '',
+      restartCounts: 0
     }
   },
   created() {
@@ -341,14 +356,13 @@ export default {
       })
     },
     handleUpdate(row, event) {
-      // this.temp = Object.assign({}, row) // copy obj
-      // this.temp.timestamp = new Date(this.temp.timestamp)
-      // this.dialogStatus = 'update'
-      // this.dialogFormVisible = true
-      // this.$nextTick(() => {
-      //   this.$refs['dataForm'].clearValidate()
-      // })
-      alert(event)
+      this.temp = Object.assign({}, row) // copy obj
+      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
