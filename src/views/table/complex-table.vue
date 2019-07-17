@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <span v-for="ff in filterForm" :key="ff.key">
-        <el-input v-if="ff.type == 'input'" v-model="listQuery[ff.prop]" :placeholder="ff.ph" :prop="ff.prop" style="width:200px;margin-left:20px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-input v-if="ff.type == 'input'" v-model="listQuery[ff.prop]" :placeholder="ff.ph" :prop="ff.prop" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter" />
         <el-select v-if="ff.type == 'select'" v-model="listQuery[ff.prop]" :prop="ff.prop" :placeholder="ff.ph" :width="ff.width" class="filter-item" @change="handleFilter">
           <el-option v-for="item in littleDataSource[ff.dataSource]" :key="item.key" :label="item.label" :value="item.value" />
         </el-select>
@@ -245,7 +245,7 @@ export default {
     ]
     this.filterForm = [
       { type: 'select', key: 1, label: '选择主机', dataSource: 'hosts', ph: '选择主机', width: 200, prop: 'host' },
-      { type: 'input', key: 2, label: '任务名称', ph: '输入任务', width: 200, prop: 'name' }
+      { type: 'input', key: 2, label: '任务名称', ph: '输入任务', width: 200, prop: 'name', style: 'width:200px;margin-left:20px;margin-right:20px;' }
     ]
     this.littleDataSource = {
       hosts: [
