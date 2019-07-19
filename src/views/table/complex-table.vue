@@ -32,8 +32,16 @@
       @sort-change="sortChange"
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row[item.row] }}</span>
+        <template  slot-scope="scope">
+          <router-link :to="{path:'/charts/grafana',query: {taskname: scope.row[item.row]}}" v-if="item.kind == 'a'" tag="a" class="link">
+            {{ scope.row[item.row] }}
+          </router-link>
+          <span v-if="item.kind == undefined">{{ scope.row[item.row] }}</span>
+          <!-- <router-link :to="{path:'/'}" tag="a">
+            <span>
+              
+            </span>
+          </router-link> -->
         </template>
       </el-table-column>
       <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
@@ -406,3 +414,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.link{
+  color: red;
+}
+a:hover{
+  text-decoration: underline;
+}
+</style>
