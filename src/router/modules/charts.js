@@ -13,10 +13,10 @@ const chartsRouter = {
   },
   children: [
     {
-      path: 'keyboard',
-      component: () => import('@/views/charts/keyboard'),
-      name: 'KeyboardChart',
-      meta: { title: 'Keyboard Chart', noCache: true }
+      path: 'grafana',
+      component: () => import('@/views/charts/grafana'),
+      name: 'GrafanaChart',
+      meta: { title: 'Grafana Chart', noCache: true }
     },
     {
       path: 'line',
