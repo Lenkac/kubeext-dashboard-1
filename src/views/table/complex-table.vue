@@ -33,7 +33,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/charts/grafana',query: {taskname: scope.row[item.row]}}" v-if="item.kind == 'a'" tag="a" class="link">
+          <router-link :to="{path:'/profile/taskProfile',query: {taskid: scope.row[item.row]}}" v-if="item.kind == 'a'" tag="a" class="link"   >
             {{ scope.row[item.row] }}
           </router-link>
           <span v-if="item.kind == undefined">{{ scope.row[item.row] }}</span>

@@ -119,6 +119,12 @@ export const constantRoutes = [
         component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: '个人信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'taskProfile',
+        component: () => import('@/views/profile/taskProfile'),
+        name: 'taskProfile',
+        meta: { title: '任务信息', icon: 'user', noCache: true }
       }
     ]
   }
