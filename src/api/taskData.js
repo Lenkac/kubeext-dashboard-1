@@ -80,3 +80,12 @@ export function getTemp(query) {
   })
   return res
 }
+
+export function getGrafanaLink(query) {
+  var res = request({
+    url: '/getGrafanaLink',
+    method: 'get',
+    params: query
+  })
+  return res
+}
