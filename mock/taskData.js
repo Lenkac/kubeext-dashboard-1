@@ -207,6 +207,16 @@ export default [
       }
     }
   },
+  {
+    url: '/getGrafanaSolo',
+      type: 'get',
+      response: config => {
+        return {
+          code: 20000,
+          data: 'http://39.96.4.11:30047/d-solo/at-cost-analysis-pod/analysis-by-pod?orgId=1&var-costcpu=17.78&var-costpcpu=5.35&var-costram=2.38&var-costpram=0.72&var-costStorageStandard=0.044&var-costStorageSSD=0.187&var-costDiscount=30&var-namespace=default&var-pod=reviews-v2-7cdb7475fb-glt66&from=1563765277415&to=1563766177415&panelId=95'
+        }
+      }
+    },
 
 
 

@@ -89,3 +89,12 @@ export function getGrafanaLink(query) {
   })
   return res
 }
+
+export function getGrafanaSolo(query) {
+  var res = request({
+    url: '/getGrafanaSolo',
+    method: 'get',
+    params: query
+  })
+  return res
+}
