@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <li v-if="key != undefined">{{key}}</li>
+    <el-row :gutter="20">
+      <el-col :span="10" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+        <li v-if="key != undefined">{{key}}</li>
+      </el-col>
+      <el-col :span="14" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+        <iframe class="iframe" :src="grafanaSolo"></iframe>
+      </el-col>
+    </el-row>
     <!-- <div v-if="user">
       <el-row :gutter="20">
 
@@ -35,6 +42,7 @@ import UserCard from './components/UserCard'
 import Activity from './components/Activity'
 import Timeline from './components/Timeline'
 import Account from './components/Account'
+import { getGrafanaSolo } from '@/api/taskData'
 
 export default {
   name: 'taskProfile',
@@ -43,7 +51,8 @@ export default {
     return {
       user: {},
       activeTab: 'activity',
-      key: ''
+      key: '',
+      grafanaSolo: ''
     }
   },
   computed: {
@@ -57,6 +66,11 @@ export default {
     this.getUser()
     this.key = this.$route.query.taskid
   },
+  mounted() {
+    getGrafanaSolo().then(response => {
+      this.grafanaSolo = response.data
+    })
+  },
   methods: {
     getUser() {
       this.user = {
@@ -69,3 +83,10 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.iframe{
+  width: 550px;
+  height: 200px;
+  border: 0ch;
+  }
+</style>

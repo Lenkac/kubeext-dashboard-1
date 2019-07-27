@@ -57,7 +57,7 @@ export default [
         count: 10,
         data: [
           //key：自增整数 width：每列初始宽度 label：表头 row：key值 style：表单样式 type：表单控件类型 
-          { key: 1, width: '259', label: '名称', row: 'name', style: 'width:150px;', type: 'input', kind: 'a'},
+          { key: 1, width: '259', label: '名称', row: 'name', style: 'width:150px;', type: 'input', kind: 'a', link: '/profile/taskProfile'},
           { key: 2, width: '130', label: '类型', row: 'type', style: 'width:250px;', type: 'select', dataSource: 'types' },
           { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
           { key: 4, width: '110', label: '运行状态', row: 'status' },
@@ -197,6 +197,27 @@ export default [
       }
     }
   },
+  {
+  url: '/getGrafanaLink',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        data: 'http://39.96.4.11:30047/d/at-cost-analysis-pod/analysis-by-pod?orgId=1&var-costcpu=17.78&var-costpcpu=5.35&var-costram=2.38&var-costpram=0.72&var-costStorageStandard=0.044&var-costStorageSSD=0.187&var-costDiscount=30&var-namespace=default&var-pod=reviews-v2-7cdb7475fb-glt66&from=1563757907654&to='+new Date().getTime()
+      }
+    }
+  },
+  {
+    url: '/getGrafanaSolo',
+      type: 'get',
+      response: config => {
+        return {
+          code: 20000,
+          data: 'http://39.96.4.11:30047/d-solo/at-cost-analysis-pod/analysis-by-pod?orgId=1&var-costcpu=17.78&var-costpcpu=5.35&var-costram=2.38&var-costpram=0.72&var-costStorageStandard=0.044&var-costStorageSSD=0.187&var-costDiscount=30&var-namespace=default&var-pod=reviews-v2-7cdb7475fb-glt66&from=1563765277415&to=1563766177415&panelId=95'
+        }
+      }
+    },
+
 
 
 ]
