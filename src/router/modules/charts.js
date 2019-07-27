@@ -8,7 +8,7 @@ const chartsRouter = {
   redirect: 'noRedirect',
   name: 'Charts',
   meta: {
-    title: '任务管理',
+    title: '主机管理',
     icon: 'chart'
   },
   children: [
@@ -19,17 +19,17 @@ const chartsRouter = {
       meta: { title: 'Grafana Chart', noCache: true }
     },
     {
-      path: 'line',
-      component: () => import('@/views/charts/line'),
-      name: 'LineChart',
-      meta: { title: 'Line Chart', noCache: true }
-    },
-    {
-      path: 'mix-chart',
-      component: () => import('@/views/charts/mix-chart'),
-      name: 'MixChart',
-      meta: { title: 'Mix Chart', noCache: true }
+      path: 'node-table',
+      component: () => import('@/views/charts/node-table'),
+      name: 'nodeTable',
+      meta: { title: '主机基本信息' }
     }
+    // {
+    //   path: 'mix-chart',
+    //   component: () => import('@/views/charts/mix-chart'),
+    //   name: 'MixChart',
+    //   meta: { title: 'Mix Chart', noCache: true }
+    // }
   ]
 }
 
