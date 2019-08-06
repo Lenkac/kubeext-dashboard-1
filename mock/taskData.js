@@ -9,7 +9,11 @@ for (let i = 0; i < 3; i++) {
     // timestamp: +Mock.Random.date('T'),
     // author: '@first',
     // reviewer: '@first',
-    name: 'pod'+'@title(5, 10)',
+    metaData:{
+      name: 'pod'+'@title(5, 10)',
+      kind: 'node'
+    },
+    
     // content_short: 'mock data',
     // content: baseContent,
     // forecast: '@float(0, 100, 2, 2)',
@@ -57,7 +61,7 @@ export default [
         count: 10,
         data: [
           //key：自增整数 width：每列初始宽度 label：表头 row：key值 style：表单样式 type：表单控件类型 
-          { key: 1, width: '259', label: '名称', row: 'name', style: 'width:150px;', type: 'input', kind: 'a', link: '/profile/taskProfile'},
+          { key: 1, width: '259', label: '名称', row: 'metaData.name', style: 'width:150px;', type: 'input', kind: 'a', link: '/profile/taskProfile'},
           { key: 2, width: '130', label: '类型', row: 'type', style: 'width:250px;', type: 'select', dataSource: 'types' },
           { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
           { key: 4, width: '110', label: '运行状态', row: 'status' },
@@ -110,8 +114,11 @@ export default [
         data: {
           page: 1,
           limit: 20,
-          name: '',
-          viewer: 'tasks'
+          name: 'name',
+          viewer: 'tasks',
+          nest:{
+            bb: 'nest.bb'
+          }
         }
       }
     }
@@ -191,8 +198,9 @@ export default [
         count: 10,
         total: 100,
         data: [
-          { type: 'select', key: 1, label: '选择主机', dataSource: 'hosts', ph: '选择主机', width: 200, prop: 'host' },
-          { type: 'input', key: 2, label: '任务名称', ph: '输入任务', width: 200, prop: 'name', style: 'width:200px;margin-left:20px;margin-right:20px;' }
+          { type: 'select', key: 1, label: '选择主机', dataSource: 'hosts', ph: '选择主机', prop: 'host', style: 'width:200px;margin-left:10px;margin-right:20px;height:35px' },
+          { type: 'input', key: 2, label: '任务名称', ph: '输入任务', prop: 'name', style: 'width:200px;margin-left:20px;margin-right:20px;' },
+          { type: 'input', key: 3, label: '测试字段', ph: '输入测试', prop: 'nest.bb', style: 'width:200px;margin-left:20px;margin-right:20px;' }
         ]
       }
     }

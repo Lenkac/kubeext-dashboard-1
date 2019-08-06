@@ -2,10 +2,15 @@
   <div class="app-container">
     <div class="filter-container">
       <span v-for="ff in filterForm" :key="ff.key">
-        <el-input v-if="ff.type == 'input'" v-model="listQuery[ff.prop]" :placeholder="ff.ph" :prop="ff.prop" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter" />
-        <el-select v-if="ff.type == 'select'" v-model="listQuery[ff.prop]" :prop="ff.prop" :placeholder="ff.ph" :width="ff.width" class="filter-item" @change="handleFilter">
-          <el-option v-for="item in littleDataSource[ff.dataSource]" :key="item.key" :label="item.label" :value="item.value" />
-        </el-select>
+        <!-- @input="updateJson(listQuery,ff.prop,$event)" -->
+        <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop)" 
+　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter" />
+        <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
+          @change="updateInputValue(listQuery,ff.prop,$event.target.value)"
+         :placeholder="ff.ph" :style="ff.style" class="filter-item">
+          <option v-for="item in littleDataSource[ff.dataSource]" 
+          :key="item.key" :label="item.label" :value="item.value" />
+        </select>
       </span>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         查找
@@ -34,9 +39,9 @@
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
           <router-link :to="{path:'/profile/taskProfile',query: {taskid: scope.row[item.row]}}" v-if="item.kind == 'a'" tag="a" class="link"   >
-            {{ scope.row[item.row] }}
+            {{ getJsonPrint(scope.row,item.row) }}
           </router-link>
-          <span v-if="item.kind == undefined">{{ scope.row[item.row] }}</span>
+          <span v-if="item.kind == undefined">{{ getJsonPrint(scope.row,item.row) }}</span>
           <!-- <router-link :to="{path:'/'}" tag="a">
             <span>
               
@@ -224,35 +229,37 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'nodes'
+      viewer: 'nodes',
+      value: ""
     }
   },
   mounted() {
-    //getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp
-    getColumns({viewer: this.viewer}).then(response => {
-      this.columns = response.data
-    })
-    getLittleDataSource({viewer: this.viewer}).then(response => {
-      this.littleDataSource = response.data
-    })
-    getActions({viewer: this.viewer}).then(response => {
-      this.actions = response.data
-    })
-    getFilterForm({viewer: this.viewer}).then(response => {
-      this.filterForm = response.data
-    })
+   
+  },
+  created() {
+     //getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp
     getListQuery({viewer: this.viewer}).then(response => {
       this.listQuery = response.data
-      console.log( this.listQuery)
-    })
-    getRules({viewer: this.viewer}).then(response => {
-      this.rules = response.data
+      //console.log( this.listQuery)
     })
     getTemp({viewer: this.viewer}).then(response => {
       this.temp = response.data
     })
-  },
-  created() {
+    getLittleDataSource({viewer: this.viewer}).then(response => {
+      this.littleDataSource = response.data
+    })
+    getRules({viewer: this.viewer}).then(response => {
+      this.rules = response.data
+    })
+    getFilterForm({viewer: this.viewer}).then(response => {
+      this.filterForm = response.data
+    })
+    getColumns({viewer: this.viewer}).then(response => {
+      this.columns = response.data
+    })
+    getActions({viewer: this.viewer}).then(response => {
+      this.actions = response.data
+    })
     this.getList()
   },
   methods: {
@@ -398,8 +405,42 @@ export default {
           return v[j]
         }
       }))
+    },
+    getJsonPrint(scope,longKey){
+      if( longKey.indexOf('\.') < 0 ){
+        return scope[longKey]
+      }
+      var keys = longKey.split("\.")
+      var res =scope;
+      keys.forEach(element => {
+        res = res[element]
+      });
+      return res
+    },
+    getInputValue(scope,longKey){
+      if( longKey.indexOf('\.') < 0 ){
+        return scope[longKey]
+      }
+      var keys = longKey.split("\.")
+      var res =scope;
+      keys.forEach(element => {
+        res = res[element]
+      });
+      return res
+    },
+    updateInputValue(scope,longKey,event){
+      if( longKey.indexOf('\.') < 0 ){
+         scope[longKey] = event
+         return 
+      }
+      var keys = longKey.split("\.")
+      var obj = scope
+      for (var i=0 ;i < keys.length -1 ;i++){
+        obj = obj[keys[i]]
+      }
+      obj[keys[keys.length-1]] = event
     }
-  }
+  },
 }
 </script>
 
@@ -409,5 +450,8 @@ export default {
 }
 a:hover{
   text-decoration: underline;
+}
+input {
+  height: 35px;
 }
 </style>
