@@ -39,9 +39,9 @@
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
           <router-link :to="{path:'/profile/taskProfile',query: {taskid: scope.row[item.row]}}" v-if="item.kind == 'a'" tag="a" class="link"   >
-            {{ getJsonPrint(scope.row,item.row) }}
+            {{ getInputValue(scope.row,item.row) }}
           </router-link>
-          <span v-if="item.kind == undefined">{{ getJsonPrint(scope.row,item.row) }}</span>
+          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
           <!-- <router-link :to="{path:'/'}" tag="a">
             <span>
               
@@ -406,17 +406,6 @@ export default {
         }
       }))
     },
-    getJsonPrint(scope,longKey){
-      if( longKey.indexOf('\.') < 0 ){
-        return scope[longKey]
-      }
-      var keys = longKey.split("\.")
-      var res =scope;
-      keys.forEach(element => {
-        res = res[element]
-      });
-      return res
-    },
     getInputValue(scope,longKey){
       if( longKey.indexOf('\.') < 0 ){
         return scope[longKey]
@@ -424,7 +413,13 @@ export default {
       var keys = longKey.split("\.")
       var res =scope;
       keys.forEach(element => {
-        res = res[element]
+        if(element.indexOf('\[') > 0){
+          res = res[element.substring(0,element.indexOf('\['))]
+          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+        }
+        else{
+          res = res[element]
+        }
       });
       return res
     },
@@ -436,7 +431,14 @@ export default {
       var keys = longKey.split("\.")
       var obj = scope
       for (var i=0 ;i < keys.length -1 ;i++){
-        obj = obj[keys[i]]
+        var element = keys[i]
+        if(element.indexOf('\[') > 0){
+          obj = obj[element.substring(0,element.indexOf('\['))]
+          obj = obj[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+        }
+        else{
+          obj = obj[element]
+        }
       }
       obj[keys[keys.length-1]] = event
     }
