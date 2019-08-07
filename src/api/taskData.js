@@ -20,7 +20,7 @@ export function getListAllData(listQuery) {
 
 export function getColumns(query) {
   var res = request({
-    url: '/list/getColumns',
+    url: 'http://localhost:32000/kubesys/v1/table/getMetaData',
     method: 'get',
     params: query
   })
@@ -90,9 +90,9 @@ export function getGrafanaLink(query) {
   return res
 }
 
-export function getGrafanaSolo(query) {
+export function getMonitorInfo(query) {
   var res = request({
-    url: '/getGrafanaSolo',
+    url: 'http://localhost:32000/kubesys/v1/monitor/getMonitorInfo',
     method: 'get',
     params: query
   })

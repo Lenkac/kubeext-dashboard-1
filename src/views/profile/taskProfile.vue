@@ -1,13 +1,51 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
-      <el-col :span="10" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+  
+      <el-col :span="12" style="margin-bottom:32px;">
         <li v-if="key != undefined">{{key}}</li>
       </el-col>
-      <el-col :span="14" style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-        <iframe class="iframe" :src="grafanaSolo"></iframe>
+      <el-col :span="12" style="margin-bottom:32px;">        
+        <el-row :span="8" style="margin-bottom:32px;">
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="iframe" :src="cpu.used"></iframe>
+          </el-col>
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="iframe" :src="cpu.total"></iframe>
+          </el-col>
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="rate_iframe" :src="cpu.rate"></iframe>
+          </el-col>
+        </el-row>
+        <el-row :span="8" style="margin-bottom:32px;">
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="rate_iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+        </el-row>
+        <el-row :span="8" style="margin-bottom:32px;">
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="rate_iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+        </el-row>
+        <el-row :span="8" style="margin-bottom:32px;">
+          <el-col :span="6" style="margin:0 50px 10px 50px;">
+            <iframe class="IO_iframe" :src="grafanaSolo"></iframe>
+          </el-col>
+        </el-row>
+        
       </el-col>
-    </el-row>
+    
     <!-- <div v-if="user">
       <el-row :gutter="20">
 
@@ -42,7 +80,7 @@ import UserCard from './components/UserCard'
 import Activity from './components/Activity'
 import Timeline from './components/Timeline'
 import Account from './components/Account'
-import { getGrafanaSolo } from '@/api/taskData'
+import { getMonitorInfo } from '@/api/taskData'
 
 export default {
   name: 'taskProfile',
@@ -52,7 +90,14 @@ export default {
       user: {},
       activeTab: 'activity',
       key: '',
-      grafanaSolo: ''
+      grafanaSolo: '',
+      cpu:{},
+      memory:{},
+      fs:{},
+      network:'',
+      node:'',
+      index:'',
+      viewerName:'nodes'
     }
   },
   computed: {
@@ -67,8 +112,12 @@ export default {
     this.key = this.$route.query.taskid
   },
   mounted() {
-    getGrafanaSolo().then(response => {
-      this.grafanaSolo = response.data
+    getMonitorInfo({"viewerName":"nodes","index":"0","node":"ali1","objectName":"grafana"}).then(response => {
+      this.cpu = response.cpu
+      this.memory = response.memory
+      this.fs = response.fs
+      this.network = response.network
+      
     })
   },
   methods: {
@@ -85,7 +134,17 @@ export default {
 </script>
 <style lang="scss" scoped>
 .iframe{
-  width: 550px;
+  width: 250px;
+  height: 100px;
+  border: 0ch;
+  }
+.rate_iframe{
+  width: 510px;
+  height: 150px;
+  border: 0ch;
+  }
+.IO_iframe{
+  width: 510px;
   height: 200px;
   border: 0ch;
   }
