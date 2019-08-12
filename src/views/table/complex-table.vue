@@ -162,10 +162,11 @@
 
 <script>
 import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/taskData'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp } from '@/api/taskData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/taskData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { mapGetters } from 'vuex'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -184,6 +185,13 @@ export default {
   name: 'ComplexTable',
   components: { Pagination },
   directives: { waves },
+  computed: {
+    ...mapGetters([
+      'name',
+      'avatar',
+      'roles'
+    ])
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -229,8 +237,7 @@ export default {
     }
   },
   mounted() {
-    //getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp
-    getColumns({viewer: this.viewer}).then(response => {
+    getColumns({viewer: this.viewer,objectName: 'columns'}).then(response => {
       this.columns = response.data
     })
     getLittleDataSource({viewer: this.viewer}).then(response => {
@@ -252,6 +259,7 @@ export default {
     getTemp({viewer: this.viewer}).then(response => {
       this.temp = response.data
     })
+    getIp(this.viewer,this.name)
   },
   created() {
     this.getList()

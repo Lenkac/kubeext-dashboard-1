@@ -1,37 +1,55 @@
 import request from '@/utils/request'
+import {getListURL, getMetaDataURL,getParameterURL} from '@/utils/url-setter'
 
-import { getUrlPrefix } from '@/utils/url-setter'
+export function getIp(viewerName,userName){
+  console.log(userName)
+  return "39.96.4.11"
+}
 
-export function getAllTaskData(listQuery) {
+// export function getAllTaskData(listQuery) {
+//   var res = request({
+//     url: '/list/getList',
+//     method: 'get',
+//     params: listQuery
+//   })
+//   return res
+// }
+
+export function getListQuery(viewerName,ip) {
   var res = request({
-    url: getUrlPrefix()+'/list/getList',
+    url: getParameterURL(),
     method: 'get',
-    params: listQuery
+    params:{
+      "viewerName": viewerName,
+      "ip": ip
+    }
   })
   return res
 }
 
-export function getListAllData(listQuery) {
-  var res = request({
-    url: getUrlPrefix()+'/list/getList',
-    method: 'get',
-    params: listQuery
+export function getListAllData(data) {
+  return request({
+    url: getListURL(data.viewerName),
+    method: 'post',
+    data
   })
-  return res
 }
 
-export function getColumns(query) {
+export function getColumns(viewerName,objectName) {
   var res = request({
-    url: getUrlPrefix()+'/list/getColumns',
+    url: getMetaDataURL(),
     method: 'get',
-    params: query
+    params: {
+      "viewerName": viewerName,
+      "objectName": objectName
+    }
   })
   return res
 }
 
 export function getActions(query) {
   var res = request({
-    url: getUrlPrefix()+'/list/getActions',
+    url: '/list/getActions',
     method: 'get',
     params: query
   })
@@ -40,7 +58,7 @@ export function getActions(query) {
 
 export function getFilterForm(query) {
   var res = request({
-    url: getUrlPrefix()+'/list/getFilterForm',
+    url: '/list/getFilterForm',
     method: 'get',
     params: query
   })
@@ -49,16 +67,7 @@ export function getFilterForm(query) {
 
 export function getLittleDataSource(query) {
   var res = request({
-    url: getUrlPrefix()+'/list/getLittleDataSource',
-    method: 'get',
-    params: query
-  })
-  return res
-}
-
-export function getListQuery(query) {
-  var res = request({
-    url: getUrlPrefix()+'/list/getQueryParameter',
+    url: '/list/getLittleDataSource',
     method: 'get',
     params: query
   })
@@ -67,7 +76,7 @@ export function getListQuery(query) {
 
 export function getRules(query) {
   var res = request({
-    url: getUrlPrefix()+'/list/getRules',
+    url: '/list/getRules',
     method: 'get',
     params: query
   })
@@ -76,7 +85,7 @@ export function getRules(query) {
 
 export function getTemp(query) {
   var res = request({
-    url: getUrlPrefix()+'/list/getTemp',
+    url: '/list/getTemp',
     method: 'get',
     params: query
   })

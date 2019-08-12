@@ -31,7 +31,7 @@ service.interceptors.request.use(
 )
 
 // response interceptor
-service.interceptors.response.use(
+ service.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response

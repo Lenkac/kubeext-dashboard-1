@@ -1,18 +1,15 @@
 import request from '@/utils/request'
+import {getListURL, getMetaDataURL} from '@/utils/url-setter'
 
-export function getAllTaskData(listQuery) {
-  var res = request({
-    url: '/list/getList',
-    method: 'get',
-    params: listQuery
-  })
-  return res
+export function getIp(viewerName,userName){
+  console.log(userName)
+  return "39.96.4.11"
 }
 
 export function getListAllData(listQuery) {
   var res = request({
-    url: '/list/getList',
-    method: 'get',
+    url: getListURL(listQuery.viewerName),
+    method: 'POST',
     params: listQuery
   })
   return res
@@ -20,7 +17,7 @@ export function getListAllData(listQuery) {
 
 export function getColumns(query) {
   var res = request({
-    url: 'http://localhost:32000/kubesys/v1/table/getMetaData',
+    url: getMetaDataURL(),
     method: 'get',
     params: query
   })
@@ -95,6 +92,15 @@ export function getMonitorInfo(query) {
     url: 'http://localhost:32000/kubesys/v1/monitor/getMonitorInfo',
     method: 'get',
     params: query
+  })
+  return res
+}
+
+export function getAllTaskData(listQuery) {
+  var res = request({
+    url: '/list/getList',
+    method: 'get',
+    params: listQuery
   })
   return res
 }

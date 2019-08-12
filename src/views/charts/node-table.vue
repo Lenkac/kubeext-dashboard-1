@@ -38,7 +38,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile',query: {taskid: scope.row[item.row]}}" v-if="item.kind == 'a'" tag="a" class="link"   >
+          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link"   >
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -114,7 +114,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
@@ -166,10 +166,11 @@
 </template>
 
 <script>
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp } from '@/api/commonData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { mapGetters } from 'vuex'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -185,9 +186,16 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'ComplexTable',
+  name: 'nodeTable',
   components: { Pagination },
   directives: { waves },
+  computed: {
+    ...mapGetters([
+      'name',
+      'avatar',
+      'roles'
+    ])
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -230,18 +238,30 @@ export default {
         create: '创建新记录'
       },
       viewer: 'nodes',
-      value: ""
+      value: "",
+      ip: ""
     }
   },
   mounted() {
    
   },
   created() {
-     //getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp
-    getListQuery({viewer: this.viewer}).then(response => {
-      this.listQuery = response.data
-      //console.log( this.listQuery)
+    this.ip = getIp(this.viewer,this.name)
+
+    getColumns(this.viewer,'columns').then(response => {
+      this.columns = response.data
+      getListQuery(this.viewer,this.ip).then(response2 => {
+        this.listQuery = response2
+        this.listLoading = true
+        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
+          this.list = response3.data
+          this.total = response3.total
+          this.listLoading = false
+        })
     })
+
+    })
+
     getTemp({viewer: this.viewer}).then(response => {
       this.temp = response.data
     })
@@ -254,28 +274,21 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getColumns({viewer: this.viewer}).then(response => {
-      this.columns = response.data
-    })
     getActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
-    this.getList()
   },
   methods: {
     getList() {
       this.listLoading = true
-      getListAllData(this.listQuery).then(response => {
-        this.list = response.data
-        this.total = response.total
-        this.listLoading = false
-      })
-    },
-    getTest(){
-      alert('good');
+      // getListAllData(this.listQuery).then(response => {
+      //   this.list = response.data
+      //   this.total = response.total
+      //   this.listLoading = false
+      // })
     },
     handleFilter() {
-      this.listQuery.page = 1
+      this.listQuery.pageNum = 1
       this.getList()
     },
     handleModifyStatus(row, status) {
@@ -292,11 +305,6 @@ export default {
       }
     },
     sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
       this.handleFilter()
     },
     resetTemp() {
@@ -407,6 +415,12 @@ export default {
       }))
     },
     getInputValue(scope,longKey){
+      if( JSON.stringify(scope)=='{}'){
+        return ''
+      }
+      if( longKey == "" || longKey == undefined || longKey == null || !longKey){
+        return ''
+      }
       if( longKey.indexOf('\.') < 0 ){
         return scope[longKey]
       }
@@ -421,6 +435,7 @@ export default {
           res = res[element]
         }
       });
+      //console.log(res)
       return res
     },
     updateInputValue(scope,longKey,event){

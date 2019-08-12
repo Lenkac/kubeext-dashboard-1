@@ -205,7 +205,7 @@ export default [
         data: [
           { type: 'select', key: 1, label: '选择主机', dataSource: 'hosts', ph: '选择主机', prop: 'host', style: 'width:200px;margin-left:10px;margin-right:20px;height:35px' },
           { type: 'input', key: 2, label: '任务名称', ph: '输入任务', prop: 'name', style: 'width:200px;margin-left:20px;margin-right:20px;' },
-          { type: 'input', key: 3, label: '测试字段', ph: '输入测试', prop: 'listdata[0].key1', style: 'width:200px;margin-left:20px;margin-right:20px;' }
+          { type: 'input', key: 3, label: '测试字段', ph: '输入测试', prop: 'sdf', style: 'width:200px;margin-left:20px;margin-right:20px;' }
         ]
       }
     }
