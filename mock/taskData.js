@@ -185,8 +185,7 @@ export default [
         count: 10,
         total: 100,
         data: [
-          { key: 1, name: '编辑任务', event: 'update', type: 'primary' },
-          { key: 2, name: '删除任务', event: 'delete', type: 'danger' }
+          { key: 1, name: '编辑主机', event: 'update', type: 'primary' }
         ]
       }
     }
