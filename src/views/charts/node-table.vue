@@ -3,8 +3,8 @@
     <div class="filter-container">
       <span v-for="ff in filterForm" :key="ff.key">
         <!-- @input="updateJson(listQuery,ff.prop,$event)" -->
-        <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop)" 
-　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter" />
+        <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop) " 
+　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter"/>
         <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
           @change="updateInputValue(listQuery,ff.prop,$event.target.value)"
          :placeholder="ff.ph" :style="ff.style" class="filter-item">
@@ -38,7 +38,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link"   >
+          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link" @click="getNodeName((scope.row,item.row))"  >
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -171,6 +171,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
+import Bus from '../../utils/bus.js'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -279,6 +280,11 @@ export default {
     })
   },
   methods: {
+    getNodeName: function (srow, irow) {
+        Bus.$emit('val', srow)
+        console.log(irow)
+      },
+
     getList() {
       this.listLoading = true
       // getListAllData(this.listQuery).then(response => {

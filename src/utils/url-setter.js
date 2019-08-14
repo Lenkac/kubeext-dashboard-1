@@ -14,3 +14,7 @@ export function getMetaDataURL() {
 export function getParameterURL() {
   return urlPrefix+'query/parameter'
 }
+
+export function getMonitorInfoURL() {
+  return urlPrefix+'query/monitorInfo'
+}

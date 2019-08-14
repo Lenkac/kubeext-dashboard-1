@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {getListURL, getMetaDataURL} from '@/utils/url-setter'
+import {getListURL, getMetaDataURL,getMonitorInfoURL} from '@/utils/url-setter'
 
 export function getIp(viewerName,userName){
   console.log(userName)
@@ -89,7 +89,7 @@ export function getGrafanaLink(query) {
 
 export function getMonitorInfo(query) {
   var res = request({
-    url: 'http://localhost:32000/kubesys/v1/monitor/getMonitorInfo',
+    url: getMonitorInfoURL(),
     method: 'get',
     params: query
   })
