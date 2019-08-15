@@ -173,19 +173,6 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { mapGetters } from 'vuex'
 import Bus from '../../utils/bus.js'
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
-
 export default {
   name: 'nodeTable',
   components: { Pagination },
@@ -216,7 +203,6 @@ export default {
       list: null,
       listLoading: true,
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       dialogFormVisible: false,
@@ -238,7 +224,7 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'nodes',
+      viewer: 'pods',
       value: "",
       ip: ""
     }

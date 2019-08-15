@@ -215,7 +215,7 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://39.96.4.11:30047/d/at-cost-analysis-pod/analysis-by-pod?orgId=1&var-costcpu=17.78&var-costpcpu=5.35&var-costram=2.38&var-costpram=0.72&var-costStorageStandard=0.044&var-costStorageSSD=0.187&var-costDiscount=30&var-namespace=default&var-pod=reviews-v2-7cdb7475fb-glt66&from=1563757907654&to='+new Date().getTime()
+        data: 'http://39.96.4.11:31496/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1565660614683&to='+new Date().getTime()
       }
     }
   },
@@ -225,10 +225,20 @@ export default [
       response: config => {
         return {
           code: 20000,
-          data: 'http://39.96.4.11:30047/d-solo/at-cost-analysis-pod/analysis-by-pod?orgId=1&var-costcpu=17.78&var-costpcpu=5.35&var-costram=2.38&var-costpram=0.72&var-costStorageStandard=0.044&var-costStorageSSD=0.187&var-costDiscount=30&var-namespace=default&var-pod=reviews-v2-7cdb7475fb-glt66&from=1563765277415&to=1563766177415&panelId=95'
+          data: 'http://39.96.4.11:31496/d-solo/at-cost-analysis-pod/analysis-by-pod?orgId=1&var-costcpu=17.78&var-costpcpu=5.35&var-costram=2.38&var-costpram=0.72&var-costStorageStandard=0.044&var-costStorageSSD=0.187&var-costDiscount=30&var-namespace=default&var-pod=reviews-v2-7cdb7475fb-glt66&from=1563765277415&to=1563766177415&panelId=95'
         }
       }
     },
+    {
+      url: '/getMonitorinfo',
+        type: 'get',
+        response: config => {
+          return {
+            code: 20000,
+            data: {"node":1,"memory":{"total":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=10","rate":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=4","used":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=9"},"cpu":{"total":"http://39.96.4.11:31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=12","rate":"http://39.96.4.11:31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=6","used":"http://39.96.4.11:31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=11"},"fs":{"total":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=14","rate":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=7","used":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=13"},"network":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=32"}
+          }
+        }
+      },
 
 
 

@@ -8,21 +8,32 @@ const chartsRouter = {
   redirect: 'noRedirect',
   name: 'Charts',
   meta: {
-    title: '主机管理',
+    title: '资源管理',
     icon: 'chart'
   },
   children: [
-    {
-      path: 'grafana',
-      component: () => import('@/views/charts/grafana'),
-      name: 'GrafanaChart',
-      meta: { title: 'Grafana Chart', noCache: true }
-    },
+    // {
+    //   path: 'grafana',
+    //   component: () => import('@/views/charts/grafana'),
+    //   name: 'GrafanaChart',
+    //   meta: { title: 'Grafana Chart', noCache: true }
+    // },
     {
       path: 'node-table',
       component: () => import('@/views/charts/node-table'),
       name: 'nodeTable',
       meta: { title: '主机基本信息' }
+    },
+    {
+      path: 'pod-table',
+      component: () => import('@/views/charts/pod-table'),
+      name: 'podTable',
+      meta: { title: 'pod基本信息' }
+    },{
+      path: 'vm-table',
+      component: () => import('@/views/charts/vm-table'),
+      name: 'vmTable',
+      meta: { title: 'vm基本信息' }
     }
     // {
     //   path: 'mix-chart',
