@@ -174,7 +174,7 @@ import { mapGetters } from 'vuex'
 import Bus from '../../utils/bus.js'
 
 export default {
-  name: 'nodeTable',
+  name: 'vmTable',
   components: { Pagination },
   directives: { waves },
   computed: {

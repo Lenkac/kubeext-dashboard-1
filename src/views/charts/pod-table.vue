@@ -174,7 +174,7 @@ import { mapGetters } from 'vuex'
 import Bus from '../../utils/bus.js'
 
 export default {
-  name: 'nodeTable',
+  name: 'podTable',
   components: { Pagination },
   directives: { waves },
   computed: {
@@ -242,8 +242,10 @@ export default {
         this.listLoading = true
         getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
           this.list = response3.data
+          console.log(this.list)
           this.total = response3.total
           this.listLoading = false
+          Bus.$emit('pod_data', this.list)
         })
     })
 
@@ -266,7 +268,7 @@ export default {
     })
   },
   methods: {
-    getNodeName: function (srow, irow) {
+    getNodeName: function () {
         Bus.$emit('val', srow)
         console.log("hhhh"+irow)
       },

@@ -3,7 +3,8 @@ import {getListURL, getMetaDataURL,getParameterURL} from '@/utils/url-setter'
 
 export function getIp(viewerName,userName){
   console.log(userName)
-  return "39.96.4.11"
+  return "133.133.135.22"
+  //return "39.96.4.11"
 }
 
 // export function getAllTaskData(listQuery) {

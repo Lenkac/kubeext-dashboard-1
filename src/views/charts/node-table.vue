@@ -38,7 +38,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link" >
+          <router-link :to="{path:'/profile/taskProfile',query:{node:getInputValue(scope.row,item.row)}}"  v-if="item.kind == 'a'" tag="a" class="link" @click="getData">
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -258,6 +258,8 @@ export default {
           this.list = response3.data
           this.total = response3.total
           this.listLoading = false
+          Bus.$emit('val', this.list)
+          console.log("hhhh"+this.list)
         })
     })
 
@@ -278,11 +280,12 @@ export default {
     getActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
+
   },
   methods: {
-    getNodeName: function (srow, irow) {
-        Bus.$emit('val', srow)
-        console.log("hhhh"+irow)
+    getData() {
+        Bus.$emit('val', this.list)
+        console.log("hhhh"+this.list)
       },
 
     getList() {

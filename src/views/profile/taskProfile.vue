@@ -12,45 +12,21 @@
         <el-card>       
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="24">
-              <iframe class="rate_iframe" :src="monitor_rs.cpu.rate"></iframe>
-            </el-col>
-          </el-row>
-          <el-row type="flex" class="row-bg">
-            <el-col :span="12" >
-              <iframe class="iframe" :src="monitor_rs.cpu.used"></iframe>           
-            </el-col>
-            <el-col :span="12">
-              <iframe class="iframe" :src="monitor_rs.cpu.total"></iframe>
+              <iframe class="rate_iframe" :src="monitor_rs.cpu"></iframe>
             </el-col>
           </el-row>
         </el-card>
         <el-card>
         <el-row type="flex" class="row-bg">
           <el-col :span="24">
-            <iframe class="rate_iframe" :src="monitor_rs.memory.rate"></iframe>
-          </el-col>
-        </el-row>
-        <el-row type="flex" class="row-bg">
-          <el-col :span="12" >
-            <iframe class="iframe" :src="monitor_rs.memory.used"></iframe>           
-          </el-col>
-          <el-col :span="12">
-            <iframe class="iframe" :src="monitor_rs.memory.total"></iframe>
+            <iframe class="rate_iframe" :src="monitor_rs.memory"></iframe>
           </el-col>
         </el-row>
       </el-card>
       <el-card>
         <el-row type="flex" class="row-bg" justify="center">
           <el-col :span="24">
-            <iframe class="rate_iframe" :src="monitor_rs.fs.rate"></iframe>
-          </el-col>
-        </el-row>
-        <el-row type="flex" class="row-bg">
-          <el-col :span="12" >
-            <iframe class="iframe" :src="monitor_rs.fs.used"></iframe>           
-          </el-col>
-          <el-col :span="12">
-            <iframe class="iframe" :src="monitor_rs.fs.total"></iframe>
+            <iframe class="rate_iframe" :src="monitor_rs.fs"></iframe>
           </el-col>
         </el-row>
       </el-card>
@@ -62,31 +38,31 @@
         </el-row>  
       </el-card>      
       </el-col>   
-    <!-- <div v-if="user">
-      <el-row :gutter="20">
-
-        <el-col :span="6" :xs="24">
-          <user-card :user="user" />
-        </el-col>
-
-        <el-col :span="18" :xs="24">
-          <el-card>
-            <el-tabs v-model="activeTab">
-              <el-tab-pane label="Activity" name="activity">
-                <activity />
-              </el-tab-pane>
-              <el-tab-pane label="Timeline" name="timeline">
-                <timeline />
-              </el-tab-pane>
-              <el-tab-pane label="Account" name="account">
-                <account :user="user" />
-              </el-tab-pane>
-            </el-tabs>
-          </el-card>
-        </el-col>
-
-      </el-row>
-    </div> -->
+    </el-row>
+    <el-row> 
+    <el-card>
+          <div>
+            <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
+        <template  slot-scope="scope">
+          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link" >
+            {{ getInputValue(scope.row,item.row) }}
+          </router-link>
+          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
+        </template>
+      </el-table-column>
+      </el-table>
+      </div>
+        </el-card>
     </el-row>
   </div>
 </template>
@@ -99,6 +75,8 @@ import Timeline from './components/Timeline'
 import Account from './components/Account'
 import { getMonitorInfo } from '@/api/taskData'
 import JsonEditor from '@/components/JsonEditor'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
+
 import Bus from'../../utils/bus'
 const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
@@ -107,13 +85,21 @@ export default {
   components: { UserCard, Activity, Timeline, Account,JsonEditor },
   data() {
     return {
+      tableKey: 0,
+      list: null,
       user: {},
       activeTab: 'activity',
       key: '',
       monitor_rs:{},
       node:'ali1',
       objectName:'link',
-      viewerName:'monitor',
+      viewerName:'pods',
+      nodeName:'',
+      podList:'',
+      listQuery:'',
+      listLoading:'',
+      columns:'',
+      ip:'',
       value: JSON.parse(jsonData)
     }
   },
@@ -127,16 +113,39 @@ export default {
   created() {
     this.getUser()
     this.key = this.$route.query.taskid
-    getMonitorInfo({viewerName:this.viewerName,node:this.node,objectName:this.objectName}).then(response => {
+    this.nodeName = this.$route.query.node;
+    this.ip = getIp('pods',this.name)
+
+    getMonitorInfo({viewerName:'monitor',node:this.node,objectName:this.objectName}).then(response => {
       this.monitor_rs = response     
     })
+    getColumns(this.viewerName,'columns').then(response => {
+      this.columns = response.data
+      getListQuery(this.viewerName,this.ip).then(response2 => {
+        this.listQuery = response2
+        this.listLoading = true
+        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewerName}).then(response3 => {
+          var data = response3.data
+          this.total = response3.total
+          this.listLoading = false
+          for(var i = 0; i < data.length; i++) {
+              if(data[i].spec.nodeName != this.nodeName) {
+                delete data[i]
+              }
+            }
+            this.list = data
+        })
+    })
+    })
+
   },
   mounted() {
-          var vm = this
+          
           // 用$on事件来接收参数
           Bus.$on('val', (data) => {
-            console.log("hhhhhhhh"+data)
-            vm.node = data
+            this.nodeName = "node22"
+            console.log("jjjjjjjjj")
+            //this.nodeName = data
           })
     
   },
@@ -148,24 +157,88 @@ export default {
         email: 'admin@test.com',
         avatar: this.avatar
       }
+    },
+    getList() {
+      this.listLoading = true
+      // getListAllData(this.listQuery).then(response => {
+      //   this.list = response.data
+      //   this.total = response.total
+      //   this.listLoading = false
+      // })
+    },
+    handleFilter() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
+    sortChange(data) {
+      const { prop, order } = data
+      if (prop === 'id') {
+        this.sortByID(order)
+      }
+    },
+    sortByID(order) {
+      this.handleFilter()
+    },
+    getInputValue(scope,longKey){
+      if( JSON.stringify(scope)=='{}'){
+        return ''
+      }
+      if( longKey == "" || longKey == undefined || longKey == null || !longKey){
+        return ''
+      }
+      if( longKey.indexOf('\.') < 0 ){
+        return scope[longKey]
+      }
+      var keys = longKey.split("\.")
+      var res =scope;
+      keys.forEach(element => {
+        if(element.indexOf('\[') > 0){
+          res = res[element.substring(0,element.indexOf('\['))]
+          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+        }
+        else{
+          res = res[element]
+        }
+      });
+      //console.log(res)
+      return res
+    },
+    updateInputValue(scope,longKey,event){
+      if( longKey.indexOf('\.') < 0 ){
+         scope[longKey] = event
+         return 
+      }
+      var keys = longKey.split("\.")
+      var obj = scope
+      for (var i=0 ;i < keys.length -1 ;i++){
+        var element = keys[i]
+        if(element.indexOf('\[') > 0){
+          obj = obj[element.substring(0,element.indexOf('\['))]
+          obj = obj[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+        }
+        else{
+          obj = obj[element]
+        }
+      }
+      obj[keys[keys.length-1]] = event
     }
-  }
+  },
 }
 </script>
 <style lang="scss" scoped>
 .iframe{
   width: 280px;
-  height: 165px;
+  height: 135px;
   border: 0ch;
   }
 .rate_iframe{
   width: 562px;
-  height: 210px;
+  height: 150px;
   border: 0ch;
   }
 .IO_iframe{
   width: 562px;
-  height: 210px;
+  height: 150px;
   border: 0ch;
   }
 .board {

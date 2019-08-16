@@ -8,8 +8,8 @@ export function getIp(viewerName,userName){
 
 export function getListAllData(listQuery) {
   var res = request({
-    url: getListURL(listQuery.viewerName),
-    method: 'POST',
+    url: '/list/getList',
+    method: 'get',
     params: listQuery
   })
   return res
@@ -17,7 +17,7 @@ export function getListAllData(listQuery) {
 
 export function getColumns(query) {
   var res = request({
-    url: getMetaDataURL(),
+    url: '/list/getColumns',
     method: 'get',
     params: query
   })

@@ -57,11 +57,11 @@ export default {
 
 <style scoped>
 .json-editor{
-  height: 100%;
+  height: 738px;
   position: relative;
 }
 .json-editor >>> .CodeMirror {
-  height: auto;
+  height: 738px;
   min-height: 300px;
 }
 .json-editor >>> .CodeMirror-scroll{
