@@ -21,6 +21,9 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出excel
       </el-button>
+      <el-button  type="primary" class="filter-item" @click.native="clickA">
+        创建VM
+      </el-button>
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         reviewer
       </el-checkbox> -->
@@ -93,7 +96,12 @@
           </el-tag>
         </template>
       </el-table-column> -->
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+       <el-table-column label="远程连接" align="center" width="130" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">        
+            <svg-icon @click="openUrl(row)" icon-class="pc"  class-name='custom-class' />          
+        </template>
+      </el-table-column>
+      <el-table-column label="Actions" align="center" width="350" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
             {{ item.name }}
@@ -162,21 +170,53 @@
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="创建VM" @dragDialog="handleDrag">
+      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+      <div class="card-editor-container">
+        <json-editor ref="jsonEditor" v-model="value" />
+        <br>
+        <span>变量</span>
+        <el-table
+      :data="podVariables"
+      v-loading="listLoading"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+      <el-table-column  label="key"  align="center">
+        <template slot-scope="scope">
+          <span>{{scope.row.name}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  label="value"  align="center">
+        <template>
+          <el-input></el-input>
+        </template>
+      </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
+import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp, getJsonData } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
-import Bus from '../../utils/bus.js'
+import elDragDialog from '@/directive/el-drag-dialog'
+import JsonEditor from '@/components/JsonEditor'
 
 export default {
   name: 'vmTable',
-  components: { Pagination },
-  directives: { waves },
+  components: { Pagination, JsonEditor },
+  directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
       'name',
@@ -225,8 +265,16 @@ export default {
         create: '创建新记录'
       },
       viewer: 'vms',
-      value: "",
-      ip: ""
+      value: '',
+      ip: '',
+      dialogTableVisible: false,
+      modelType: '',
+      options: [
+        { value: '队列模型', label: '队列模型' },
+        { value: '最小费用最大流模型', label: '最小费用最大流模型' }
+      ],
+      podVariables: [{'key':1,'name':'name'},{'key':2,'name':'image'}],
+      vncIp: '133.133.135.31'
     }
   },
   mounted() {
@@ -261,15 +309,28 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getActions({viewer: this.viewer}).then(response => {
+    getVMActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
+    
   },
   methods: {
-    getNodeName: function (srow, irow) {
-        Bus.$emit('val', srow)
-        console.log("hhhh"+irow)
-      },
+    openUrl(row) {
+      console.log(row)
+      var vmName = row.metadata.name
+      var host = this.vncIp
+      window.open("http://"+host+":6080/vnc.html?path=websockify/?token="+vmName)
+    },
+    clickA() {
+      this.dialogTableVisible = true
+    },
+    clickB() {
+      this.dialogTableVisible = false
+      this.schedulingType = this.modelType
+    },
+     handleDrag() {
+      this.$refs.select.blur()
+    },
 
     getList() {
       this.listLoading = true

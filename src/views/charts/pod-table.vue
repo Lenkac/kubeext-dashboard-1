@@ -21,6 +21,9 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出excel
       </el-button>
+      <el-button  type="primary" class="filter-item" @click.native="clickA">
+        创建pod
+      </el-button>
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         reviewer
       </el-checkbox> -->
@@ -38,7 +41,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link" >
+          <router-link :to="{path:'/profile/containerInfo',query:{pod:getInputValue(scope.row,item.row)}}" v-if="item.kind == 'a'" tag="a" class="link" >
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -93,9 +96,14 @@
           </el-tag>
         </template>
       </el-table-column> -->
+      <el-table-column label="远程连接" align="center" width="130" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">        
+            <svg-icon @click="openUrl(row)" icon-class="pc"  class-name='custom-class' />          
+        </template>
+      </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
+        <template slot-scope="{}">
+          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="clickA">
             {{ item.name }}
           </el-button>
           <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -162,21 +170,53 @@
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="创建Pod" @dragDialog="handleDrag">
+      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+      <div class="card-editor-container">
+        <json-editor ref="jsonEditor" v-model="value" />
+        <br>
+        <span>变量</span>
+        <el-table
+      :data="podVariables"
+      v-loading="listLoading"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+      <el-table-column  label="key"  align="center">
+        <template slot-scope="scope">
+          <span>{{scope.row.name}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  label="value"  align="center">
+        <template>
+          <el-input></el-input>
+        </template>
+      </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
+import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp,getJsonData } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
-import Bus from '../../utils/bus.js'
+import elDragDialog from '@/directive/el-drag-dialog'
+import JsonEditor from '@/components/JsonEditor'
 
 export default {
   name: 'podTable',
-  components: { Pagination },
-  directives: { waves },
+  components: { Pagination, JsonEditor },
+  directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
       'name',
@@ -212,6 +252,7 @@ export default {
       downloadLoading: false,
       columns: [],
       actions: [],
+      podVariables: [{'key':1,'name':'name'},{'key':2,'name':'image'}],
       littleDataSource: {},
       filterForm: [],
       listQuery: {},
@@ -225,8 +266,14 @@ export default {
         create: '创建新记录'
       },
       viewer: 'pods',
-      value: "",
-      ip: ""
+      value: '',
+      ip: "",
+      dialogTableVisible: false,
+      modelType: '',
+      options: [
+        { value: '队列模型', label: '队列模型' },
+        { value: '最小费用最大流模型', label: '最小费用最大流模型' }
+      ],
     }
   },
   mounted() {
@@ -245,7 +292,6 @@ export default {
           console.log(this.list)
           this.total = response3.total
           this.listLoading = false
-          Bus.$emit('pod_data', this.list)
         })
     })
 
@@ -263,16 +309,31 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getActions({viewer: this.viewer}).then(response => {
+    getPodActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
+    })
+    getJsonData({viewerName: 'containers'}).then(response => {
+      this.value = response.data[0]
     })
   },
   methods: {
-    getNodeName: function () {
-        Bus.$emit('val', srow)
-        console.log("hhhh"+irow)
-      },
-
+    clickA() {
+      this.dialogTableVisible = true
+    },
+    clickB() {
+      this.dialogTableVisible = false
+      this.schedulingType = this.modelType
+    },
+     handleDrag() {
+      this.$refs.select.blur()
+    },
+    openUrl(row) {
+      console.log(row)
+      var podName = row.metadata.name
+      var host = this.ip
+      var namespace = row.metadata.namespace
+      window.open("http://"+host+":9000?host="+host+"&podName="+podName+"&namespace="+namespace)
+    },
     getList() {
       this.listLoading = true
       // getListAllData(this.listQuery).then(response => {
@@ -328,6 +389,7 @@ export default {
       })
     },
     handleUpdate(row, event) {
+      console.log(row)
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)
@@ -464,5 +526,13 @@ a:hover{
 }
 input {
   height: 35px;
+}
+.json-editor{
+  height: 538px;
+  position: relative;
+}
+.json-editor >>> .CodeMirror {
+  height: 538px;
+  min-height: 300px;
 }
 </style>

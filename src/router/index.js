@@ -9,7 +9,9 @@ import Layout from '@/layout'
 /* Router Modules */
 import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
+import templateRouter from './modules/template'
 import tableRouter from './modules/table'
+import workloadsRouter from './modules/workload';
 // import nestedRouter from './modules/nested'
 
 /**
@@ -125,6 +127,12 @@ export const constantRoutes = [
         component: () => import('@/views/profile/taskProfile'),
         name: 'taskProfile',
         meta: { title: '任务信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'containerInfo',
+        component: () => import('@/views/profile/containerInfo'),
+        name: 'containerInfo',
+        meta: { title: '容器信息', icon: 'user', noCache: true }
       }
     ]
   }
@@ -191,9 +199,12 @@ export const asyncRoutes = [
   // },
 
   /** when your routing map is too long, you can split it into small modules **/
-  componentsRouter,
+  // componentsRouter,
   chartsRouter,
+  workloadsRouter,
   tableRouter,
+  templateRouter,
+  
   // {
   //   path: '/example',
   //   component: Layout,

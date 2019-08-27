@@ -22,3 +22,11 @@ export function getParameterURL() {
 export function getMonitorInfoURL() {
   return urlPrefix+'query/monitorInfo'
 }
+
+export function getJsonDataURL() {
+  return urlPrefix+'query/jsonData'
+}
+
+export function getContainerURL() {
+  return urlPrefix+'query/containerConfig'
+}

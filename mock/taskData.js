@@ -190,6 +190,69 @@ export default [
       }
     }
   },
+  {
+    //每列最后的操作按钮，一般是删除和编辑
+    url: '/list/getPodActions',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        page: 1,
+        count: 10,
+        total: 100,
+        data: [
+          { key: 1, name: '编辑pod', event: 'update', type: 'primary' }
+        ]
+      }
+    }
+  },
+  {
+    //每列最后的操作按钮，一般是删除和编辑
+    url: '/list/getVMActions',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        page: 1,
+        count: 10,
+        total: 100,
+        data: [
+          { key: 1, name: '重启', event: 'update', type: 'primary' },
+          { key: 2, name: '关机', event: 'update', type: 'primary' },
+          { key: 3, name: '磁盘', event: 'update', type: 'primary' }
+        ]
+      }
+    }
+  },
+  {
+    //
+    url: '/list/getJsonData',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        page: 1,
+        count: 10,
+        total: 100,
+        data: [
+          { apiVersion: 'v1',
+            kind: 'Pod',
+            metadata: 
+            { name: '{{name}}',
+              namespace: 'default',
+              labels: { app: 'myapp', tier: 'frontend' } },
+            spec: 
+            { containers: 
+                [ { name: 'myapp', image: '{{image}}' },
+                  { name: 'busybox',
+                    image: 'busybox:latest',
+                    command: [ '/bin/sh', '-c', 'sleep 3600' ] 
+                  } 
+                ] 
+            } 
+          }]}
+    }
+  },
   
   {
     //每个表格上部的查询框，更新时（自动更新listquery参数）触发查询操作

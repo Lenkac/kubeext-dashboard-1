@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {getListURL, getMetaDataURL,getParameterURL} from '@/utils/url-setter'
+import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,getContainerURL} from '@/utils/url-setter'
 
 export function getIp(viewerName,userName){
   console.log(userName)
@@ -53,6 +53,44 @@ export function getActions(query) {
     url: '/list/getActions',
     method: 'get',
     params: query
+  })
+  return res
+}
+
+export function getPodActions(query) {
+  var res = request({
+    url: '/list/getPodActions',
+    method: 'get',
+    params: query
+  })
+  return res
+}
+
+export function getVMActions(query) {
+  var res = request({
+    url: '/list/getVMActions',
+    method: 'get',
+    params: query
+  })
+  return res
+}
+
+export function getJsonData(query) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getJsonDataURL(),
+    method: 'get',
+    params: query
+  })
+  return res
+}
+
+export function saveContianerConfig(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getContainerURL(),
+    method: 'post',
+    data
   })
   return res
 }
