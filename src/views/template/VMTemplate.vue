@@ -1,38 +1,27 @@
 <template>
   <div class="components-container">
     <el-row :gutter="20" style="margin:30px;">
-      <el-col :span="7" v-for="item in tasks" :key="item.key">
+      <el-col :span="7" v-for="(item,index) in value" :key="item.action" style="margin-bottom:30px">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>
-              <p style="display:inline;font-size:18px;"> <strong>{{ item.name }}</strong></p>
+              <p style="display:inline;font-size:18px;"> <strong>{{ item.action }}</strong></p>
             </span>
           </div>
-          <p style="font-size:12px;">此处配置项用于设置Kubernetes scheduler使用的具体模型，当前支持队列和MCMF两种调度模型</p>
-          <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA">模型选择</el-button>
+          <p style="font-size:12px;">配置项用于设置{{item.action}}</p>
+          <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA(index)">编辑配置</el-button>
         </el-card>
       </el-col>
     </el-row>
-    <!-- <aside>
-      <a href="javascript:void(0)" target="_blank">队列模型</a>
-    </aside>
-    <div class="board">
-      <Kanban :key="1" :list="list1" :group="group" class="kanban todo" header-text="任务情况" />
-      <Kanban :key="2" :list="list2" :group="group" class="kanban working" header-text="机器情况" />
-      <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="任务部署情况" />
-    </div>
-    <aside>
-      <a href="javascript:void(0)" target="_blank">最小费用最大流（MCMF）模型</a>
-    </aside>
-    <canvas id="test-canvas" style="width:100%;height:300px"></canvas> -->
-    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="调度模型" @dragDialog="handleDrag">
-      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
+    
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="配置" @dragDialog="handleDrag">
+      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
       <div class="card-editor-container">
         <!-- <json-editor ref="EditableJson" v-model="value" /> -->
-        <EditableJson v-model="value" />
+        <EditableJson v-model="json" />
       </div>
     </el-dialog>
   </div>
@@ -42,6 +31,8 @@
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 // import Kanban from '@/components/Kanban'
 import EditableJson from '@/components/EditableJson'
+import {getIp,getJsonData,saveContianerConfig } from '@/api/commonData'
+
 
 const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
@@ -61,29 +52,13 @@ export default {
       list3: [],
       dialogTableVisible: false,
       options: [
-        { value: '队列模型', label: '队列模型' },
-        { value: '最小费用最大流模型', label: '最小费用最大流模型' }
+        { value: '', label: '' }
       ],
       modelType: '',
-      gridData: [{
-        date: '2016-05-02',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }, {
-        date: '2016-05-04',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }, {
-        date: '2016-05-01',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }, {
-        date: '2016-05-03',
-        name: 'John Smith',
-        address: 'No.1518,  Jinshajiang Road, Putuo District'
-      }],
-      value: JSON.parse(jsonData),
+      value: [],
       tasks:[{"key":1,"name":"创建pod"},{"key":2,"name":"创建deployment"}],
+      json:{},
+      kind: ""
 
     }
   },
@@ -96,10 +71,20 @@ export default {
       console.log('reject:', reject)
     })
   },
+  created() {
+    this.ip = getIp(this.viewerName,this.name)
+    getJsonData({viewerName: "vmTemplates"}).then(response => {
+      this.value = response.data;
+      console.log(this.value)
+    })
+  
+  },
 
   methods: {
-    clickA() {
+    clickA(index) {
       this.dialogTableVisible = true
+      this.json = this.value[index].json
+      this.kind = this.value[index].kind
     },
     clickB() {
       this.dialogTableVisible = false

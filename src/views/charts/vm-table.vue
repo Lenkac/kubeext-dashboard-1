@@ -176,11 +176,11 @@
       </el-select>
       <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
       <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="value" />
+        <json-editor ref="jsonEditor" v-model="json" />
         <br>
         <span>变量</span>
         <el-table
-      :data="podVariables"
+      :data="vmVariables"
       v-loading="listLoading"
       border
       fit
@@ -190,7 +190,7 @@
     >
       <el-table-column  label="key"  align="center">
         <template slot-scope="scope">
-          <span>{{scope.row.name}}</span>
+          <span>{{scope}}</span>
         </template>
       </el-table-column>
       <el-table-column  label="value"  align="center">
@@ -273,8 +273,9 @@ export default {
         { value: '队列模型', label: '队列模型' },
         { value: '最小费用最大流模型', label: '最小费用最大流模型' }
       ],
-      podVariables: [{'key':1,'name':'name'},{'key':2,'name':'image'}],
-      vncIp: '133.133.135.31'
+      vmVariables: ["hh","kk"],
+      vncIp: '133.133.135.31',
+      json:{}
     }
   },
   mounted() {
@@ -312,7 +313,15 @@ export default {
     getVMActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
-    
+    getJsonData({viewerName: "vmTemplates"}).then(response => {
+      this.value = response.data
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "createAndStartVMFromISO") {
+           this.json = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+        }
+      }
+      })    
   },
   methods: {
     openUrl(row) {
