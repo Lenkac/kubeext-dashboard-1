@@ -24,9 +24,9 @@ export function getMonitorInfoURL() {
 }
 
 export function getJsonDataURL() {
-  return urlPrefix+'query/jsonData'
+  return urlPrefix+'query/jsonTemplate'
 }
 
 export function getContainerURL() {
-  return urlPrefix+'query/containerConfig'
+  return urlPrefix+'update/templateConfig'
 }

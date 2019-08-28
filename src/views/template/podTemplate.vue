@@ -73,7 +73,7 @@ export default {
   },
   created() {
     this.ip = getIp(this.viewerName,this.name)
-    getJsonData({viewerName: this.viewerName}).then(response => {
+    getJsonData({viewerName: "templates"}).then(response => {
       this.value = response.data;
       console.log(this.value)
     })
@@ -89,7 +89,7 @@ export default {
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
-      saveContianerConfig({viewerName:this.viewerName,json:JSON.stringify(this.json), kind:this.kind}).then(response => {
+      saveContianerConfig({viewerName:"templates",json:JSON.stringify(this.json), kind:this.kind}).then(response => {
       console.log(response.code)
       })
     },

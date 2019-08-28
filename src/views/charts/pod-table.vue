@@ -312,9 +312,9 @@ export default {
     getPodActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
-    getJsonData({viewerName: 'containers'}).then(response => {
-      this.value = response.data[0]
-    })
+    // getJsonData({viewerName: 'containers'}).then(response => {
+    //   this.value = response.data[0]
+    // })
   },
   methods: {
     clickA() {
