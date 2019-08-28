@@ -89,7 +89,8 @@ export default {
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
-      saveContianerConfig({viewerName:"templates",json:JSON.stringify(this.json), kind:this.kind}).then(response => {
+      var res = this.toRawJson(this.json);
+      saveContianerConfig({viewerName:"templates",json: res, kind:this.kind}).then(response => {
       console.log(response.code)
       })
     },
@@ -97,6 +98,12 @@ export default {
     handleDrag() {
       this.$refs.select.blur()
     },
+    toRawJson(val){
+      var str = JSON.stringify(val)
+      str = str.replace(/\ +/g,"")
+      str = str.replace(/[\r\\\\n]/g,"")
+      return str;
+    }
   }
 }
 </script>
