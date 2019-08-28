@@ -100,8 +100,10 @@ export default {
     },
     toRawJson(val){
       var str = JSON.stringify(val)
-      str = str.replace(/\ +/g,"")
-      str = str.replace(/[\r\\\\n]/g,"")
+      str = str.replace(/ +/g,"")
+      str = str.replace(/\\n/g,"")
+      str = str.substring(1,str.length-1)
+      str = str.replace(/\\/g,"")
       return str;
     }
   }
