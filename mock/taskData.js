@@ -218,7 +218,7 @@ export default [
         total: 100,
         data: [
           { key: 1, name: '重启', event: 'update', type: 'primary' },
-          { key: 2, name: '关机', event: 'update', type: 'primary' },
+          { key: 2, name: '关机', event: 'delete', type: 'primary' },
           { key: 3, name: '磁盘', event: 'update', type: 'primary' }
         ]
       }
@@ -278,21 +278,9 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://39.96.4.11:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1565660614683&to='+new Date().getTime()
+        data: 'http://133.133.135.22:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1567260614683&to='+new Date().getTime()
       }
     }
   },
-    {
-      url: '/getMonitorinfo',
-        type: 'get',
-        response: config => {
-          return {
-            code: 20000,
-            data: {"node":1,"memory":{"total":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=10","rate":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=4","used":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=9"},"cpu":{"total":"http://39.96.4.11:31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=12","rate":"http://39.96.4.11:31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=6","used":"http://39.96.4.11:31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=11"},"fs":{"total":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=14","rate":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=7","used":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=13"},"network":"http://39.96.4.11:31496/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node=ali1&from=1565155428085&to=1565156328085&panelId=32"}
-          }
-        }
-      },
-
-
 
 ]

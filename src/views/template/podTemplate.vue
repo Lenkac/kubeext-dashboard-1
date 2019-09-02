@@ -5,10 +5,10 @@
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>
-              <p style="display:inline;font-size:18px;"> <strong>{{ value[index].kind }}</strong></p>
+              <p style="display:inline;font-size:18px;"> <strong>{{ value[index].action }}</strong></p>
             </span>
           </div>
-          <p style="font-size:12px;">此处配置项用于操作{{item.kind}}</p>
+          <p style="font-size:12px;">此处配置项用于操作{{item.action}}</p>
           <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA(index)">编辑配置</el-button>
         </el-card>
       </el-col>

@@ -84,15 +84,33 @@ export default {
     clickA(index) {
       this.dialogTableVisible = true
       this.json = this.value[index].json
-      this.kind = this.value[index].kind
+      this.kind = this.value[index].action
     },
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
+      var res = this.toRawJson(this.json);
+      saveContianerConfig({viewerName:"vmTemplates",json: res, kind:this.kind}).then(response => {
+      //console.log(response.code)
+     })
+    //   getJsonData({viewerName: "vmTemplates"}).then(response => {
+    //     this.value = response.data;
+    //     //console.log(this.value)
+    // })
     },
     // v-el-drag-dialog onDrag callback function
     handleDrag() {
       this.$refs.select.blur()
+    },
+    toRawJson(val){
+      var str = JSON.stringify(val)
+      str = str.replace(/ +/g,"")
+      str = str.replace(/\\n/g,"")
+      if(str[0] == "\"") {
+        str = str.substring(1,str.length-1)
+      }     
+      str = str.replace(/\\/g,"")
+      return str;
     }
   }
 }

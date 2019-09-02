@@ -133,6 +133,12 @@ export const constantRoutes = [
         component: () => import('@/views/profile/containerInfo'),
         name: 'containerInfo',
         meta: { title: '容器信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'vmInfo',
+        component: () => import('@/views/profile/vmInfo'),
+        name: 'vmInfo',
+        meta: { title: 'vm信息', icon: 'user', noCache: true }
       }
     ]
   }

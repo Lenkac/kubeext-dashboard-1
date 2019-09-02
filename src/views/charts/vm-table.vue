@@ -41,7 +41,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link" >
+          <router-link :to="{path:'/profile/vmInfo',query:{vm:getInputValue(scope.row,item.row)}}" v-if="item.kind == 'a'" tag="a" class="link" >
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -176,7 +176,7 @@
       </el-select>
       <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
       <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="json" />
+        <json-editor ref="jsonEditor" v-model="createVMJson" />
         <br>
         <span>变量</span>
         <el-table
@@ -205,7 +205,7 @@
 </template>
 
 <script>
-import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp, getJsonData } from '@/api/commonData'
+import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp, getJsonData,createSthFromTemplate,deleteSthFromTemplate } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -275,7 +275,7 @@ export default {
       ],
       vmVariables: ["hh","kk"],
       vncIp: '133.133.135.31',
-      json:{}
+      createVMJson:{}
     }
   },
   mounted() {
@@ -293,6 +293,7 @@ export default {
           this.list = response3.data
           this.total = response3.total
           this.listLoading = false
+          console.log(this.list)
         })
     })
 
@@ -317,11 +318,11 @@ export default {
       this.value = response.data
       for(var i = 0; i < this.value.length; i++) {
         if(this.value[i].action == "createAndStartVMFromISO") {
-           this.json = this.value[i].json
+           this.createVMJson = this.value[i].json
            this.vmVariables = this.value[i].createVariables
         }
       }
-      })    
+    })    
   },
   methods: {
     openUrl(row) {
@@ -336,6 +337,29 @@ export default {
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
+      var str = JSON.stringify(this.createVMJson)
+      str = str.replace(/ +/g,"")
+      str = str.replace(/\\n/g,"")
+      //str = str.substring(1,str.length-1)
+      str = str.replace(/\\/g,"")
+      createSthFromTemplate({ip: this.ip, json: str, kind:this.createVMJson.kind}).then(response => {
+        setTimeout(getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
+          this.list = response3.data
+          this.total = response3.total
+          this.listLoading = false
+          console.log("10s "+this.list)
+        }),10000)
+    })
+    },
+    toRawJson(val){
+      var str = JSON.stringify(val)
+      str = str.replace(/ +/g,"")
+      str = str.replace(/\\n/g,"")
+      if(str[0] == "\"") {
+        str = str.substring(1,str.length-1)
+      }     
+      str = str.replace(/\\/g,"")
+      return str;
     },
      handleDrag() {
       this.$refs.select.blur()
@@ -406,7 +430,18 @@ export default {
         })
       }
       if (event === 'delete') {
+        var deleteJson;
         this.handleDelete(row)
+        //console.log(row)
+        for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "deleteVM") {
+           deleteJson = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+        }
+      }
+        deleteJson.metadata.name = row.metadata.name
+        var str = this.toRawJson(deleteJson)
+        createSthFromTemplate({ip: this.ip, json: str, kind:row.kind})
       }
     },
     updateData() {

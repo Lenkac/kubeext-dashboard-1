@@ -39,7 +39,7 @@
       </el-card>      
       </el-col>   
     </el-row>
-    <el-row> 
+    <!-- <el-row> 
     <el-card>
           <div>
             <el-table
@@ -65,7 +65,7 @@
       </el-table>
       </div>
         </el-card>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
@@ -79,10 +79,8 @@ import { getMonitorInfo } from '@/api/taskData'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 
-import Bus from'../../utils/bus'
-
 export default {
-  name: 'containerInfo',
+  name: 'vmInfo',
   components: { UserCard, Activity, Timeline, Account,JsonEditor },
   data() {
     return {
@@ -94,7 +92,7 @@ export default {
       monitor_rs:{},
       node:'ali1',
       objectName:'link',
-      viewerName:'pods',
+      viewerName:'vms',
       nodeName:'',
       podList:'',
       listQuery:'',
@@ -114,8 +112,9 @@ export default {
   created() {
     this.getUser()
     this.key = this.$route.query.taskid
-    this.podName = this.$route.query.pod;
-    this.ip = getIp('pods',this.name)
+    this.vmName = this.$route.query.vm
+    console.log("vmname"+this.vmName)
+    this.ip = getIp('vms',this.name)
 
     getMonitorInfo({viewerName:'monitor',node:this.node,objectName:this.objectName}).then(response => {
       this.monitor_rs = response     
@@ -130,11 +129,13 @@ export default {
           this.total = response3.total
           this.listLoading = false
           for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name != this.podName) {
+              if(data[i].metadata.name != this.vmName) {
                 delete data[i]
               }
             }
             this.list = data
+            console.log("this.list"+this.list)
+
             this.value = this.list[0]
             console.log(this.list)
         })

@@ -30,3 +30,11 @@ export function getJsonDataURL() {
 export function getContainerURL() {
   return urlPrefix+'update/templateConfig'
 }
+
+export function getCreateSthURL() {
+  return urlPrefix+'create/sthFromTemplate'
+}
+
+export function getDeleteSthURL() {
+  return urlPrefix+'delete/sthFromTemplate'
+}

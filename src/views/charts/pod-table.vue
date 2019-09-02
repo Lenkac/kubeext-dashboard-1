@@ -21,7 +21,7 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出excel
       </el-button>
-      <el-button  type="primary" class="filter-item" @click.native="clickA">
+      <el-button  type="primary" class="filter-item" @click.native="createPod">
         创建pod
       </el-button>
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
@@ -102,8 +102,8 @@
         </template>
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="clickA">
+        <template slot-scope="{row}">
+          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="clickA(row)">
             {{ item.name }}
           </el-button>
           <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -176,7 +176,7 @@
       </el-select>
       <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
       <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="value" />
+        <json-editor ref="jsonEditor" v-model="createPodJson" />
         <br>
         <span>变量</span>
         <el-table
@@ -205,7 +205,7 @@
 </template>
 
 <script>
-import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp,getJsonData } from '@/api/commonData'
+import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -274,6 +274,8 @@ export default {
         { value: '队列模型', label: '队列模型' },
         { value: '最小费用最大流模型', label: '最小费用最大流模型' }
       ],
+      createPodJson: {},
+      kind: ""
     }
   },
   mounted() {
@@ -312,17 +314,53 @@ export default {
     getPodActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
-    // getJsonData({viewerName: 'containers'}).then(response => {
-    //   this.value = response.data[0]
-    // })
+    getJsonData({viewerName: 'templates'}).then(response => {
+      this.value = response.data
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "Pod") {
+           this.createPodJson = this.value[i].json
+           this.kind = "Pod"
+           console.log(this.createPodJson)
+           //this.containerVariables = this.value[i].createVariables
+        }
+      }
+    })
   },
   methods: {
-    clickA() {
+    clickA(row) {
       this.dialogTableVisible = true
+      var podName = row.metadata.name
+      //var namespace = row.metadata.namespace
+          
+    },
+    createPod() {
+      this.dialogTableVisible = true
+      getJsonData({viewerName: 'templates'}).then(response => {
+      this.value = response.data
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "Pod") {
+           this.createPodJson = this.value[i].json
+           //this.containerVariables = this.value[i].createVariables
+        }
+      }
+    })
+          
     },
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
+      var str = this.toRawJson(this.createPodJson)
+      createSthFromTemplate({ip: this.ip, json: str,kind: this.kind})
+    },
+    toRawJson(val){
+      var str = JSON.stringify(val)
+      str = str.replace(/ +/g,"")
+      str = str.replace(/\\n/g,"")
+      if(str[0] == "\"") {
+        str = str.substring(1,str.length-1)
+      }     
+      str = str.replace(/\\/g,"")
+      return str;
     },
      handleDrag() {
       this.$refs.select.blur()

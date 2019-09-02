@@ -77,7 +77,6 @@ import { getMonitorInfo } from '@/api/taskData'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 
-import Bus from'../../utils/bus'
 const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
 export default {
@@ -91,7 +90,7 @@ export default {
       activeTab: 'activity',
       key: '',
       monitor_rs:{},
-      node:'ali1',
+      node:'',
       objectName:'link',
       viewerName:'pods',
       nodeName:'',
@@ -116,7 +115,7 @@ export default {
     this.nodeName = this.$route.query.node;
     this.ip = getIp('pods',this.name)
 
-    getMonitorInfo({viewerName:'monitor',node:this.node,objectName:this.objectName}).then(response => {
+    getMonitorInfo({viewerName:'monitor',node:this.nodeName,objectName:this.objectName}).then(response => {
       this.monitor_rs = response     
     })
     getColumns(this.viewerName,'columns').then(response => {
@@ -140,13 +139,6 @@ export default {
 
   },
   mounted() {
-          
-          // 用$on事件来接收参数
-          Bus.$on('val', (data) => {
-            this.nodeName = "node22"
-            console.log("jjjjjjjjj")
-            //this.nodeName = data
-          })
     
   },
   methods: {

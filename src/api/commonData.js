@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,getContainerURL} from '@/utils/url-setter'
+import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,getContainerURL,getCreateSthURL,getDeleteSthURL} from '@/utils/url-setter'
 
 export function getIp(viewerName,userName){
   console.log(userName)
@@ -89,6 +89,26 @@ export function saveContianerConfig(data) {
   var res = request({
     // url: '/list/getJsonData',
     url: getContainerURL(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function createSthFromTemplate(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getCreateSthURL(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function deleteSthFromTemplate(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getDeleteSthURL(),
     method: 'post',
     data
   })
