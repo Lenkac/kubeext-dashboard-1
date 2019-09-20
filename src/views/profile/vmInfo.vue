@@ -90,7 +90,7 @@ export default {
       activeTab: 'activity',
       key: '',
       monitor_rs:{},
-      node:'ali1',
+      node:'',
       objectName:'link',
       viewerName:'vms',
       nodeName:'',
@@ -113,6 +113,8 @@ export default {
     this.getUser()
     this.key = this.$route.query.taskid
     this.vmName = this.$route.query.vm
+    this.node = this.$route.query.node.substring(3)
+
     console.log("vmname"+this.vmName)
     this.ip = getIp('vms',this.name)
 
@@ -128,15 +130,16 @@ export default {
           var data = response3.data
           this.total = response3.total
           this.listLoading = false
+        console.log(data)
+
           for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name != this.vmName) {
-                delete data[i]
+              if(data[i].metadata.name == this.vmName) {
+                this.list = data[i]
               }
             }
-            this.list = data
-            console.log("this.list"+this.list)
+            
 
-            this.value = this.list[0]
+            this.value = this.list
             console.log(this.list)
         })
     })
@@ -190,11 +193,19 @@ export default {
       var res =scope;
       keys.forEach(element => {
         if(element.indexOf('\[') > 0){
-          res = res[element.substring(0,element.indexOf('\['))]
-          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+            if(res[element.substring(0,element.indexOf('\['))]) {
+                res = res[element.substring(0,element.indexOf('\['))]
+                res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+            } else {
+                res = ""
+            }           
         }
         else{
-          res = res[element]
+            if(res[element]) {
+                res = res[element]
+            }else {
+                res = ""
+            }          
         }
       });
       //console.log(res)

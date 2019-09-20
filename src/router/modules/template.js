@@ -10,7 +10,6 @@ const templateRouter = {
   meta: {
     title: '元配置管理',
     icon: 'chart',
-    roles: ['admin']
   },
   children: [
     // {

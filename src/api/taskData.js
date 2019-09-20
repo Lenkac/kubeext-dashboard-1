@@ -104,3 +104,21 @@ export function getAllTaskData(listQuery) {
   })
   return res
 }
+
+export function getEchartsData(listQuery) {
+  var res = request({
+    url: '/getEchartsData',
+    method: 'get',
+    params: listQuery
+  })
+  return res
+}
+
+export function getScheduleData(listQuery) {
+  var res = request({
+    url: '/getScheduleData',
+    method: 'get',
+    params: listQuery
+  })
+  return res
+}

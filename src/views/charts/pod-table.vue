@@ -41,7 +41,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/containerInfo',query:{pod:getInputValue(scope.row,item.row)}}" v-if="item.kind == 'a'" tag="a" class="link" >
+          <router-link :to="{path:'/profile/containerInfo',query:{pod:getInputValue(scope.row,item.row),node:scope.row.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>

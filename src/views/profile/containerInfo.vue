@@ -92,7 +92,7 @@ export default {
       activeTab: 'activity',
       key: '',
       monitor_rs:{},
-      node:'ali1',
+      node:'',
       objectName:'link',
       viewerName:'pods',
       nodeName:'',
@@ -115,6 +115,7 @@ export default {
     this.getUser()
     this.key = this.$route.query.taskid
     this.podName = this.$route.query.pod;
+    this.node = this.$route.query.node;
     this.ip = getIp('pods',this.name)
 
     getMonitorInfo({viewerName:'monitor',node:this.node,objectName:this.objectName}).then(response => {

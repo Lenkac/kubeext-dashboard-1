@@ -41,10 +41,10 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/vmInfo',query:{vm:getInputValue(scope.row,item.row)}}" v-if="item.kind == 'a'" tag="a" class="link" >
-            {{ getInputValue(scope.row,item.row) }}
+          <router-link :to="{path:'/profile/vmInfo',query:{vm:getInputValue(scope.row.json,item.row), node:scope.row.json.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
+            {{ getInputValue(scope.row.json,item.row) }}
           </router-link>
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
+          <span v-if="item.kind == undefined">{{ getInputValue(scope.row.json,item.row) }}</span>
           <!-- <router-link :to="{path:'/'}" tag="a">
             <span>
               
@@ -103,9 +103,12 @@
       </el-table-column>
       <el-table-column label="Actions" align="center" width="350" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
+          <!-- <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
             {{ item.name }}
-          </el-button>
+          </el-button> -->
+          <el-select v-model="row.val" @change="(handleUpdate($event, row.json))">
+             <el-option v-for="item in actions" :key="item.key" :label="item.label" :value="item.value" @click="popJson"/>
+        </el-select>
           <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
@@ -240,7 +243,7 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       listLoading: true,
       importanceOptions: [1, 2, 3],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -275,7 +278,9 @@ export default {
       ],
       vmVariables: ["hh","kk"],
       vncIp: '133.133.135.31',
-      createVMJson:{}
+      createVMJson:{},
+      vm: "",
+      listTemp: [],
     }
   },
   mounted() {
@@ -287,13 +292,25 @@ export default {
     getColumns(this.viewer,'columns').then(response => {
       this.columns = response.data
       getListQuery(this.viewer,this.ip).then(response2 => {
+        console.log(response2)
         this.listQuery = response2
         this.listLoading = true
         getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
-          this.list = response3.data
+          this.listTemp = response3.data
           this.total = response3.total
           this.listLoading = false
-          console.log(this.list)
+          console.log(this.listTemp)
+          getVMActions({viewer: this.viewer}).then(response => {
+            console.log(this.listTemp[0])
+      this.actions = response.data
+      for(var i = 0; i < this.listTemp.length; i++) {
+        console.log(this.listTemp[0])
+        this.list.push({});
+          this.list[i].json = this.listTemp[i]
+          this.list[i].actions = this.actions
+          this.list[i].val = ""        
+      }
+    })
         })
     })
 
@@ -311,9 +328,7 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getVMActions({viewer: this.viewer}).then(response => {
-      this.actions = response.data
-    })
+    
     getJsonData({viewerName: "vmTemplates"}).then(response => {
       this.value = response.data
       for(var i = 0; i < this.value.length; i++) {
@@ -325,6 +340,10 @@ export default {
     })    
   },
   methods: {
+    popJson() {
+      this.dialogTableVisible = true
+
+    },
     openUrl(row) {
       console.log(row)
       var vmName = row.metadata.name
@@ -333,23 +352,21 @@ export default {
     },
     clickA() {
       this.dialogTableVisible = true
+      getJsonData({viewerName: "vmTemplates"}).then(response => {
+      this.value = response.data
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "createAndStartVMFromISO") {
+           this.createVMJson = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+        }
+      }
+    })   
     },
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
-      var str = JSON.stringify(this.createVMJson)
-      str = str.replace(/ +/g,"")
-      str = str.replace(/\\n/g,"")
-      //str = str.substring(1,str.length-1)
-      str = str.replace(/\\/g,"")
-      createSthFromTemplate({ip: this.ip, json: str, kind:this.createVMJson.kind}).then(response => {
-        setTimeout(getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
-          this.list = response3.data
-          this.total = response3.total
-          this.listLoading = false
-          console.log("10s "+this.list)
-        }),10000)
-    })
+      var str = this.toRawJson(this.createVMJson)
+      createSthFromTemplate({ip: this.ip, json: str, kind:"VirtualMachine"})
     },
     toRawJson(val){
       var str = JSON.stringify(val)
@@ -419,7 +436,19 @@ export default {
         }
       })
     },
-    handleUpdate(row, event) {
+    handleUpdate(event, row) {
+      console.log("event"+event);
+      console.log(row)
+      this.dialogTableVisible = true
+      var deleteJson;
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == event) {
+           this.createVMJson = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+           this.createVMJson.metadata.name = row.metadata.name
+          //var str = this.toRawJson(this.createVMJson)
+          //createSthFromTemplate({ip: this.ip, json: str, kind:row.kind})
+        }
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)
@@ -430,18 +459,12 @@ export default {
         })
       }
       if (event === 'delete') {
-        var deleteJson;
+        
         this.handleDelete(row)
         //console.log(row)
-        for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == "deleteVM") {
-           deleteJson = this.value[i].json
-           this.vmVariables = this.value[i].createVariables
-        }
+        
       }
-        deleteJson.metadata.name = row.metadata.name
-        var str = this.toRawJson(deleteJson)
-        createSthFromTemplate({ip: this.ip, json: str, kind:row.kind})
+        
       }
     },
     updateData() {
