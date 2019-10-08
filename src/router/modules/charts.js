@@ -16,20 +16,26 @@ const chartsRouter = {
       path: 'node-table',
       component: () => import('@/views/charts/node-table'),
       name: 'nodeTable',
-      meta: { title: '主机基本信息' }
+      meta: { title: '资源管理' }
     },
-    {
-      path: 'test',
-      component: () => import('@/views/echarts/test'),
-      name: 'test',
-      meta: { title: '测试echarts' }
-    },
-    {
-      path: 'schedule',
-      component: () => import('@/views/echarts/schedule'),
-      name: 'schedule',
-      meta: { title: '调度' }
-    }
+    // {
+    //   path: 'network',
+    //   component: () => import('@/views/charts/network'),
+    //   name: 'network',
+    //   meta: { title: '网络拓扑' }
+    // },
+    // {
+    //   path: 'test',
+    //   component: () => import('@/views/echarts/test'),
+    //   name: 'test',
+    //   meta: { title: '测试echarts' }
+    // },
+    // {
+    //   path: 'schedule',
+    //   component: () => import('@/views/echarts/schedule'),
+    //   name: 'schedule',
+    //   meta: { title: '调度' }
+    // }
     
   ]
 }

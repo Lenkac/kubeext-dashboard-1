@@ -3,7 +3,7 @@ import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,getContainerUR
 
 export function getIp(viewerName,userName){
   console.log(userName)
-  return "133.133.135.22"
+  return "133.133.135.35"
   //return "39.96.4.11"
 }
 

@@ -8,7 +8,7 @@ const templateRouter = {
   redirect: 'noRedirect',
   name: 'Template',
   meta: {
-    title: '元配置管理',
+    title: '配置管理',
     icon: 'chart',
   },
   children: [
@@ -22,13 +22,13 @@ const templateRouter = {
         path: 'podTemplate',
         component: () => import('@/views/template/podTemplate'),
         name: 'podTemplate',
-        meta: { title: '容器配置' }
+        meta: { title: '容器生命周期' }
       },
       {
         path: 'VMTemplate',
         component: () => import('@/views/template/VMTemplate'),
         name: 'VMTemplate',
-        meta: { title: 'vm配置' }
+        meta: { title: 'vm生命周期' }
       }
     // {
     //   path: 'mix-chart',

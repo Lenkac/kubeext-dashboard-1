@@ -122,3 +122,22 @@ export function getScheduleData(listQuery) {
   })
   return res
 }
+
+export function AgetScheduleData(listQuery) {
+  var res = request({
+    url: '/AgetScheduleData',
+    method: 'get',
+    params: listQuery
+  })
+  return res
+}
+
+export function getPriorityData(listQuery) {
+  var res = request({
+    url: '/getPriorityData',
+    method: 'get',
+    params: listQuery
+  })
+  return res
+}
+

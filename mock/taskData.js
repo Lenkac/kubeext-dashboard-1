@@ -1,6 +1,493 @@
 import Mock from 'mockjs'
+var testcase1 = [
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "busybox1",
+        "namespace": "testcase1"
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "busybox",
+            "command": [
+              "sleep",
+              "3600"
+            ],
+            "imagePullPolicy": "IfNotPresent",
+            "name": "busybox"
+          }
+        ],
+        "restartPolicy": "Always"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "busybox2",
+        "namespace": "testcase1"
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "busybox",
+            "command": [
+              "sleep",
+              "3600"
+            ],
+            "imagePullPolicy": "IfNotPresent",
+            "name": "busybox"
+          }
+        ],
+        "restartPolicy": "Always"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "name": "busybox3",
+        "namespace": "testcase1"
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "busybox",
+            "command": [
+              "sleep",
+              "3600"
+            ],
+            "imagePullPolicy": "IfNotPresent",
+            "name": "busybox"
+          }
+        ],
+        "restartPolicy": "Always"
+      }
+    }
+  ]
+var testcase2 = testcase1
+var testcase3 = testcase1
+var ptestcase1 = [
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox1",
+      "namespace": "ptestcase1"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox2",
+      "namespace": "ptestcase1"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox3",
+      "namespace": "ptestcase1"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  }
+]
+var testcase2 = [
+  {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "busybox1",
+      "namespace": "testcase2"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "busybox3",
+      "namespace": "testcase2"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "busybox2",
+      "namespace": "testcase2"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  }
+]
+var ptestcase2 = [
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox1",
+      "namespace": "ptestcase2"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox3",
+      "namespace": "ptestcase2"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox2",
+      "namespace": "ptestcase2"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  }
+]
+var testcase3 = [
+  {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "busybox3",
+      "namespace": "testcase3"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "busybox2",
+      "namespace": "testcase3"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+      "name": "busybox1",
+      "namespace": "testcase3"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  }
+]
+var ptestcase3 = [
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox3",
+      "namespace": "ptestcase3"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox2",
+      "namespace": "ptestcase3"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  },
+  {
+    "apiVersion": "v1",
+    "kind": "PriorityPod",
+    "metadata": {
+      "name": "busybox1",
+      "namespace": "ptestcase3"
+    },
+    "spec": {
+      "containers": [
+        {
+          "image": "busybox",
+          "command": [
+            "sleep",
+            "3600"
+          ],
+          "imagePullPolicy": "IfNotPresent",
+          "name": "busybox"
+        }
+      ],
+      "restartPolicy": "Always"
+    }
+  }
+]
+testcase2[1].metadata.name = "busybox3"
+testcase2[2].metadata.name = "busybox2"
+testcase3[0].metadata.name = "busybox3"
+testcase3[2].metadata.name = "busybox1"
 
 const taskList = []
+const schedule = {symbol:[],links:[],tipData:[],failure:[]}
+const scheduleA = {symbol:[],links:[],tipData:[],failure:[]}
+var tipData = ['@integer(0,100)',0,0,1,0]
+var tipDataS = []
+var tipDataA = ['@integer(0,100)',0,0,1,0]
+var tipDataSA = []
+const fail = {
+  id:1,
+  name:'T'+'@integer(0,10000)'
+}
+const symbolKind = [
+  {
+    name: 'G'+'@integer(1,4000)',
+    x: '@integer(750,800)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: 'MediumTurquoise'
+    }
+  },
+  {
+    name: 'M'+'@integer(1,4000)',
+    x: '@integer(900,950)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: '#0399d3'
+    }
+  },
+  {
+    name: 'T'+'@integer(1,10000)',
+    x: '@integer(450,500)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: '#67b55b'
+    }
+  },
+  {
+    name: 'A'+'@integer(1,4000)',
+    x: '@integer(600,650)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: 'SandyBrown'
+    }
+  }
+  
+]
+
+const symbolKindA = [
+  {
+    name: 'G'+'@integer(1,4000)',
+    x: '@integer(700,750)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: 'MediumTurquoise'
+    }
+  },
+  {
+    name: 'M'+'@integer(1,4000)',
+    x: '@integer(900,950)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: '#0399d3'
+    }
+  },
+  {
+    name: 'T'+'@integer(1,10000)',
+    x: '@integer(450,500)',
+    y: '@integer(200,800)',
+    itemStyle: {
+      color: '#67b55b'
+    }
+  }
+]
+
 
 //生成模拟的任务数据
 for (let i = 0; i < 3; i++) {
@@ -32,6 +519,278 @@ for (let i = 0; i < 3; i++) {
     // platforms: ['a-platform']
   }))
 }
+var maxms = -1
+var minms = 1000
+var totalms = 0
+for (let i = 0; i < 30; i++) {
+  var task = []
+  var application = []
+  var group = []
+  var machine = []
+  var arr = []
+  for (let j = 0; j < 50; j++) {
+    if(i == 29) {
+      var k = Math.floor(Math.random()*2)
+    }else {
+      var k = Math.floor(Math.random()*4)
+    }
+    arr.push(Mock.mock(symbolKind[k]))
+    //console.log(arr)
+    if(arr[j].name.charAt(0) == 'T') {
+      task.push(arr[j].name)
+    } else if(arr[j].name.charAt(0) == 'A') {
+      application.push(arr[j].name)
+    } else if(arr[j].name.charAt(0) == 'G') {
+      group.push(arr[j].name)
+    } else if(arr[j].name.charAt(0) == 'M') {
+      machine.push(arr[j].name)
+    }
+  }
+  arr.push({
+    name: 'S',
+    x: 300,
+    y: 400,
+    itemStyle: {
+      color: '#ff9999'
+    }
+  })
+  arr.push({
+    name: 'E',
+    x: 1050,
+    y: 400,
+    itemStyle: {
+      color: '#ff9999'
+    }
+  })
+  const linkKind = [
+    {
+      'source|1': 'S',
+      target: '',
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    },
+    {
+      'source|1': task,
+      'target|1': application,
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    },
+    {
+      source: '',
+      target: '',
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa'] 
+        },    
+      }
+    },
+    {
+      'source|1': group,
+      'target|1': machine,
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    },
+    {
+      source: '',
+      'target|1': 'E',
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    }
+  ]
+  var arrl = []
+  if(i == 29) {
+    for (let x = 0; x < group.length; x++) {
+      linkKind[0].target = group[x]
+      arrl.push(Mock.mock(linkKind[0]))
+    }
+  }else {
+    for (let x = 0; x < task.length; x++) {
+      linkKind[0].target = task[x]
+      arrl.push(Mock.mock(linkKind[0]))
+      arrl.push(Mock.mock(linkKind[1]))
+    }
+  }
+  
+  for (let x = 0; x < application.length; x++) {
+    for(let y = 0; y < group.length; y++ ) {
+      linkKind[2].source = application[x]
+      linkKind[2].target = group[y]
+      arrl.push(Mock.mock(linkKind[2]))
+    }
+  }
+  for (let x = 0; x < machine.length; x++) {
+    linkKind[4].source = machine[x]
+    arrl.push(Mock.mock(linkKind[3]))
+    arrl.push(Mock.mock(linkKind[4]))
+  }
+  tipDataS = Mock.mock(tipData)
+  tipDataS[1] = tipDataS[0]
+  tipDataS[2] = tipDataS[0]
+  totalms += tipDataS[0]
+  tipDataS[0] = (totalms/(i+1)).toFixed(2)
+  if(maxms < tipDataS[1]) {
+    maxms = tipDataS[1]
+  }
+  if(minms > tipDataS[2]) {
+    minms = tipDataS[2]
+  }
+  tipDataS[1] = maxms
+  tipDataS[2] = minms
+  if(i == 29) {
+    tipDataS[3] = 10000
+  }else {
+    tipDataS[3] = tipData[3] + Math.floor(Math.random()*580)
+    tipData[3] = tipDataS[3]
+  }
+    schedule.tipData.push(tipDataS)
+    schedule.symbol.push(Mock.mock(arr))
+    schedule.links.push(Mock.mock(arrl))
+  //console.log(schedule)
+  
+  
+}
+
+//scheduleA
+var maxmsA = -1
+var minmsA = 1000
+var totalmsA = 0
+for (let i = 0; i < 30; i++) {
+  var taskA = []
+  var groupA = []
+  var machineA = []
+  var arrA = []
+  for (let j = 0; j < 50; j++) {
+    var k = Math.floor(Math.random()*3)
+    arrA.push(Mock.mock(symbolKindA[k]))
+    //console.log(arr)
+    if(arrA[j].name.charAt(0) == 'T') {
+      taskA.push(arrA[j].name)
+    } else if(arrA[j].name.charAt(0) == 'G') {
+      groupA.push(arrA[j].name)
+    } else if(arrA[j].name.charAt(0) == 'M') {
+      machineA.push(arrA[j].name)
+    }
+  }
+  arrA.push({
+    name: 'S',
+    x: 300,
+    y: 400,
+    itemStyle: {
+      color: '#ff9999'
+    }
+  })
+  arrA.push({
+    name: 'E',
+    x: 1050,
+    y: 400,
+    itemStyle: {
+      color: '#ff9999'
+    }
+  })
+  const linkKindA = [
+    {
+      'source|1': 'S',
+      target: '',
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    },
+    {
+      'source|1': taskA,
+      'target|1': groupA,
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa'] 
+        },    
+      }
+    },
+    {
+      'source|1': groupA,
+      'target|1': machineA,
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    },
+    {
+      source: '',
+      'target|1': 'E',
+      lineStyle: {
+        normal: {
+            width: 3,
+            'color|1': ['#aaa']
+        },    
+      }
+    }
+  ]
+  var arrlA = []
+  for (let x = 0; x < taskA.length; x++) {
+    linkKindA[0].target = taskA[x]
+    arrlA.push(Mock.mock(linkKindA[0]))
+    arrlA.push(Mock.mock(linkKindA[1]))
+  }
+  for (let x = 0; x < machineA.length; x++) {
+    linkKindA[3].source = machineA[x]
+    arrlA.push(Mock.mock(linkKindA[2]))
+    arrlA.push(Mock.mock(linkKindA[3]))
+  }
+  tipDataSA = Mock.mock(tipDataA)
+  tipDataSA[1] = tipDataSA[0]
+  tipDataSA[2] = tipDataSA[0]
+  totalmsA += tipDataSA[0]
+  tipDataS[0] = (totalmsA/(i+1)).toFixed(2)
+  if(maxmsA < tipDataSA[1]) {
+    maxmsA = tipDataSA[1]
+  }
+  if(minmsA > tipDataSA[2]) {
+    minmsA = tipDataSA[2]
+  }
+  tipDataSA[1] = maxmsA
+  tipDataSA[2] = minmsA
+  if(i == 29) {
+    tipDataSA[3] = 8917
+    tipDataSA[4] = 1083
+  }else {
+    tipDataSA[3] = tipDataA[3] + Math.floor(Math.random()*520)
+    tipDataSA[4] = tipDataA[4] + Math.floor(Math.random()*70)
+    tipDataA[3] = tipDataSA[3]
+    tipDataA[4] = tipDataSA[4]
+  }
+  
+  scheduleA.tipData.push(tipDataSA)
+  scheduleA.symbol.push(Mock.mock(arrA))
+  scheduleA.links.push(Mock.mock(arrlA))
+  //console.log(scheduleA)
+  for(var p = 0; p<30;p++) {
+    scheduleA.failure.push(Mock.mock({
+      id:1+p,
+      name:'T'+'@integer(0,10000)'
+    }))
+  }
+}
 
 export default [
   //模拟返回所有任务list
@@ -39,7 +798,7 @@ export default [
     url: '/list/getList',
     type: 'get',
     response: config => {
-      console.log(config.query)
+      //console.log(config.query)
       return {
         code: 20000,
         page: 1,
@@ -260,8 +1019,6 @@ export default [
           { key: 30, label: '显示所有phyPool', value: 'listAllPhyPool'},
           { key: 31, label: '暂停虚拟机', value: 'suspendVM'},
           { key: 32, label: '显示存储池', value: 'listStoragePool'},
-          
-
         ]
       }
     }
@@ -320,7 +1077,7 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://133.133.135.22:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1567260614683&to='+new Date().getTime()
+        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1570470714683&to='+new Date().getTime()
       }
     }
   },
@@ -719,120 +1476,52 @@ export default [
         response: config => {
           return {
             code: 20000,
-            data:[[{
-              source: 'S',
-              target: 'task1',
-              symbolSize: [5, 20],
-              label: {
-                  normal: {
-                      show: true
-                  }
-              },
-              lineStyle: {
-                  normal: {
-                      width: 5,
-                      curveness: 0.2,
-                      color: 'green'
-                  },
-                  
-              }
-          }, {
-              source: 'S',
-              target: 'task2',
-              label: {
-                  normal: {
-                      show: true
-                  }
-              },
-              lineStyle: {
-                  normal: { curveness: 0.2 }
-              }
-          }, {
-              source: 'S',
-              target: 'task3'
-          }, {
-              source: 'task1',
-              target: 'node1'
-          }, {
-              source: 'task1',
-              target: 'node2'
-          }, {
-              source: 'task2',
-              target: 'node1'
-          }, {
-              source: 'task2',
-              target: 'node2'
-          }, {
-              source: 'task3',
-              target: 'node1'
-          }, {
-              source: 'task3',
-              target: 'node2'
-          }, {
-              source: 'node1',
-              target: 'E'
-          }, {
-              source: 'node2',
-              target: 'E'
-          }],
-          [{
-            source: 'S',
-            target: 'task1',
-            symbolSize: [5, 20],
-            label: {
-                normal: {
-                    show: true
-                }
-            },
-            lineStyle: {
-                normal: {
-                    width: 5,
-                    curveness: 0.2,
-                    color: 'red'
-                },
-                
-            }
-        }, {
-            source: 'S',
-            target: 'task2',
-            label: {
-                normal: {
-                    show: true
-                }
-            },
-            lineStyle: {
-                normal: { curveness: 0.2 }
-            }
-        }, {
-            source: 'S',
-            target: 'task3'
-        }, {
-            source: 'task1',
-            target: 'node1'
-        }, {
-            source: 'task1',
-            target: 'node2'
-        }, {
-            source: 'task2',
-            target: 'node1'
-        }, {
-            source: 'task2',
-            target: 'node2'
-        }, {
-            source: 'task3',
-            target: 'node1'
-        }, {
-            source: 'task3',
-            target: 'node2'
-        }, {
-            source: 'node1',
-            target: 'E'
-        }, {
-            source: 'node2',
-            target: 'E'
-        }]]
-        }
+            data: schedule
       }
     }
-
+  },
+  {
+    url: '/AgetScheduleData',
+      type: 'get',
+      response: config => {
+        return {
+          code: 20000,
+          data: scheduleA
+    }
+  }
+},
+{
+  url: '/getPriorityData',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        data: [{
+          title:'测试用例1',
+          json: testcase1         
+        },
+        {
+          title:'测试用例2',
+          json: testcase2        
+        },
+        {
+          title:'测试用例3',
+          json: testcase3
+        },
+        {
+          title:'测试用例1',
+          json: ptestcase1         
+        },
+        {
+          title:'测试用例2',
+          json: ptestcase2        
+        },
+        {
+          title:'测试用例3',
+          json: ptestcase3
+        }
+      ]
+  }
+}
+}
 ]

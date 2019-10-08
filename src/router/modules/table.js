@@ -30,12 +30,12 @@ const tableRouter = {
     //   name: 'InlineEditTable',
     //   meta: { title: 'Inline Edit' }
     // },
-    {
-      path: 'complex-table',
-      component: () => import('@/views/table/complex-table'),
-      name: 'ComplexTable',
-      meta: { title: '任务基本信息' }
-    }
+    // {
+    //   path: 'complex-table',
+    //   component: () => import('@/views/table/complex-table'),
+    //   name: 'ComplexTable',
+    //   meta: { title: '任务基本信息' }
+    // }
   ]
 }
 export default tableRouter

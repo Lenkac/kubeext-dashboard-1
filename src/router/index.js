@@ -10,8 +10,10 @@ import Layout from '@/layout'
 import componentsRouter from './modules/components'
 import chartsRouter from './modules/charts'
 import templateRouter from './modules/template'
-import tableRouter from './modules/table'
-import workloadsRouter from './modules/workload';
+//import tableRouter from './modules/table'
+import workloadsRouter from './modules/workload'
+import sysConfigRouter from './modules/sysConfig'
+import scheduleConfigRouter from './modules/scheduleConfig'
 // import nestedRouter from './modules/nested'
 
 /**
@@ -81,7 +83,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index'),
         name: 'dashboard',
-        meta: { title: '云平台仪表盘', icon: 'dashboard', affix: true }
+        meta: { title: '仪表盘', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -206,11 +208,12 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
-  chartsRouter,
   workloadsRouter,
-  tableRouter,
-  templateRouter,
-  
+  chartsRouter,
+  //tableRouter,
+  //templateRouter,
+  sysConfigRouter,
+  //scheduleConfigRouter,
   // {
   //   path: '/example',
   //   component: Layout,

@@ -77,7 +77,6 @@ import { getMonitorInfo } from '@/api/taskData'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 
-const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
 export default {
   name: 'taskProfile',
@@ -92,14 +91,14 @@ export default {
       monitor_rs:{},
       node:'',
       objectName:'link',
-      viewerName:'pods',
+      viewerName:'nodes',
       nodeName:'',
       podList:'',
       listQuery:'',
       listLoading:'',
       columns:'',
       ip:'',
-      value: JSON.parse(jsonData)
+      value: ''
     }
   },
   computed: {
@@ -128,11 +127,13 @@ export default {
           this.total = response3.total
           this.listLoading = false
           for(var i = 0; i < data.length; i++) {
-              if(data[i].spec.nodeName != this.nodeName) {
-                delete data[i]
+              if(data[i].metadata.name == this.nodeName) {
+                this.value = data[i]
               }
             }
             this.list = data
+            console.log(data)
+            
         })
     })
     })
