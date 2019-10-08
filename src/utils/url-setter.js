@@ -1,4 +1,4 @@
-export const urlPrefix = 'http://133.133.135.35:31000/kubesys/v1/'
+export const urlPrefix = '/kubesys/v1/'
 
 export function getListURL(viewerName) {
   if(viewerName === 'nodes'){
