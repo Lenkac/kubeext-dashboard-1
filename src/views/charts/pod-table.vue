@@ -2,7 +2,6 @@
   <div class="app-container">
     <div class="filter-container">
       <span v-for="ff in filterForm" :key="ff.key">
-        <!-- @input="updateJson(listQuery,ff.prop,$event)" -->
         <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop) " 
 　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter"/>
         <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
@@ -24,9 +23,9 @@
       <el-button  type="primary" class="filter-item" @click.native="createPod">
         创建pod
       </el-button>
-      <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        reviewer
-      </el-checkbox> -->
+    <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
+        删除最后一个菜单
+    </el-button>
     </div>
 
     <el-table
@@ -45,79 +44,6 @@
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
-          <!-- <router-link :to="{path:'/'}" tag="a">
-            <span>
-              
-            </span>
-          </router-link> -->
-        </template>
-      </el-table-column>
-      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row['id'] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Title" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
-        <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Imp" width="80px">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column> -->
-      <el-table-column label="远程连接" align="center" width="130" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">        
-            <svg-icon @click="openUrl(row)" icon-class="pc"  class-name='custom-class' />          
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="clickA(row)">
-            {{ item.name }}
-          </el-button>
-          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
-            Delete
-          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -133,23 +59,6 @@
           </el-select>
           <el-input v-if="efi.type == undefined" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
         </el-form-item>
-        <!-- <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -212,6 +121,8 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import { mapGetters } from 'vuex'
 import elDragDialog from '@/directive/el-drag-dialog'
 import JsonEditor from '@/components/JsonEditor'
+import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
+import Bus from '@/utils/Bus'
 
 export default {
   name: 'podTable',
@@ -550,6 +461,11 @@ export default {
         }
       }
       obj[keys[keys.length-1]] = event
+    },
+    deleteMenu(){
+      // console.log(constantRoutes[9])
+      // constantRoutes.splice(9,1)
+      Bus.$emit('deleteMenuTest')
     }
   },
 }

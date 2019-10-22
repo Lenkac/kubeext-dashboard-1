@@ -23,6 +23,7 @@ import { mapGetters } from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
+import Bus from '@/utils/Bus'
 
 export default {
   components: { SidebarItem, Logo },
@@ -34,7 +35,6 @@ export default {
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
-      // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         return meta.activeMenu
       }
@@ -49,6 +49,11 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
+  },
+  mounted(){
+    Bus.$on('deleteMenuTest',()=>{
+        this.permission_routes.splice(9,2)
+    })
   }
 }
 </script>

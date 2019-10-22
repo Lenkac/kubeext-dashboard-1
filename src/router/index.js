@@ -87,31 +87,6 @@ export const constantRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/documentation',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/documentation/index'),
-  //       name: 'Documentation',
-  //       meta: { title: '参考文档', icon: 'documentation', affix: true }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/guide',
-  //   component: Layout,
-  //   redirect: '/guide/index',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/guide/index'),
-  //       name: 'Guide',
-  //       meta: { title: 'Guide', icon: 'guide', noCache: true }
-  //     }
-  //   ]
-  // },
   {
     path: '/profile',
     component: Layout,
@@ -123,27 +98,12 @@ export const constantRoutes = [
         component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: '个人信息', icon: 'user', noCache: true }
-      },
-      {
-        path: 'taskProfile',
-        component: () => import('@/views/profile/taskProfile'),
-        name: 'taskProfile',
-        meta: { title: '任务信息', icon: 'user', noCache: true }
-      },
-      {
-        path: 'containerInfo',
-        component: () => import('@/views/profile/containerInfo'),
-        name: 'containerInfo',
-        meta: { title: '容器信息', icon: 'user', noCache: true }
-      },
-      {
-        path: 'vmInfo',
-        component: () => import('@/views/profile/vmInfo'),
-        name: 'vmInfo',
-        meta: { title: 'vm信息', icon: 'user', noCache: true }
       }
     ]
-  }
+  },
+  workloadsRouter,
+  chartsRouter,
+  sysConfigRouter
 ]
 
 /**
@@ -208,11 +168,6 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
-  workloadsRouter,
-  chartsRouter,
-  //tableRouter,
-  //templateRouter,
-  sysConfigRouter,
   //scheduleConfigRouter,
   // {
   //   path: '/example',
@@ -424,4 +379,19 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
+export function setNewRouter(newRoutes) {
+  const newRouter = resetConst(newRoutes)
+  router.matcher = newRouter.matcher // reset router
+}
+
+const resetConst = (newRoutes) => new Router({
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({ y: 0 }),
+  routes: newRoutes
+})
+
+
+
 export default router
+
+

@@ -154,7 +154,6 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
-import Bus from '../../utils/bus.js'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -241,7 +240,6 @@ export default {
           this.list = response3.data
           this.total = response3.total
           this.listLoading = false
-          Bus.$emit('val', this.list)
           console.log("hhhh"+this.list)
         })
     })

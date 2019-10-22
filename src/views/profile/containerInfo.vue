@@ -79,8 +79,6 @@ import { getMonitorInfo } from '@/api/taskData'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 
-import Bus from'../../utils/bus'
-
 export default {
   name: 'containerInfo',
   components: { UserCard, Activity, Timeline, Account,JsonEditor },
