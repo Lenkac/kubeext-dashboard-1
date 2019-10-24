@@ -277,7 +277,7 @@ export default {
         { value: '最小费用最大流模型', label: '最小费用最大流模型' }
       ],
       vmVariables: ["hh","kk"],
-      vncIp: '133.133.135.31',
+      vncIp: '133.133.135.35',
       createVMJson:{},
       vm: "",
       listTemp: [],
@@ -346,7 +346,7 @@ export default {
     },
     openUrl(row) {
       console.log(row)
-      var vmName = row.metadata.name
+      var vmName = row.json.metadata.name
       var host = this.vncIp
       window.open("http://"+host+":6080/vnc.html?path=websockify/?token="+vmName)
     },

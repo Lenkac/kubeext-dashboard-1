@@ -1077,7 +1077,7 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1570470714683&to='+new Date().getTime()
+        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1571910714683&to='+new Date().getTime()
       }
     }
   },

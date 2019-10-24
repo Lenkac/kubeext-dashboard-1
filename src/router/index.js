@@ -98,6 +98,24 @@ export const constantRoutes = [
         component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: '个人信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'taskProfile',
+        component: () => import('@/views/profile/taskProfile'),
+        name: 'taskProfile',
+        meta: { title: '任务信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'containerInfo',
+        component: () => import('@/views/profile/containerInfo'),
+        name: 'containerInfo',
+        meta: { title: '容器信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'vmInfo',
+        component: () => import('@/views/profile/vmInfo'),
+        name: 'vmInfo',
+        meta: { title: 'vm信息', icon: 'user', noCache: true }
       }
     ]
   },

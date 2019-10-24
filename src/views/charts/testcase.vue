@@ -46,7 +46,7 @@
   </el-table>  
       </div>
    <div id="myChart1" :style="{width: '200px', height: '250px',float:'left'}"></div>
-   <div id="myChart2" :style="{width: '200px', height: '250px',float:'left'}"></div>
+   <div id="myChart2" :style="{width: '200px', height: '250px',float:'left',}"></div>
    <div id="myChart3" :style="{width: '200px', height: '250px',float:'left'}"></div>
 
     </div>
@@ -269,7 +269,12 @@ export default {
           this.kind = val
       },
       fetchData() {
+        this.$message({
+        message: '开始测试！',
+        type: 'success'
+      })
           if(this.kind == 'priority' && this.rate == 1) {
+            setTimeout(function(){
               this.list = [{"name": "testcase1",
              "strategy": 'default',
              "status1": 'success',
@@ -285,130 +290,20 @@ export default {
              "status1": 'success',
              "status2": 'success',
              "status3": 'fail',
-      }]
-      this.testData1.children = children
-      this.testData2.children = children
-      this.testData3.children = children
-      this.drawLine()
-      for(var i = 0; i < 3;i++) {
-        for(var j = 0; j < 3;j++) {
-          if(this.createPodJson[i].json[j].metadata.name == "busybox1" ||this.createPodJson[i].json[j].metadata.name == "busybox2") {
-            var str = this.toRawJson(this.createPodJson[i].json[j])
-            createSthFromTemplate({ip: this.ip, json: str,kind: "Pod"})
-        }  
-        }
-              
-      }
-          }else if (this.kind == 'default' && this.rate == 1) {
-              this.list = [{"name": "testcase1",
-             "strategy": 'priority',
-             "status1": 'success',
-             "status2": 'success',
-             "status3": 'fail',
-      },{"name":"testcase2",
-            "strategy": 'priority',
-             "status1": 'success',
-             "status2": 'fail',
-             "status3": 'success',
-      },{"name":"testcase3",
-            "strategy": 'priority',
-             "status1": 'fail',
-             "status2": 'success',
-             "status3": 'success',
-      }]
-      this.testData1.children = children
-      this.testData2.children = children1
-      this.testData3.children = children2
-      this.drawLine()
-      for(var i = 0; i < 3;i++) {
-        for(var j = 0; j<2;j++) {
-          var str = this.toRawJson(this.createPodJson[i].json[j])
-          createSthFromTemplate({ip: this.ip, json: str,kind: "Pod"})
-        }        
-      }
-      
-          }else if(this.rate > 1){
-              this.list = [{"name": "testcase1",
-             "strategy": 'priority',
-             "status1": 'success',
-             "status2": 'success',
-             "status3": 'success',
-      },{"name":"testcase2",
-            "strategy": 'priority',
-             "status1": 'success',
-             "status2": 'success',
-             "status3": 'success',
-      },{"name":"testcase3",
-            "strategy": 'priority',
-             "status1": 'success',
-             "status2": 'success',
-             "status3": 'success',
-      }]
-      this.testData2.children = children3
-      this.testData3.children = children3
-      this.testData1.children = children3
-      this.drawLine()
-          }
-    },
-    drawLine(){
-        // 基于准备好的dom，初始化echarts实例
-        let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
+      }]}.bind(this),5000)
+      setTimeout(function(){
+        this.testData1.children = children
+        this.drawLine1()
+        this.$message({
+        message: '卸载环境！',
+        type: 'success'
+      })
+      }.bind(this),1000)
+      setTimeout(function(){
+        this.testData2.children = children
+        //this.describe2()
         let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
-        let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
-
-        // 绘制图表
-        myChart1.setOption({
-        tooltip: {
-            trigger: 'item',
-            triggerOn: 'mousemove'
-        },
-        series:[
-            {
-                type: 'tree',
-
-                data: [this.testData1],
-
-                left: '2%',
-                right: '2%',
-                top: '25%',
-                bottom: '30%',
-
-                symbol: 'circle',
-                symbolSize: 15,
-                itemStyle: {
-                    color: 'black',
-                    borderWidth:0
-                },
-
-                orient: 'vertical',
-
-                expandAndCollapse: true,
-
-                label: {
-                    normal: {
-                        position: 'top',
-                        verticalAlign: 'middle',
-                        align: 'right',
-                        fontSize: 14
-                    }
-                },
-
-                leaves: {
-                    label: {
-                        normal: {
-                            position: 'bottom',
-                            verticalAlign: 'right',
-                            align: 'right',
-                            rotate: -90,
-                        }
-                    }
-                },
-
-                animationDurationUpdate: 750,
-            }
-        ]
-    });
-    myChart2.setOption({
+        myChart2.setOption({
         tooltip: {
             trigger: 'item',
             triggerOn: 'mousemove'
@@ -459,7 +354,12 @@ export default {
             }
         ]
     });
-    myChart3.setOption({
+      }.bind(this),2500)
+      setTimeout(function(){
+        this.testData3.children = children
+        //this.drawLine3()
+        let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
+        myChart3.setOption({
         tooltip: {
             trigger: 'item',
             triggerOn: 'mousemove'
@@ -510,7 +410,448 @@ export default {
             }
         ]
     });
+      }.bind(this),4000)
+      
+          }else if (this.kind == 'default' && this.rate == 1) {
+            setTimeout(function(){
+              this.list = [{"name": "testcase1",
+             "strategy": 'priority',
+             "status1": 'success',
+             "status2": 'success',
+             "status3": 'fail',
+      },{"name":"testcase2",
+            "strategy": 'priority',
+             "status1": 'success',
+             "status2": 'fail',
+             "status3": 'success',
+      },{"name":"testcase3",
+            "strategy": 'priority',
+             "status1": 'fail',
+             "status2": 'success',
+             "status3": 'success',
+      }]
+      }.bind(this),5000)
+      setTimeout(function(){
+      this.testData1.children = children
+      this.drawLine1()
+      this.drawLine1()
+      }.bind(this),1000)
+      setTimeout(function(){
+      this.testData2.children = children1
+      let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
+        myChart2.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData2],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750
+            }
+        ]
+    });
+      }.bind(this),2500)
+      setTimeout(function(){
+      this.testData3.children = children2
+      let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
+        myChart3.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData3],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750
+            }
+        ]
+    });
+      }.bind(this),4000)
+    
+      
+          }else if(this.rate > 1){
+            setTimeout(function(){
+              this.list = [{"name": "testcase1",
+             "strategy": 'priority',
+             "status1": 'success',
+             "status2": 'success',
+             "status3": 'success',
+      },{"name":"testcase2",
+            "strategy": 'priority',
+             "status1": 'success',
+             "status2": 'success',
+             "status3": 'success',
+      },{"name":"testcase3",
+            "strategy": 'priority',
+             "status1": 'success',
+             "status2": 'success',
+             "status3": 'success',
+      }]
+       }.bind(this),5000)
+      setTimeout(function(){
+      this.testData1.children = children3
+      this.drawLine1()
+      this.drawLine1()
+      }.bind(this),1000)
+      setTimeout(function(){
+      this.testData2.children = children3
+      let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
+        myChart2.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData2],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750
+            }
+        ]
+    });
+      }.bind(this),2500)
+      setTimeout(function(){
+      this.testData3.children = children3
+      let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
+        myChart3.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData3],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750
+            }
+        ]
+    });
+      }.bind(this),4000)
+      this.drawLine()
+          }
+    },
+    drawLine1(){
+        // 基于准备好的dom，初始化echarts实例
+        let myChart1 = this.$echarts.init(document.getElementById('myChart1'))
+
+        // 绘制图
+        myChart1.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData1],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750,
+            }
+        ]
+    });    
     }
+  },
+  describe2(){
+        // 基于准备好的dom，初始化echarts实例
+        let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
+        myChart2.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData2],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750
+            }
+        ]
+    });
+  },
+  drawLine3(){
+        // 基于准备好的dom，初始化echarts实例
+        let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
+        myChart3.setOption({
+        tooltip: {
+            trigger: 'item',
+            triggerOn: 'mousemove'
+        },
+        series:[
+            {
+                type: 'tree',
+
+                data: [this.testData3],
+
+                left: '2%',
+                right: '2%',
+                top: '25%',
+                bottom: '30%',
+
+                symbol: 'circle',
+                symbolSize: 15,
+                itemStyle: {
+                    color: 'black',
+                    borderWidth:0
+                },
+
+                orient: 'vertical',
+
+                expandAndCollapse: true,
+
+                label: {
+                    normal: {
+                        position: 'top',
+                        verticalAlign: 'middle',
+                        align: 'right',
+                        fontSize: 14
+                    }
+                },
+
+                leaves: {
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            verticalAlign: 'right',
+                            align: 'right',
+                            rotate: -90,
+                        }
+                    }
+                },
+
+                animationDurationUpdate: 750
+            }
+        ]
+    });
   }
   
     
