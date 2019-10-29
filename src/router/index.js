@@ -423,11 +423,7 @@ function filterAsyncRouter(asyncRouterMap) { //遍历后台传来的路由字符
       if (route.component === 'Layout') { //Layout组件特殊处理
         route.component = Layout
       } else {
-        //route.component = _import(route.component)
-        route.component = () =>
-          import('@/views/' + route.component)
-        
-      }
+        route.component = _import(route.component)
     }
     if (route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children)
