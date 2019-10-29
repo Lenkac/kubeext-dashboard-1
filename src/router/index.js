@@ -424,12 +424,14 @@ function filterAsyncRouter(asyncRouterMap) { //遍历后台传来的路由字符
         route.component = Layout
       } else {
         route.component = _import(route.component)
+      }
     }
     if (route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children)
     }
     return true
   })
+
 
   return accessedRouters
 }
