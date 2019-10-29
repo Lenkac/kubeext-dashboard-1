@@ -1,4 +1,6 @@
-import { asyncRoutes, constantRoutes } from '@/router'
+import constantRoutes from '@/router/modules/constantRoutes'
+
+import {getAsyncRoutes} from '@/router/modules/asyncRoutes'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -51,9 +53,9 @@ const actions = {
     return new Promise(resolve => {
       let accessedRoutes
       if (roles.includes('admin')) {
-        accessedRoutes = asyncRoutes || []
+        accessedRoutes = getAsyncRoutes() || []
       } else {
-        accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+        accessedRoutes = filterAsyncRoutes(getAsyncRoutes(), roles)
       }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
