@@ -1,5 +1,6 @@
 FROM node:latest
 MAINTAINER ISCAS {tangting17,xuyuanjia2017}@otcaix.iscas.ac.cn
+ENV TZ Asia/Shanghai
 COPY . /home/kubeext-dashboard
 WORKDIR /home/kubeext-dashboard
 EXPOSE 9527
