@@ -1077,7 +1077,7 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1571910714683&to='+new Date().getTime()
+        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1572093814683&to='+new Date().getTime()
       }
     }
   },
@@ -1521,6 +1521,76 @@ export default [
           json: ptestcase3
         }
       ]
+    }
+  }
+},
+{
+  url: '/getRouterData',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        data: [{
+          path: '/profile',
+          component: 'Layout',
+          redirect: '/profile/index',
+          hidden: true,
+          children: [
+            {
+              path: 'index',
+              component: 'profile/index',
+              name: 'Profile',
+              meta: { title: '个人信息', icon: 'user', noCache: true }
+            },
+            {
+              path: 'taskProfile',
+              component: 'profile/taskProfile',
+              name: 'taskProfile',
+              meta: { title: '任务信息', icon: 'user', noCache: true }
+            },
+            {
+              path: 'containerInfo',
+              component: 'profile/containerInfo',
+              name: 'containerInfo',
+              meta: { title: '容器信息', icon: 'user', noCache: true }
+            },
+            {
+              path: 'vmInfo',
+              component: 'profile/vmInfo',
+              name: 'vmInfo',
+              meta: { title: 'vm信息', icon: 'user', noCache: true }
+            }
+          ]
+        },
+        {
+          path: '/workloads',
+          component: 'Layout',
+          redirect: 'noRedirect',
+          name: 'Workloads',
+          meta: {
+            title: '任务管理',
+            icon: 'chart'
+          },
+          children: [
+            {
+              path: 'pod-table',
+              component: 'charts/pod-table',
+              name: 'podTable',
+              meta: { title: '任务（容器）' }
+            },{
+              path: 'vm-table',
+              component: 'charts/vm-table',
+              name: 'vmTable',
+              meta: { title: '任务（虚拟机）' }
+            },
+            {
+              path: 'testcase',
+              component: 'charts/testcase',
+              name: 'testcase',
+              meta: { title: '任务（演示）' }
+            }
+          ]
+        }]
   }
 }
 }

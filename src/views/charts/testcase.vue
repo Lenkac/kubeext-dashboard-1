@@ -276,29 +276,42 @@ export default {
           if(this.kind == 'priority' && this.rate == 1) {
             setTimeout(function(){
               this.list = [{"name": "testcase1",
-             "strategy": 'default',
+             "strategy": 'priority',
              "status1": 'success',
              "status2": 'success',
              "status3": 'fail',
       },{"name":"testcase2",
-            "strategy": 'default',
+            "strategy": 'priority',
              "status1": 'success',
              "status2": 'success',
              "status3": 'fail',
       },{"name":"testcase3",
-            "strategy": 'default',
+            "strategy": 'priority',
              "status1": 'success',
              "status2": 'success',
              "status3": 'fail',
-      }]}.bind(this),5000)
+      }]}.bind(this),9500)
+      
       setTimeout(function(){
         this.testData1.children = children
         this.drawLine1()
+      }.bind(this),3000)
+
+      setTimeout(function(){
         this.$message({
         message: '卸载环境！',
         type: 'success'
       })
-      }.bind(this),1000)
+      }.bind(this),3500)
+
+      setTimeout(function(){
+        this.$message({
+        message: '卸载环境！',
+        type: 'success'
+      })
+      }.bind(this),7000)
+
+
       setTimeout(function(){
         this.testData2.children = children
         //this.describe2()
@@ -354,7 +367,7 @@ export default {
             }
         ]
     });
-      }.bind(this),2500)
+      }.bind(this),6000)
       setTimeout(function(){
         this.testData3.children = children
         //this.drawLine3()
@@ -410,32 +423,46 @@ export default {
             }
         ]
     });
-      }.bind(this),4000)
+      }.bind(this),9000)
       
           }else if (this.kind == 'default' && this.rate == 1) {
             setTimeout(function(){
               this.list = [{"name": "testcase1",
-             "strategy": 'priority',
+             "strategy": 'default',
              "status1": 'success',
              "status2": 'success',
              "status3": 'fail',
       },{"name":"testcase2",
-            "strategy": 'priority',
+            "strategy": 'default',
              "status1": 'success',
              "status2": 'fail',
              "status3": 'success',
       },{"name":"testcase3",
-            "strategy": 'priority',
+            "strategy": 'default',
              "status1": 'fail',
              "status2": 'success',
              "status3": 'success',
       }]
-      }.bind(this),5000)
+      }.bind(this),9500)
       setTimeout(function(){
       this.testData1.children = children
       this.drawLine1()
-      this.drawLine1()
-      }.bind(this),1000)
+      }.bind(this),3000)
+
+      setTimeout(function(){
+        this.$message({
+        message: '卸载环境！',
+        type: 'success'
+      })
+      }.bind(this),3500)
+
+      setTimeout(function(){
+        this.$message({
+        message: '卸载环境！',
+        type: 'success'
+      })
+      }.bind(this),7000)
+
       setTimeout(function(){
       this.testData2.children = children1
       let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
@@ -490,7 +517,7 @@ export default {
             }
         ]
     });
-      }.bind(this),2500)
+      }.bind(this),6000)
       setTimeout(function(){
       this.testData3.children = children2
       let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
@@ -545,7 +572,7 @@ export default {
             }
         ]
     });
-      }.bind(this),4000)
+      }.bind(this),9000)
     
       
           }else if(this.rate > 1){
@@ -566,12 +593,26 @@ export default {
              "status2": 'success',
              "status3": 'success',
       }]
-       }.bind(this),5000)
+       }.bind(this),9500)
       setTimeout(function(){
       this.testData1.children = children3
       this.drawLine1()
-      this.drawLine1()
-      }.bind(this),1000)
+      }.bind(this),3000)
+
+      setTimeout(function(){
+        this.$message({
+        message: '卸载环境！',
+        type: 'success'
+      })
+      }.bind(this),3500)
+
+      setTimeout(function(){
+        this.$message({
+        message: '卸载环境！',
+        type: 'success'
+      })
+      }.bind(this),7000)
+      
       setTimeout(function(){
       this.testData2.children = children3
       let myChart2 = this.$echarts.init(document.getElementById('myChart2'))
@@ -626,7 +667,7 @@ export default {
             }
         ]
     });
-      }.bind(this),2500)
+      }.bind(this),6000)
       setTimeout(function(){
       this.testData3.children = children3
       let myChart3 = this.$echarts.init(document.getElementById('myChart3'))
@@ -681,8 +722,8 @@ export default {
             }
         ]
     });
-      }.bind(this),4000)
-      this.drawLine()
+      }.bind(this),9000)
+      //this.drawLine()
           }
     },
     drawLine1(){

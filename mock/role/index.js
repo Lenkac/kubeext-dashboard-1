@@ -3,6 +3,7 @@ import { deepClone } from '../../src/utils/index.js'
 import { asyncRoutes, constantRoutes } from './routes.js'
 
 const routes = deepClone([...constantRoutes, ...asyncRoutes])
+console.log(routes.filter(i => i.path !== '/permission'))
 
 const roles = [
   {

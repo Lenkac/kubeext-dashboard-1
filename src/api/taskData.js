@@ -141,3 +141,12 @@ export function getPriorityData(listQuery) {
   return res
 }
 
+export function getRouterData(listQuery) {
+  var res = request({
+    url: '/getRouterData',
+    method: 'get',
+    params: listQuery
+  })
+  return res
+}
+

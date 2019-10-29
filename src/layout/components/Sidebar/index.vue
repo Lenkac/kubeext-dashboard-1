@@ -52,6 +52,8 @@ export default {
   },
   mounted(){
     Bus.$on('deleteMenuTest',()=>{
+      console.log(this.permission_routes);
+      
         this.permission_routes.splice(9,2)
     })
   }

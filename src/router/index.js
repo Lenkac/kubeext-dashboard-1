@@ -5,6 +5,8 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+const _import = require('@/router/_import_development') //获取组件的方法
+
 
 /* Router Modules */
 import componentsRouter from './modules/components'
@@ -14,6 +16,10 @@ import templateRouter from './modules/template'
 import workloadsRouter from './modules/workload'
 import sysConfigRouter from './modules/sysConfig'
 import scheduleConfigRouter from './modules/scheduleConfig'
+import configRouter from './modules/config'
+import { getRouterData} from '@/api/taskData'
+
+
 // import nestedRouter from './modules/nested'
 
 /**
@@ -42,7 +48,8 @@ import scheduleConfigRouter from './modules/scheduleConfig'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
-export const constantRoutes = [
+
+export var constantRoutes = [
   {
     path: '/redirect',
     component: Layout,
@@ -87,41 +94,43 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: '个人信息', icon: 'user', noCache: true }
-      },
-      {
-        path: 'taskProfile',
-        component: () => import('@/views/profile/taskProfile'),
-        name: 'taskProfile',
-        meta: { title: '任务信息', icon: 'user', noCache: true }
-      },
-      {
-        path: 'containerInfo',
-        component: () => import('@/views/profile/containerInfo'),
-        name: 'containerInfo',
-        meta: { title: '容器信息', icon: 'user', noCache: true }
-      },
-      {
-        path: 'vmInfo',
-        component: () => import('@/views/profile/vmInfo'),
-        name: 'vmInfo',
-        meta: { title: 'vm信息', icon: 'user', noCache: true }
-      }
-    ]
-  },
-  workloadsRouter,
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: '个人信息', icon: 'user', noCache: true }
+  //     },
+  //     {
+  //       path: 'taskProfile',
+  //       component: () => import('@/views/profile/taskProfile'),
+  //       name: 'taskProfile',
+  //       meta: { title: '任务信息', icon: 'user', noCache: true }
+  //     },
+  //     {
+  //       path: 'containerInfo',
+  //       component: () => import('@/views/profile/containerInfo'),
+  //       name: 'containerInfo',
+  //       meta: { title: '容器信息', icon: 'user', noCache: true }
+  //     },
+  //     {
+  //       path: 'vmInfo',
+  //       component: () => import('@/views/profile/vmInfo'),
+  //       name: 'vmInfo',
+  //       meta: { title: 'vm信息', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // },
+  //workloadsRouter,
   chartsRouter,
-  sysConfigRouter
+  sysConfigRouter,
+  templateRouter,
+  configRouter
 ]
 
 /**
@@ -395,6 +404,38 @@ const router = createRouter()
 export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
+}
+export function getRouter() {
+  getRouterData().then(response => {
+    var temp = filterAsyncRouter(response.data)
+     for(let i = 0;i < temp.length;i++) {
+      constantRoutes.push(temp[i])
+      //console.log(constantRoutes)
+     }
+     console.log(constantRoutes)
+  })
+}
+getRouter()
+
+function filterAsyncRouter(asyncRouterMap) { //遍历后台传来的路由字符串，转换为组件对象
+  const accessedRouters = asyncRouterMap.filter(route => {
+    if (route.component) {
+      if (route.component === 'Layout') { //Layout组件特殊处理
+        route.component = Layout
+      } else {
+        //route.component = _import(route.component)
+        route.component = () =>
+          import('@/views/' + route.component)
+        
+      }
+    }
+    if (route.children && route.children.length) {
+      route.children = filterAsyncRouter(route.children)
+    }
+    return true
+  })
+
+  return accessedRouters
 }
 
 export function setNewRouter(newRoutes) {

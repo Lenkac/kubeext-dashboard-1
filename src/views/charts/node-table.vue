@@ -21,6 +21,9 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出excel
       </el-button>
+       <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
+        删除最后一个菜单
+    </el-button>
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         reviewer
       </el-checkbox> -->
@@ -154,6 +157,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
+import Bus from '@/utils/Bus'
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -264,6 +268,11 @@ export default {
 
   },
   methods: {
+    deleteMenu(){
+      // console.log(constantRoutes[9])
+      // constantRoutes.splice(9,1)
+      Bus.$emit('deleteMenuTest')
+    },
     getData() {
         Bus.$emit('val', this.list)
         console.log("hhhh"+this.list)

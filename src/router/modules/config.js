@@ -2,21 +2,21 @@
 
 import Layout from '@/layout'
 
-const chartsRouter = {
-  path: '/charts',
+const configRouter = {
+  path: '/config',
   component: Layout,
   redirect: 'noRedirect',
-  name: 'Charts',
+  name: 'Config',
   meta: {
-    title: '资源管理',
+    title: '配置',
     icon: 'chart'
   },
   children: [
     {
-      path: 'node-table',
-      component: () => import('@/views/charts/node-table'),
-      name: 'nodeTable',
-      meta: { title: '资源管理' }
+      path: 'api-analysis',
+      component: () => import('@/views/config/apiAnalysis'),
+      name: 'apiAnalysis',
+      meta: { title: 'api分析' }
     },
     // {
     //   path: 'network',
@@ -30,14 +30,14 @@ const chartsRouter = {
     //   name: 'test',
     //   meta: { title: '测试echarts' }
     // },
-    {
-      path: 'schedule',
-      component: () => import('@/views/echarts/schedule'),
-      name: 'schedule',
-      meta: { title: '调度' }
-    }
+    // {
+    //   path: 'schedule',
+    //   component: () => import('@/views/echarts/schedule'),
+    //   name: 'schedule',
+    //   meta: { title: '调度' }
+    // }
     
   ]
 }
 
-export default chartsRouter
+export default configRouter
