@@ -20,7 +20,7 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出excel
       </el-button>
-      <el-button  type="primary" class="filter-item" @click.native="createPod">
+      <el-button  type="primary" class="filter-item" @click.native="createJson">
         创建pod
       </el-button>
     <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
@@ -102,7 +102,7 @@
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="clickA(row)">
+          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="showDialog(row)">
             {{ item.name }}
           </el-button>
           <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -156,7 +156,7 @@
       <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="create">确认配置</el-button>
       <div class="card-editor-container">
         <json-editor ref="jsonEditor" v-model="createPodJson" />
         <br>
@@ -249,7 +249,7 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'pods',
+      viewer: 'Pod',
       value: '',
       ip: "",
       dialogTableVisible: false,
@@ -259,7 +259,7 @@ export default {
         { value: '最小费用最大流模型', label: '最小费用最大流模型' }
       ],
       createPodJson: {},
-      kind: ""
+      kind: "Pod"
     }
   },
   mounted() {
@@ -268,19 +268,14 @@ export default {
   created() {
     this.ip = getIp(this.viewer,this.name)
 
-    getColumns(this.viewer,'columns').then(response => {
-      this.columns = response.data
-      getListQuery(this.viewer,this.ip).then(response2 => {
-        this.listQuery = response2
-        this.listLoading = true
-        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
+    getColumns(this.viewer).then(response => {
+      this.columns = response.data    
+        getListAllData({viewerName: this.viewer}).then(response3 => {
           this.list = response3.data
           console.log(this.list)
-          this.total = response3.total
+          //this.total = response3.total
           this.listLoading = false
         })
-    })
-
     })
 
     getTemp({viewer: this.viewer}).then(response => {
@@ -298,7 +293,7 @@ export default {
     getPodActions({viewer: this.viewer}).then(response => {
       this.actions = response.data
     })
-    getJsonData({viewerName: 'templates'}).then(response => {
+    getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
       this.value = response.data
       for(var i = 0; i < this.value.length; i++) {
         if(this.value[i].action == "Pod") {
@@ -311,30 +306,26 @@ export default {
     })
   },
   methods: {
-    clickA(row) {
+    showDialog(row) {
       this.dialogTableVisible = true
       var podName = row.metadata.name
       //var namespace = row.metadata.namespace
           
     },
-    createPod() {
+    createJson() {
       this.dialogTableVisible = true
-      getJsonData({viewerName: 'templates'}).then(response => {
-      this.value = response.data
-      for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == "Pod") {
-           this.createPodJson = this.value[i].json
-           //this.containerVariables = this.value[i].createVariables
-        }
-      }
+      getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+      this.value = response.data      
+      this.createPodJson = response.data
+      //this.containerVariables = this.value[i].createVariables        
     })
           
     },
-    clickB() {
+    create() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
       var str = this.toRawJson(this.createPodJson)
-      createSthFromTemplate({ip: this.ip, json: str,kind: this.kind})
+      createSthFromTemplate({json: JSON.parse(str),kind: this.kind})
     },
     toRawJson(val){
       var str = JSON.stringify(val)
@@ -358,11 +349,6 @@ export default {
     },
     getList() {
       this.listLoading = true
-      // getListAllData(this.listQuery).then(response => {
-      //   this.list = response.data
-      //   this.total = response.total
-      //   this.listLoading = false
-      // })
     },
     handleFilter() {
       this.listQuery.pageNum = 1

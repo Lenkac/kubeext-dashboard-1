@@ -1,20 +1,11 @@
 import request from '@/utils/request'
-import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,getContainerURL,getCreateSthURL,getDeleteSthURL} from '@/utils/url-setter'
+import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getDeleteSthURL} from '@/utils/url-setter'
 
 export function getIp(viewerName,userName){
   console.log(userName)
   return "133.133.135.35"
   //return "39.96.4.11"
 }
-
-// export function getAllTaskData(listQuery) {
-//   var res = request({
-//     url: '/list/getList',
-//     method: 'get',
-//     params: listQuery
-//   })
-//   return res
-// }
 
 export function getListQuery(viewerName,ip) {
   var res = request({
@@ -30,19 +21,20 @@ export function getListQuery(viewerName,ip) {
 
 export function getListAllData(data) {
   return request({
-    url: getListURL(data.viewerName),
-    method: 'post',
-    data
+    url: getListURL(),
+    method: 'get',
+    params: {
+      "kind": data.viewerName,
+    }
   })
 }
 
-export function getColumns(viewerName,objectName) {
+export function getColumns(viewerName) {
   var res = request({
     url: getMetaDataURL(),
     method: 'get',
     params: {
-      "viewerName": viewerName,
-      "objectName": objectName
+      "kind": viewerName,
     }
   })
   return res
@@ -88,7 +80,7 @@ export function getJsonData(query) {
 export function saveContianerConfig(data) {
   var res = request({
     // url: '/list/getJsonData',
-    url: getContainerURL(),
+    url: updateJsonDataURL(),
     method: 'post',
     data
   })

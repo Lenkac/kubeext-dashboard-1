@@ -75,7 +75,7 @@ import UserCard from './components/UserCard'
 import Activity from './components/Activity'
 import Timeline from './components/Timeline'
 import Account from './components/Account'
-import { getMonitorInfo } from '@/api/taskData'
+import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 
@@ -99,7 +99,8 @@ export default {
       listLoading:'',
       columns:'',
       ip:'',
-      value: {}
+      value: {},
+      kind: 'VirtualMachine'
     }
   },
   computed: {
@@ -115,20 +116,16 @@ export default {
     this.vmName = this.$route.query.vm
     this.node = this.$route.query.node.substring(3)
 
-    console.log("vmname"+this.vmName)
+    //console.log("vmname"+this.vmName)
     this.ip = getIp('vms',this.name)
 
-    getMonitorInfo({viewerName:'monitor',node:this.node,objectName:this.objectName}).then(response => {
-      this.monitor_rs = response     
-    })
-    getColumns('containers','columns').then(response => {
+    this.monitor_rs = getMonitorInfo(this.kind, this.vmName)
+          
+    getColumns(this.kind).then(response => {
       this.columns = response.data
-      getListQuery(this.viewerName,this.ip).then(response2 => {
-        this.listQuery = response2
-        this.listLoading = true
-        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewerName}).then(response3 => {
+        getListAllData({viewerName: this.kind}).then(response3 => {
           var data = response3.data
-          this.total = response3.total
+          //this.total = response3.total
           this.listLoading = false
         console.log(data)
 
@@ -137,12 +134,9 @@ export default {
                 this.list = data[i]
               }
             }
-            
-
-            this.value = this.list
+                this.value = this.list
             console.log(this.list)
         })
-    })
     })
 
   },

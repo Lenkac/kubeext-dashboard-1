@@ -30,12 +30,6 @@ const templateRouter = {
         name: 'VMTemplate',
         meta: { title: 'vm生命周期' }
       }
-    // {
-    //   path: 'mix-chart',
-    //   component: () => import('@/views/charts/mix-chart'),
-    //   name: 'MixChart',
-    //   meta: { title: 'Mix Chart', noCache: true }
-    // }
   ]
 }
 

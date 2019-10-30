@@ -89,7 +89,8 @@ export function getGrafanaLink(query) {
 
 export function getMonitorInfo(query) {
   var res = request({
-    url: getMonitorInfoURL(),
+    //url: getMonitorInfoURL(),
+    url: '/getSingleMonitorInfo',
     method: 'get',
     params: query
   })

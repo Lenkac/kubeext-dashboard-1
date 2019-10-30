@@ -58,7 +58,7 @@ export default {
       value: [],
       tasks:[{"key":1,"name":"创建pod"},{"key":2,"name":"创建deployment"}],
       json:{},
-      kind: ""
+      kind: "VirtualMachine"
 
     }
   },
@@ -73,7 +73,7 @@ export default {
   },
   created() {
     this.ip = getIp(this.viewerName,this.name)
-    getJsonData({viewerName: "vmTemplates"}).then(response => {
+    getJsonData({kind: this.kind ,operator: 'query'}).then(response => {
       this.value = response.data;
       console.log(this.value)
     })
@@ -93,12 +93,7 @@ export default {
       saveContianerConfig({viewerName:"vmTemplates",json: res, kind:this.kind}).then(response => {
       //console.log(response.code)
      })
-    //   getJsonData({viewerName: "vmTemplates"}).then(response => {
-    //     this.value = response.data;
-    //     //console.log(this.value)
-    // })
     },
-    // v-el-drag-dialog onDrag callback function
     handleDrag() {
       this.$refs.select.blur()
     },

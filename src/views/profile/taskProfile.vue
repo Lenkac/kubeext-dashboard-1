@@ -73,7 +73,7 @@ import UserCard from './components/UserCard'
 import Activity from './components/Activity'
 import Timeline from './components/Timeline'
 import Account from './components/Account'
-import { getMonitorInfo } from '@/api/taskData'
+import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
 
@@ -90,15 +90,15 @@ export default {
       key: '',
       monitor_rs:{},
       node:'',
-      objectName:'link',
-      viewerName:'nodes',
+      viewerName:'Node',
       nodeName:'',
       podList:'',
       listQuery:'',
       listLoading:'',
       columns:'',
       ip:'',
-      value: ''
+      value: '',
+      kind: 'Node'
     }
   },
   computed: {
@@ -114,17 +114,13 @@ export default {
     this.nodeName = this.$route.query.node;
     this.ip = getIp('pods',this.name)
 
-    getMonitorInfo({viewerName:'monitor',node:this.nodeName,objectName:this.objectName}).then(response => {
-      this.monitor_rs = response     
-    })
+    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName)
+    
     getColumns(this.viewerName,'columns').then(response => {
-      this.columns = response.data
-      getListQuery(this.viewerName,this.ip).then(response2 => {
-        this.listQuery = response2
-        this.listLoading = true
-        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewerName}).then(response3 => {
+      this.columns = response.data      
+        getListAllData({viewerName: this.viewerName}).then(response3 => {
           var data = response3.data
-          this.total = response3.total
+          //this.total = response3.total
           this.listLoading = false
           for(var i = 0; i < data.length; i++) {
               if(data[i].metadata.name == this.nodeName) {
@@ -132,12 +128,9 @@ export default {
               }
             }
             this.list = data
-            console.log(data)
-            
-        })
+            //console.log(data)
     })
     })
-
   },
   mounted() {
     
@@ -153,11 +146,6 @@ export default {
     },
     getList() {
       this.listLoading = true
-      // getListAllData(this.listQuery).then(response => {
-      //   this.list = response.data
-      //   this.total = response.total
-      //   this.listLoading = false
-      // })
     },
     handleFilter() {
       this.listQuery.pageNum = 1

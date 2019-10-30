@@ -1077,7 +1077,7 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1572093814683&to='+new Date().getTime()
+        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1572393814683&to='+new Date().getTime()
       }
     }
   },
@@ -1489,6 +1489,16 @@ export default [
           data: scheduleA
     }
   }
+},
+{
+  url: '/getSingleMonitorInfo',
+    type: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        data: scheduleA
+  }
+}
 },
 {
   url: '/getPriorityData',

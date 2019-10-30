@@ -12,12 +12,6 @@ const sysConfigRouter = {
     icon: 'chart',
   },
   children: [
-    // {
-    //   path: 'grafana',
-    //   component: () => import('@/views/charts/grafana'),
-    //   name: 'GrafanaChart',
-    //   meta: { title: 'Grafana Chart', noCache: true }
-    // },
     {
         path: 'priority',
         component: () => import('@/views/sysConfig/priority'),

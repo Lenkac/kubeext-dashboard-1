@@ -267,7 +267,7 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'vms',
+      viewer: 'VirtualMachine',
       value: '',
       ip: '',
       dialogTableVisible: false,
@@ -289,15 +289,12 @@ export default {
   created() {
     this.ip = getIp(this.viewer,this.name)
 
-    getColumns(this.viewer,'columns').then(response => {
+    getColumns(this.viewer).then(response => {
       this.columns = response.data
-      getListQuery(this.viewer,this.ip).then(response2 => {
-        console.log(response2)
-        this.listQuery = response2
-        this.listLoading = true
-        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
+      
+        getListAllData({viewerName: this.viewer}).then(response3 => {
           this.listTemp = response3.data
-          this.total = response3.total
+          //this.total = response3.total
           this.listLoading = false
           console.log(this.listTemp)
           getVMActions({viewer: this.viewer}).then(response => {
@@ -310,7 +307,6 @@ export default {
           this.list[i].actions = this.actions
           this.list[i].val = ""        
       }
-    })
         })
     })
 
@@ -384,11 +380,6 @@ export default {
 
     getList() {
       this.listLoading = true
-      // getListAllData(this.listQuery).then(response => {
-      //   this.list = response.data
-      //   this.total = response.total
-      //   this.listLoading = false
-      // })
     },
     handleFilter() {
       this.listQuery.pageNum = 1

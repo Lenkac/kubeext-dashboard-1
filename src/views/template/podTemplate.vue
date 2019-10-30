@@ -58,7 +58,7 @@ export default {
       // tasks:[{"key":1,"name":"创建pod"},{"key":2,"name":"创建deployment"}],
       viewerName: "containers",
       json:{},
-      kind: ""
+      kind: "Pod"
 
     }
   },
@@ -73,7 +73,7 @@ export default {
   },
   created() {
     this.ip = getIp(this.viewerName,this.name)
-    getJsonData({viewerName: "templates"}).then(response => {
+    getJsonData({kind: this.kind ,operator: 'query'}).then(response => {
       this.value = response.data;
       console.log(this.value)
     })
@@ -90,7 +90,7 @@ export default {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
       var res = this.toRawJson(this.json);
-      saveContianerConfig({viewerName:"templates",json: res, kind:this.kind}).then(response => {
+      saveContianerConfig({operator:"update",json: JSON.parse(res), kind:this.kind}).then(response => {
       console.log(response.code)
       })
     },
