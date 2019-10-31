@@ -77,7 +77,7 @@ import Timeline from './components/Timeline'
 import Account from './components/Account'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp } from '@/api/commonData'
 
 export default {
   name: 'containerInfo',

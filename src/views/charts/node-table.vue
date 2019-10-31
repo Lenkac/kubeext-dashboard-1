@@ -45,74 +45,13 @@
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
-          <!-- <router-link :to="{path:'/'}" tag="a">
-            <span>
-              
-            </span>
-          </router-link> -->
         </template>
       </el-table-column>
-      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row['id'] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Title" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
-        <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Imp" width="80px">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column> -->
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
             {{ item.name }}
           </el-button>
-          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
-            Delete
-          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -152,25 +91,13 @@
 </template>
 
 <script>
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp } from '@/api/commonData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
 import Bus from '@/utils/Bus'
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
 
 export default {
   name: 'nodeTable',
@@ -202,7 +129,6 @@ export default {
       list: null,
       listLoading: true,
       importanceOptions: [1, 2, 3],
-      calendarTypeOptions,
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       dialogFormVisible: false,

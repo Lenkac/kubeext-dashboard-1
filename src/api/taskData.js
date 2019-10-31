@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {getListURL, getMetaDataURL,getMonitorInfoURL} from '@/utils/url-setter'
+import {getListURL, getMetaDataURL} from '@/utils/url-setter'
 
 export function getIp(viewerName,userName){
   console.log(userName)
@@ -51,14 +51,6 @@ export function getLittleDataSource(query) {
   return res
 }
 
-export function getListQuery(query) {
-  var res = request({
-    url: '/list/getQueryParameter',
-    method: 'get',
-    params: query
-  })
-  return res
-}
 
 export function getRules(query) {
   var res = request({
@@ -81,16 +73,6 @@ export function getTemp(query) {
 export function getGrafanaLink(query) {
   var res = request({
     url: '/getGrafanaLink',
-    method: 'get',
-    params: query
-  })
-  return res
-}
-
-export function getMonitorInfo(query) {
-  var res = request({
-    //url: getMonitorInfoURL(),
-    url: '/getSingleMonitorInfo',
     method: 'get',
     params: query
   })

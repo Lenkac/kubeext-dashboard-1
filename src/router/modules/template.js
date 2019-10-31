@@ -28,7 +28,7 @@ const templateRouter = {
         path: 'VMTemplate',
         component: () => import('@/views/template/VMTemplate'),
         name: 'VMTemplate',
-        meta: { title: 'vm生命周期' }
+        meta: { title: '虚拟机生命周期' }
       }
   ]
 }

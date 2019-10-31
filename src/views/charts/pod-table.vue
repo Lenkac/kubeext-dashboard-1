@@ -1,125 +1,26 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <span v-for="ff in filterForm" :key="ff.key">
-        <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop) " 
-　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter"/>
-        <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
-          @change="updateInputValue(listQuery,ff.prop,$event.target.value)"
-         :placeholder="ff.ph" :style="ff.style" class="filter-item">
-          <option v-for="item in littleDataSource[ff.dataSource]" 
-          :key="item.key" :label="item.label" :value="item.value" />
-        </select>
-      </span>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        查找
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        导出excel
-      </el-button>
-      <el-button  type="primary" class="filter-item" @click.native="createJson">
-        创建pod
+    <div class="filter-container" >
+      <el-button  style="float:right" type="primary" class="filter-item" @click.native="createJson">
+        {{this.createResource}}
       </el-button>
     <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
         删除最后一个菜单
     </el-button> -->
     </div>
+    <div class="tab-container">
+    <el-tag>mounted times ：{{ createdTimes }}</el-tag>
+    <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
+    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card" @tab-click="handleClick">
+      <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
+        <keep-alive>
+          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key"/>
+        </keep-alive>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
-        <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/containerInfo',query:{pod:getInputValue(scope.row,item.row),node:scope.row.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
-            {{ getInputValue(scope.row,item.row) }}
-          </router-link>
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
-         <!-- <router-link :to="{path:'/'}" tag="a">
-            <span>
-              
-            </span>
-          </router-link> -->
-        </template>
-      </el-table-column>
-      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row['id'] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Title" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
-        <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Imp" width="80px">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column> -->
-      <el-table-column label="远程连接" align="center" width="130" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">        
-            <svg-icon @click="openUrl(row)" icon-class="pc"  class-name='custom-class' />          
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="showDialog(row)">
-            {{ item.name }}
-          </el-button>
-          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
-            Delete
-          </el-button> -->
-        </template>
-      </el-table-column>
-    </el-table>
+    
 
     <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
@@ -187,7 +88,7 @@
 </template>
 
 <script>
-import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
+import { getJsonData, getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getRules, getTemp, createSthFromTemplate} from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -196,10 +97,11 @@ import elDragDialog from '@/directive/el-drag-dialog'
 import JsonEditor from '@/components/JsonEditor'
 import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
 import Bus from '@/utils/Bus'
+import tabPane from './TabPane'
 
 export default {
   name: 'podTable',
-  components: { Pagination, JsonEditor },
+  components: { Pagination, JsonEditor, tabPane},
   directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
@@ -259,53 +161,45 @@ export default {
         { value: '最小费用最大流模型', label: '最小费用最大流模型' }
       ],
       createPodJson: {},
-      kind: "Pod"
+      createResource: "创建容器资源",
+      catalog_kind: "Catalog",
+      catalog_operator: "container",
+      tabMapOptions: [
+        
+      ],
+      activeName: '',
+      kind: '',
+      createdTimes: 0
     }
   },
   mounted() {
    
   },
   created() {
-    this.ip = getIp(this.viewer,this.name)
-
-    getColumns(this.viewer).then(response => {
-      this.columns = response.data    
-        getListAllData({viewerName: this.viewer}).then(response3 => {
-          this.list = response3.data
-          console.log(this.list)
-          //this.total = response3.total
-          this.listLoading = false
-        })
+    getJsonData({kind: this.catalog_kind ,operator: this.catalog_operator}).then(response => {
+      this.tabMapOptions = response.data.tabMapOptions;
+      this.activeName = response.data.activeName     
     })
 
-    getTemp({viewer: this.viewer}).then(response => {
-      this.temp = response.data
-    })
-    getLittleDataSource({viewer: this.viewer}).then(response => {
-      this.littleDataSource = response.data
-    })
-    getRules({viewer: this.viewer}).then(response => {
-      this.rules = response.data
-    })
-    getFilterForm({viewer: this.viewer}).then(response => {
-      this.filterForm = response.data
-    })
-    getPodActions({viewer: this.viewer}).then(response => {
-      this.actions = response.data
-    })
-    getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-      this.value = response.data
-      for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == "Pod") {
-           this.createPodJson = this.value[i].json
-           this.kind = "Pod"
-           console.log(this.createPodJson)
-           //this.containerVariables = this.value[i].createVariables
-        }
-      }
-    })
+    
+    // getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+    //   this.value = response.data
+    //   for(var i = 0; i < this.value.length; i++) {
+    //     if(this.value[i].action == "Pod") {
+    //        this.createPodJson = this.value[i].json
+    //        this.kind = "Pod"
+    //        //console.log(this.createPodJson)
+    //        //this.containerVariables = this.value[i].createVariables
+    //     }
+    //   }
+    // })
   },
   methods: {
+    handleClick(tab, event) {
+        console.log(tab.name, event);
+        this.kind = tab.name
+        console.log(this.kind)
+      },
     showDialog(row) {
       this.dialogTableVisible = true
       var podName = row.metadata.name
@@ -341,7 +235,7 @@ export default {
       this.$refs.select.blur()
     },
     openUrl(row) {
-      console.log(row)
+      //console.log(row)
       var podName = row.metadata.name
       var host = this.ip
       var namespace = row.metadata.namespace
@@ -397,7 +291,7 @@ export default {
       })
     },
     handleUpdate(row, event) {
-      console.log(row)
+    
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)

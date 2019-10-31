@@ -7,17 +7,6 @@ export function getIp(viewerName,userName){
   //return "39.96.4.11"
 }
 
-export function getListQuery(viewerName,ip) {
-  var res = request({
-    url: getParameterURL(),
-    method: 'get',
-    params:{
-      "viewerName": viewerName,
-      "ip": ip
-    }
-  })
-  return res
-}
 
 export function getListAllData(data) {
   return request({
@@ -39,6 +28,7 @@ export function getColumns(viewerName) {
   })
   return res
 }
+
 
 export function getActions(query) {
   var res = request({
@@ -77,7 +67,7 @@ export function getJsonData(query) {
   return res
 }
 
-export function saveContianerConfig(data) {
+export function updateJsonData(data) {
   var res = request({
     // url: '/list/getJsonData',
     url: updateJsonDataURL(),

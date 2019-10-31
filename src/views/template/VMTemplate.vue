@@ -1,29 +1,31 @@
 <template>
   <div class="components-container">
     <el-row :gutter="20" style="margin:30px;">
-      <el-col :span="7" v-for="(item,index) in value" :key="item.action" style="margin-bottom:30px">
-        <el-card class="box-card">
+      <el-col :span="7" v-for="(item,index) in value" :key="item.name" style="margin-bottom:30px">
+        <el-card class="box-card" :style="height" >
           <div slot="header" class="clearfix">
             <span>
-              <p style="display:inline;font-size:18px;"> <strong>{{ item.action }}</strong></p>
+              <p style="display:inline;font-size:18px;"> <strong>{{ value[index].name }}</strong></p>
             </span>
           </div>
-          <p style="font-size:12px;">配置项用于设置{{item.action}}</p>
-          <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA(index)">编辑配置</el-button>
+          <p style="font-size:12px;">{{item.desc}}</p>
+          <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA(index)">查看/修改</el-button>
         </el-card>
       </el-col>
     </el-row>
     
-    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="配置" @dragDialog="handleDrag">
-      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
-      <div class="card-editor-container">
-        <!-- <json-editor ref="EditableJson" v-model="value" /> -->
-        <EditableJson v-model="json" />
-      </div>
-    </el-dialog>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" :title="this.title"  @dragDialog="handleDrag">
+          
+            <div class="card-editor-container">
+              <!-- <json-editor ref="EditableJson" v-model="value" /> -->
+            <EditableJson v-model="json" />
+            </div>
+            <div style="width:100%;height:50px;">
+          <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;" @click.native="clickB">确认</el-button>
+          <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
+
+          </div>
+        </el-dialog>
   </div>
 </template>
 
@@ -31,35 +33,29 @@
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 // import Kanban from '@/components/Kanban'
 import EditableJson from '@/components/EditableJson'
-import {getIp,getJsonData,saveContianerConfig } from '@/api/commonData'
+import {getJsonData, updateJsonData} from '@/api/commonData'
 
-
-const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
 export default {
   name: 'Template',
   directives: { elDragDialog },
   components: {
-    // Kanban,
     EditableJson
   },
   data() {
     return {
       schedulingType: '未选择',
-      group: 'mission',
-      list1: [],
-      list2: [],
-      list3: [],
       dialogTableVisible: false,
       options: [
         { value: '', label: '' }
       ],
       modelType: '',
       value: [],
-      tasks:[{"key":1,"name":"创建pod"},{"key":2,"name":"创建deployment"}],
       json:{},
-      kind: "VirtualMachine"
-
+      kind: "VirtualMachine",
+      lifecycle_kind: "lifecycle",
+      lifecycle_operator: "virtualmachine",
+      height:"height: 250px"
     }
   },
   
@@ -72,8 +68,7 @@ export default {
     })
   },
   created() {
-    this.ip = getIp(this.viewerName,this.name)
-    getJsonData({kind: this.kind ,operator: 'query'}).then(response => {
+    getJsonData({kind: this.lifecycle_kind ,operator: this.lifecycle_operator}).then(response => {
       this.value = response.data;
       console.log(this.value)
     })
@@ -83,17 +78,18 @@ export default {
   methods: {
     clickA(index) {
       this.dialogTableVisible = true
-      this.json = this.value[index].json
-      this.kind = this.value[index].action
+      this.json = JSON.parse(this.value[index].json)
+      this.title = this.value[index].name
     },
     clickB() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
       var res = this.toRawJson(this.json);
-      saveContianerConfig({viewerName:"vmTemplates",json: res, kind:this.kind}).then(response => {
-      //console.log(response.code)
-     })
+      updateJsonData({operator:"update",json: JSON.parse(res), kind:this.kind}).then(response => {
+      console.log(response.code)
+      })
     },
+    // v-el-drag-dialog onDrag callback function
     handleDrag() {
       this.$refs.select.blur()
     },
@@ -101,9 +97,7 @@ export default {
       var str = JSON.stringify(val)
       str = str.replace(/ +/g,"")
       str = str.replace(/\\n/g,"")
-      if(str[0] == "\"") {
-        str = str.substring(1,str.length-1)
-      }     
+      str = str.substring(1,str.length-1)
       str = str.replace(/\\/g,"")
       return str;
     }

@@ -1,4 +1,4 @@
-export const urlPrefix = 'http://133.133.133.111:32000/kubesys/v1/'
+export const urlPrefix = 'http://133.133.133.125:32000/kubesys/v1/'
 
 export function getListURL() {
   return urlPrefix+'kube/query'

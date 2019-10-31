@@ -208,7 +208,7 @@
 </template>
 
 <script>
-import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp, getJsonData,createSthFromTemplate,deleteSthFromTemplate } from '@/api/commonData'
+import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp, getJsonData,createSthFromTemplate,deleteSthFromTemplate } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination

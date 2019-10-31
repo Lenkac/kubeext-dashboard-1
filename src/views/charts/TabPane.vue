@@ -24,16 +24,16 @@
       </el-table-column>
       <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click.native="showDialog(row)">
-            {{ item.name }}
-          </el-button>
+         <el-select v-model="action" @change="(handleUpdate($event, row.json))">
+             <el-option v-for="item in actions" :key="item.key" :label="item.key" :value="item.key" @click="popJson"/>
+        </el-select>
         </template>
       </el-table-column>
     </el-table>    
     </template>
 
 <script>
-import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
+import { getListAllData, getColumns, getFilterForm, getLittleDataSource, getRules, getTemp,getJsonData , createSthFromTemplate} from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -53,6 +53,12 @@ export default {
       'avatar',
       'roles'
     ])
+  },
+  props: {
+    tabName: {
+      type: String,
+      default: ''
+    }
   },
   filters: {
     statusFilter(status) {
@@ -108,33 +114,31 @@ export default {
       createResource: "创建容器资源",
       catalog_kind: "Catalog",
       catalog_operator: "container",
+      action_kind: "Action",
+      action_operator: "container",
       tabMapOptions: [
         
       ],
       activeName: '',
-      createdTimes: 0
+      action: ''
     }
   },
   mounted() {
    
   },
   created() {
-    getJsonData({kind: this.catalog_kind ,operator: this.catalog_operator}).then(response => {
-      this.tabMapOptions = response.data.tabMapOptions;
-      this.activeName = response.data.activeName
-      
-    })
-    
-
-    getColumns(this.activeName).then(response => {
+    console.log(this.tabName)
+      getColumns(this.tabName).then(response => {
       this.columns = response.data    
-        getListAllData({viewerName: this.activeName}).then(response3 => {
+        getListAllData({viewerName: this.tabName}).then(response3 => {
           this.list = response3.data
           
           //this.total = response3.total
           this.listLoading = false
         })
     })
+    
+    
 
     getTemp({viewer: this.viewer}).then(response => {
       this.temp = response.data
@@ -148,18 +152,9 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getPodActions({viewer: this.viewer}).then(response => {
+    getJsonData({kind: this.action_kind ,operator: this.action_operator}).then(response => {
       this.actions = response.data
-    })
-    getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-      this.value = response.data
-      for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == "Pod") {
-           this.createPodJson = this.value[i].json
-           this.kind = "Pod"
-           //this.containerVariables = this.value[i].createVariables
-        }
-      }
+      this.action = response.data[0].key
     })
   },
   methods: {
@@ -254,7 +249,6 @@ export default {
       })
     },
     handleUpdate(row, event) {
-      console.log(row)
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)

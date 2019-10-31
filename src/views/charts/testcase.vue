@@ -55,7 +55,7 @@
 
 <script>
 import { getEchartsData,getPriorityData} from '@/api/taskData'
-import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getListQuery, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
+import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'

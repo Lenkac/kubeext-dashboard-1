@@ -170,7 +170,7 @@ export default {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
       var res = this.toRawJson(this.json);
-      saveContianerConfig({viewerName:"templates",json: res, kind:this.kind}).then(response => {
+      updateJsonData({operator:"update",json: JSON.parse(res), kind:this.kind}).then(response => {
       console.log(response.code)
       })
     },
