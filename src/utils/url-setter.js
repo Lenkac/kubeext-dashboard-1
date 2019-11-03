@@ -48,5 +48,10 @@ export function createJsonDataURL() {
   return urlPrefix+'res/create'
 }
 
+export function queryOperationURL() {
+  return urlPrefix+'exec/query'
+}
+
+
 
 

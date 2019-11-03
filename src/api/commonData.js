@@ -1,12 +1,5 @@
 import request from '@/utils/request'
-import {getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getDeleteSthURL} from '@/utils/url-setter'
-
-export function getIp(viewerName,userName){
-  console.log(userName)
-  return "133.133.135.35"
-  //return "39.96.4.11"
-}
-
+import {queryOperationURL, getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getUpdateSthURL,getDeleteSthURL} from '@/utils/url-setter'
 
 export function getListAllData(data) {
   return request({
@@ -39,14 +32,6 @@ export function getActions(query) {
   return res
 }
 
-export function getPodActions(query) {
-  var res = request({
-    url: '/list/getPodActions',
-    method: 'get',
-    params: query
-  })
-  return res
-}
 
 export function getVMActions(query) {
   var res = request({
@@ -81,6 +66,36 @@ export function createSthFromTemplate(data) {
   var res = request({
     // url: '/list/getJsonData',
     url: getCreateSthURL(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function updateSthFromTemplate(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getUpdateSthURL(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function deletSthFromTemplate(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getDeleteSthURL(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function queryOperation(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: queryOperationURL(),
     method: 'post',
     data
   })

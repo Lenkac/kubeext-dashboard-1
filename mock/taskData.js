@@ -962,22 +962,6 @@ export default [
   },
   {
     //每列最后的操作按钮，一般是删除和编辑
-    url: '/list/getPodActions',
-    type: 'get',
-    response: config => {
-      return {
-        code: 20000,
-        page: 1,
-        count: 10,
-        total: 100,
-        data: [
-          { key: 1, name: '编辑pod', event: 'update', type: 'primary' }
-        ]
-      }
-    }
-  },
-  {
-    //每列最后的操作按钮，一般是删除和编辑
     url: '/list/getVMActions',
     type: 'get',
     response: config => {
@@ -1077,7 +1061,7 @@ export default [
     response: config => {
       return {
         code: 20000,
-        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1572393814683&to='+new Date().getTime()
+        data: 'http://133.133.135.35:31000/d/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&from=1572593814683&to='+new Date().getTime()
       }
     }
   },

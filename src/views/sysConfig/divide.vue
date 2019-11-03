@@ -30,11 +30,9 @@
 
 <script>
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
-// import Kanban from '@/components/Kanban'
 import EditableJson from '@/components/EditableJson'
 import {getIp,getJsonData,saveContianerConfig,getListAllData } from '@/api/commonData'
 import { getPriorityData} from '@/api/taskData'
-//import { getListAllData, getIp } from '@/api/commonData'
 
 
 

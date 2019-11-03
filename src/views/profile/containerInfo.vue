@@ -77,7 +77,7 @@ import Timeline from './components/Timeline'
 import Account from './components/Account'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp } from '@/api/commonData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
 
 export default {
   name: 'containerInfo',
@@ -99,7 +99,8 @@ export default {
       listLoading:'',
       columns:'',
       ip:'',
-      value: {}
+      value: {},
+      tabName: ''
     }
   },
   computed: {
@@ -114,24 +115,21 @@ export default {
     this.key = this.$route.query.taskid
     this.podName = this.$route.query.pod;
     this.node = this.$route.query.node;
-    this.ip = getIp('pods',this.name)
+    this.tabName = this.$route.query.tabName;
 
     this.monitor_rs = getMonitorInfo(this.viewerName, this.podName)
       
-    getColumns(this.viewerName).then(response => {
+    getColumns(this.tabName).then(response => {
       this.columns = response.data
-        getListAllData({viewerName: this.viewerName}).then(response3 => {
+        getListAllData({viewerName: this.tabName}).then(response3 => {
           var data = response3.data
           //this.total = response3.total
           this.listLoading = false
           for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name != this.podName) {
-                delete data[i]
+              if(data[i].metadata.name == this.podName) {
+                this.value = data[i]
               }
-            }
-            this.list = data
-            this.value = this.list[0]
-            console.log(this.list)
+            }           
         })
     })
 

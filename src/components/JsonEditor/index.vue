@@ -20,7 +20,7 @@ export default {
   props: ['value'],
   data() {
     return {
-      jsonEditor: false
+      jsonEditor: false,
     }
   },
   watch: {
@@ -41,7 +41,7 @@ export default {
     })
 
     this.jsonEditor.setValue(JSON.stringify(this.value, null, 2))
-    this.jsonEditor.setOption("readOnly", true);
+    this.jsonEditor.setOption("readOnly", false);
     this.jsonEditor.on('change', cm => {
       this.$emit('changed', cm.getValue())
       this.$emit('input', cm.getValue())

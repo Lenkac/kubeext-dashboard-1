@@ -33,7 +33,7 @@
     </template>
 
 <script>
-import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
+import { getListAllData, getColumns, getFilterForm, getLittleDataSource, getRules, getTemp, getJsonData , createSthFromTemplate} from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -148,9 +148,7 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getPodActions({viewer: this.viewer}).then(response => {
-      this.actions = response.data
-    })
+    
     getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
       this.value = response.data
       for(var i = 0; i < this.value.length; i++) {

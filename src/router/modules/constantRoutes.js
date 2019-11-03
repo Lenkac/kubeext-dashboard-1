@@ -81,9 +81,8 @@ const constantRoutes = [
         }
       ]
     },
-    workloadsRouter,
     chartsRouter,
-    templateRouter
+    workloadsRouter, 
   ]
 
   export default constantRoutes

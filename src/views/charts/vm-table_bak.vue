@@ -21,9 +21,9 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出excel
       </el-button>
-       <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
-        删除最后一个菜单
-    </el-button> -->
+      <el-button  type="primary" class="filter-item" @click.native="create">
+        创建VM
+      </el-button>
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         reviewer
       </el-checkbox> -->
@@ -41,24 +41,93 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile',query:{node:getInputValue(scope.row,item.row)}}"  v-if="item.kind == 'a'" tag="a" class="link" @click="getData">
-            {{ getInputValue(scope.row,item.row) }}
+          <router-link :to="{path:'/profile/vmInfo',query:{vm:getInputValue(scope.row.json,item.row), node:scope.row.json.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
+            {{ getInputValue(scope.row.json,item.row) }}
           </router-link>
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
+          <span v-if="item.kind == undefined">{{ getInputValue(scope.row.json,item.row) }}</span>
+          <!-- <router-link :to="{path:'/'}" tag="a">
+            <span>
+              
+            </span>
+          </router-link> -->
         </template>
       </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row['id'] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Date" width="150px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Title" min-width="150px">
         <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
+          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
+          <el-tag>{{ row.type | typeFilter }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="Author" width="110px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.author }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+        <template slot-scope="scope">
+          <span style="color:red;">{{ scope.row.reviewer }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Imp" width="80px">
+        <template slot-scope="scope">
+          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
+        </template>
+      </el-table-column>
+      <el-table-column label="Readings" align="center" width="95">
+        <template slot-scope="{row}">
+          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
+          <span v-else>0</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Status" class-name="status-col" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status }}
+          </el-tag>
+        </template>
+      </el-table-column> -->
+       <el-table-column label="远程连接" align="center" width="130" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">        
+            <svg-icon @click="openUrl(row)" icon-class="pc"  class-name='custom-class' />          
+        </template>
+      </el-table-column>
+      <el-table-column label="Actions" align="center" width="350" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <!-- <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
             {{ item.name }}
+          </el-button> -->
+          <el-select v-model="row.val" @change="(handleUpdate($event, row.json))">
+             <el-option v-for="item in actions" :key="item.key" :label="item.label" :value="item.value" @click="popJson"/>
+        </el-select>
+          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            Edit
           </el-button>
+          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+            Publish
+          </el-button>
+          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+            Draft
+          </el-button>
+          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
+            Delete
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <!-- <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item v-for="efi in columns" :key="efi.key" :label="efi.label" :prop="efi.row" :style='efi.itemStyle'>
           <el-input v-if="efi.type == 'input'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
@@ -76,33 +145,55 @@
           确认
         </el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="创建VM" @dragDialog="handleDrag">
+      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+      <div class="card-editor-container">
+        <json-editor ref="jsonEditor" v-model="createVMJson" />
+        <br>
+        <span>变量</span>
+        <el-table
+      :data="vmVariables"
+      v-loading="listLoading"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+      <el-table-column  label="key"  align="center">
+        <template slot-scope="scope">
+          <span>{{scope}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  label="value"  align="center">
+        <template>
+          <el-input></el-input>
+        </template>
+      </el-table-column>
+        </el-table>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
+import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getRules, getTemp, getJsonData,createSthFromTemplate,deleteSthFromTemplate } from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
-import Bus from '@/utils/Bus'
-
+import elDragDialog from '@/directive/el-drag-dialog'
+import JsonEditor from '@/components/JsonEditor'
 
 export default {
-  name: 'nodeTable',
-  components: { Pagination },
-  directives: { waves },
+  name: 'vmTable',
+  components: { Pagination, JsonEditor },
+  directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
       'name',
@@ -126,7 +217,7 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       listLoading: true,
       importanceOptions: [1, 2, 3],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -150,9 +241,20 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'Node',
-      value: "",
-      ip: ""
+      viewer: 'VirtualMachine',
+      value: '',
+      ip: '',
+      dialogTableVisible: false,
+      modelType: '',
+      options: [
+        { value: '队列模型', label: '队列模型' },
+        { value: '最小费用最大流模型', label: '最小费用最大流模型' }
+      ],
+      vmVariables: ["hh","kk"],
+      vncIp: '133.133.135.35',
+      createVMJson:{},
+      vm: "",
+      listTemp: [],
     }
   },
   mounted() {
@@ -161,11 +263,23 @@ export default {
   created() {
     getColumns(this.viewer).then(response => {
       this.columns = response.data
+      
         getListAllData({viewerName: this.viewer}).then(response3 => {
-          this.list = response3.data
+          this.listTemp = response3.data
           //this.total = response3.total
           this.listLoading = false
+          console.log(this.listTemp)
+          getVMActions({viewer: this.viewer}).then(response => {
+      this.actions = response.data
+      for(var i = 0; i < this.listTemp.length; i++) {
+          this.list.push({});
+          this.list[i].json = this.listTemp[i]
+          this.list[i].actions = this.actions
+          this.list[i].val = ""        
+      }
         })
+    })
+
     })
 
     getTemp({viewer: this.viewer}).then(response => {
@@ -180,21 +294,59 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getActions({viewer: this.viewer}).then(response => {
-      this.actions = response.data
-    })
-
+    
+    getJsonData({viewerName: "vmTemplates"}).then(response => {
+      this.value = response.data
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "createAndStartVMFromISO") {
+           this.createVMJson = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+        }
+      }
+    })    
   },
   methods: {
-    deleteMenu(){
-      // console.log(constantRoutes[9])
-      // constantRoutes.splice(9,1)
-      Bus.$emit('deleteMenuTest')
+    popJson() {
+      this.dialogTableVisible = true
+
     },
-    getData() {
-        Bus.$emit('val', this.list)
-        console.log("hhhh"+this.list)
-      },
+    openUrl(row) {
+      console.log(row)
+      var vmName = row.json.metadata.name
+      var host = this.vncIp
+      window.open("http://"+host+":6080/vnc.html?path=websockify/?token="+vmName)
+    },
+    create() {
+      this.dialogTableVisible = true
+      getJsonData({viewerName: "vmTemplates"}).then(response => {
+      this.value = response.data
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == "createAndStartVMFromISO") {
+           this.createVMJson = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+        }
+      }
+    })   
+    },
+    clickB() {
+      this.dialogTableVisible = false
+      this.schedulingType = this.modelType
+      var str = this.toRawJson(this.createVMJson)
+      createSthFromTemplate({ip: this.ip, json: str, kind:"VirtualMachine"})
+    },
+    toRawJson(val){
+      var str = JSON.stringify(val)
+      str = str.replace(/ +/g,"")
+      str = str.replace(/\\n/g,"")
+      if(str[0] == "\"") {
+        str = str.substring(1,str.length-1)
+      }     
+      str = str.replace(/\\/g,"")
+      return str;
+    },
+     handleDrag() {
+      this.$refs.select.blur()
+    },
 
     getList() {
       this.listLoading = true
@@ -245,7 +397,19 @@ export default {
         }
       })
     },
-    handleUpdate(row, event) {
+    handleUpdate(event, row) {
+      console.log("event"+event);
+      console.log(row)
+      this.dialogTableVisible = true
+      var deleteJson;
+      for(var i = 0; i < this.value.length; i++) {
+        if(this.value[i].action == event) {
+           this.createVMJson = this.value[i].json
+           this.vmVariables = this.value[i].createVariables
+           this.createVMJson.metadata.name = row.metadata.name
+          //var str = this.toRawJson(this.createVMJson)
+          //createSthFromTemplate({ip: this.ip, json: str, kind:row.kind})
+        }
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)
@@ -256,7 +420,12 @@ export default {
         })
       }
       if (event === 'delete') {
+        
         this.handleDelete(row)
+        //console.log(row)
+        
+      }
+        
       }
     },
     updateData() {
@@ -344,12 +513,7 @@ export default {
           res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
         }
         else{
-          if(res.hasOwnProperty(element)){
-            res = res[element]
-          }else [
-            res = "unknown"
-          ]
-
+          res = res[element]
         }
       });
       //console.log(res)
@@ -369,7 +533,12 @@ export default {
           obj = obj[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
         }
         else{
-          obj = obj[element]
+          if(res.hasOwnProperty(element)){
+            res = res[element]
+          }else [
+            res = "unknown"
+          ]
+
         }
       }
       obj[keys[keys.length-1]] = event

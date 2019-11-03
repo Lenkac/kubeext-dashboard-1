@@ -9,7 +9,7 @@
             </span>
           </div>
           <p style="font-size:12px;">此处配置项用于设置Kubernetes scheduler使用的具体模型，当前支持队列和MCMF两种调度模型</p>
-          <el-button type="primary" style="float:right;margin:20px;" @click.native="clickA">模型选择</el-button>
+          <el-button type="primary" style="float:right;margin:20px;" @click.native="showDialog">模型选择</el-button>
         </el-card>
       </el-col>
     </el-row>
@@ -29,7 +29,7 @@
       <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
-      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="updateTemplate">确认配置</el-button>
       <div class="card-editor-container">
         <json-editor ref="jsonEditor" v-model="value" />
       </div>
@@ -109,10 +109,10 @@ export default {
     })
   },
   methods: {
-    clickA() {
+    showDialog() {
       this.dialogTableVisible = true
     },
-    clickB() {
+    updateTemplate() {
       this.dialogTableVisible = false
       this.schedulingType = this.modelType
     },

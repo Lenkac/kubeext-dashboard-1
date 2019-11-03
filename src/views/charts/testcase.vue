@@ -55,7 +55,7 @@
 
 <script>
 import { getEchartsData,getPriorityData} from '@/api/taskData'
-import { getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp,getJsonData , createSthFromTemplate} from '@/api/commonData'
+import { getListAllData, getColumns, getFilterForm, getLittleDataSource, getRules, getTemp,getJsonData , createSthFromTemplate} from '@/api/commonData'
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
@@ -247,8 +247,7 @@ export default {
       })
    
   },
-  created() {
-    this.ip = getIp(this.viewer,this.name) 
+  created() { 
     getPriorityData().then(response => {
       this.createPodJson = response.data
     })   

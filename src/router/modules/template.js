@@ -8,8 +8,9 @@ const templateRouter = {
   redirect: 'noRedirect',
   name: 'Template',
   meta: {
-    title: '配置管理',
+    title: '系统配置',
     icon: 'chart',
+    roles: ['admin']
   },
   children: [
     // {
@@ -20,15 +21,21 @@ const templateRouter = {
     // },
     {
         path: 'podTemplate',
-        component: () => import('@/views/template/podTemplate'),
+        component: () => import('@/views/echarts/schedule'),
         name: 'podTemplate',
-        meta: { title: '容器生命周期' }
+        meta: { title: '调度策略' }
       },
       {
         path: 'VMTemplate',
-        component: () => import('@/views/template/VMTemplate'),
+        component: () => import('@/views/sysConfig/lifecycle'),
         name: 'VMTemplate',
-        meta: { title: '虚拟机生命周期' }
+        meta: { title: '生命周期' }
+      },
+      {
+        path: 'testcase',
+        component: () => import('@/views/charts/testcase'),
+        name: 'VMTemplate',
+        meta: { title: '测试用例' }
       }
   ]
 }

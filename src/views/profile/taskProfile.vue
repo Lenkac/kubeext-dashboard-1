@@ -75,7 +75,7 @@ import Timeline from './components/Timeline'
 import Account from './components/Account'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp } from '@/api/commonData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
 
 
 export default {
@@ -112,7 +112,6 @@ export default {
     this.getUser()
     this.key = this.$route.query.taskid
     this.nodeName = this.$route.query.node;
-    this.ip = getIp('pods',this.name)
 
     this.monitor_rs = getMonitorInfo(this.kind, this.nodeName)
     

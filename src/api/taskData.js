@@ -1,11 +1,6 @@
 import request from '@/utils/request'
 import {getListURL, getMetaDataURL} from '@/utils/url-setter'
 
-export function getIp(viewerName,userName){
-  console.log(userName)
-  return "39.96.4.11"
-}
-
 export function getListAllData(listQuery) {
   var res = request({
     url: '/list/getList',

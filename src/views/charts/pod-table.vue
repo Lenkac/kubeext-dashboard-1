@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="filter-container" >
+    <div class="filter-container" style="margin-bottom:50px">
       <el-button  style="float:right" type="primary" class="filter-item" @click.native="createJson">
         {{this.createResource}}
       </el-button>
@@ -9,8 +9,7 @@
     </el-button> -->
     </div>
     <div class="tab-container">
-    <el-tag>mounted times ：{{ createdTimes }}</el-tag>
-    <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" />
+    <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
     <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card" @tab-click="handleClick">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
@@ -19,9 +18,6 @@
       </el-tab-pane>
     </el-tabs>
   </div>
-
-    
-
     <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -53,42 +49,24 @@
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
-    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="创建Pod" @dragDialog="handleDrag">
-      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="create">确认配置</el-button>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" :title="this.createResource" @dragDialog="handleDrag">
       <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="createPodJson" />
-        <br>
-        <span>变量</span>
-        <el-table
-      :data="podVariables"
-      v-loading="listLoading"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column  label="key"  align="center">
-        <template slot-scope="scope">
-          <span>{{scope.row.name}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column  label="value"  align="center">
-        <template>
-          <el-input></el-input>
-        </template>
-      </el-table-column>
-        </el-table>
+        <json-editor ref="jsonEditor" v-model="createRSJson" />
+        <div style="width:100%;height:50px;">
+        <el-button
+          type="primary"
+          style="float:right;margin-top:20px;height:40px;display:inline;"
+          @click.native="create"
+        >确认</el-button>
+        <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
+      </div>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getJsonData, getListAllData, getColumns, getPodActions, getFilterForm, getLittleDataSource, getRules, getTemp, createSthFromTemplate} from '@/api/commonData'
+import { getJsonData, getListAllData, getColumns, getFilterForm, getLittleDataSource, getRules, getTemp, createSthFromTemplate} from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -97,7 +75,7 @@ import elDragDialog from '@/directive/el-drag-dialog'
 import JsonEditor from '@/components/JsonEditor'
 import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
 import Bus from '@/utils/Bus'
-import tabPane from './TabPane'
+import tabPane from './PodTabPane'
 
 export default {
   name: 'podTable',
@@ -128,9 +106,6 @@ export default {
       tableKey: 0,
       list: null,
       listLoading: true,
-      importanceOptions: [1, 2, 3],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
       dialogFormVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
@@ -138,7 +113,6 @@ export default {
       downloadLoading: false,
       columns: [],
       actions: [],
-      podVariables: [{'key':1,'name':'name'},{'key':2,'name':'image'}],
       littleDataSource: {},
       filterForm: [],
       listQuery: {},
@@ -151,16 +125,10 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'Pod',
+      viewer: 'VirtualMachine',
       value: '',
-      ip: "",
       dialogTableVisible: false,
-      modelType: '',
-      options: [
-        { value: '队列模型', label: '队列模型' },
-        { value: '最小费用最大流模型', label: '最小费用最大流模型' }
-      ],
-      createPodJson: {},
+      createRSJson: {},
       createResource: "创建容器资源",
       catalog_kind: "Catalog",
       catalog_operator: "container",
@@ -178,10 +146,9 @@ export default {
   created() {
     getJsonData({kind: this.catalog_kind ,operator: this.catalog_operator}).then(response => {
       this.tabMapOptions = response.data.tabMapOptions;
-      this.activeName = response.data.activeName     
-    })
-
-    
+      this.activeName = response.data.activeName
+      console.log(this.tabMapOptions)     
+    })   
     // getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
     //   this.value = response.data
     //   for(var i = 0; i < this.value.length; i++) {
@@ -202,24 +169,19 @@ export default {
       },
     showDialog(row) {
       this.dialogTableVisible = true
-      var podName = row.metadata.name
-      //var namespace = row.metadata.namespace
-          
+      var podName = row.metadata.name      
     },
     createJson() {
       this.dialogTableVisible = true
-      getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-      this.value = response.data      
-      this.createPodJson = response.data
-      //this.containerVariables = this.value[i].createVariables        
-    })
+    //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+    //   this.value = response.data      
+    //   this.createPodJson = response.data       
+    //})
           
     },
     create() {
       this.dialogTableVisible = false
-      this.schedulingType = this.modelType
-      var str = this.toRawJson(this.createPodJson)
-      createSthFromTemplate({json: JSON.parse(str),kind: this.kind})
+      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind})
     },
     toRawJson(val){
       var str = JSON.stringify(val)
@@ -390,7 +352,12 @@ export default {
           res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
         }
         else{
-          res = res[element]
+          if(res.hasOwnProperty(element)){
+            res = res[element]
+          }else [
+            res = "unknown"
+          ]
+
         }
       });
       //console.log(res)

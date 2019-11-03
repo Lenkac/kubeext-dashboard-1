@@ -162,7 +162,7 @@
 
 <script>
 import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/taskData'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp } from '@/api/taskData'
+import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/taskData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -256,7 +256,6 @@ export default {
     getTemp({viewer: this.viewer}).then(response => {
       this.temp = response.data
     })
-    getIp(this.viewer,this.name)
   },
   created() {
     this.getList()

@@ -13,6 +13,7 @@
 
 <script>
 export default {
+  name: 'SwitchRoles',
   computed: {
     roles() {
       return this.$store.getters.roles
@@ -26,6 +27,11 @@ export default {
           this.$emit('change')
         })
       }
+    },
+  },
+  methods: {
+    getRole() {
+      return roles
     }
   }
 }

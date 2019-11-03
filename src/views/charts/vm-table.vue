@@ -1,130 +1,23 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <span v-for="ff in filterForm" :key="ff.key">
-        <!-- @input="updateJson(listQuery,ff.prop,$event)" -->
-        <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop) " 
-　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter"/>
-        <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
-          @change="updateInputValue(listQuery,ff.prop,$event.target.value)"
-         :placeholder="ff.ph" :style="ff.style" class="filter-item">
-          <option v-for="item in littleDataSource[ff.dataSource]" 
-          :key="item.key" :label="item.label" :value="item.value" />
-        </select>
-      </span>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        查找
+    <div class="filter-container" style="margin-bottom:50px">
+      <el-button  style="float:right" type="primary" class="filter-item" @click.native="createJson">
+        {{this.createResource}}
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        导出excel
-      </el-button>
-      <el-button  type="primary" class="filter-item" @click.native="clickA">
-        创建VM
-      </el-button>
-      <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        reviewer
-      </el-checkbox> -->
+    <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
+        删除最后一个菜单
+    </el-button> -->
     </div>
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
-        <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/vmInfo',query:{vm:getInputValue(scope.row.json,item.row), node:scope.row.json.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
-            {{ getInputValue(scope.row.json,item.row) }}
-          </router-link>
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row.json,item.row) }}</span>
-          <!-- <router-link :to="{path:'/'}" tag="a">
-            <span>
-              
-            </span>
-          </router-link> -->
-        </template>
-      </el-table-column>
-      <!-- <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row['id'] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Title" min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
-        <template slot-scope="scope">
-          <span style="color:red;">{{ scope.row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Imp" width="80px">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column> -->
-       <el-table-column label="远程连接" align="center" width="130" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">        
-            <svg-icon @click="openUrl(row)" icon-class="pc"  class-name='custom-class' />          
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="350" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <!-- <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
-            {{ item.name }}
-          </el-button> -->
-          <el-select v-model="row.val" @change="(handleUpdate($event, row.json))">
-             <el-option v-for="item in actions" :key="item.key" :label="item.label" :value="item.value" @click="popJson"/>
-        </el-select>
-          <!-- <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
-          </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleModifyStatus(row,'deleted')">
-            Delete
-          </el-button> -->
-        </template>
-      </el-table-column>
-    </el-table>
-
+    <div class="tab-container">
+    <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
+    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card" @tab-click="handleClick">
+      <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
+        <keep-alive>
+          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key"/>
+        </keep-alive>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
     <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -136,23 +29,6 @@
           </el-select>
           <el-input v-if="efi.type == undefined" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
         </el-form-item>
-        <!-- <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -173,52 +49,37 @@
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
-    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" title="创建VM" @dragDialog="handleDrag">
-      <el-select ref="select" v-model="modelType" style="margin-top:0px;margin-bottom:20px;" placeholder="请选择调度模型">
-        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-button type="primary" style="float:right;margin-top:0px;height:5%;display:inline;margin-right:20px;margin-bottom:20px;" @click.native="clickB">确认配置</el-button>
+    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" :title="this.createResource" @dragDialog="handleDrag">
       <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="createVMJson" />
-        <br>
-        <span>变量</span>
-        <el-table
-      :data="vmVariables"
-      v-loading="listLoading"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column  label="key"  align="center">
-        <template slot-scope="scope">
-          <span>{{scope}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column  label="value"  align="center">
-        <template>
-          <el-input></el-input>
-        </template>
-      </el-table-column>
-        </el-table>
+        <json-editor ref="jsonEditor" v-model="createRSJson" />
+        <div style="width:100%;height:50px;">
+        <el-button
+          type="primary"
+          style="float:right;margin-top:20px;height:40px;display:inline;"
+          @click.native="create"
+        >确认</el-button>
+        <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
+      </div>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getListAllData, getColumns, getVMActions, getFilterForm, getLittleDataSource, getRules, getTemp, getIp, getJsonData,createSthFromTemplate,deleteSthFromTemplate } from '@/api/commonData'
+import { getJsonData, getListAllData, getColumns, getFilterForm, getLittleDataSource, getRules, getTemp, createSthFromTemplate} from '@/api/commonData'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { mapGetters } from 'vuex'
 import elDragDialog from '@/directive/el-drag-dialog'
 import JsonEditor from '@/components/JsonEditor'
+import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
+import Bus from '@/utils/Bus'
+import tabPane from './VMTabPane'
 
 export default {
   name: 'vmTable',
-  components: { Pagination, JsonEditor },
+  components: { Pagination, JsonEditor, tabPane},
   directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
@@ -243,11 +104,8 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: [],
+      list: null,
       listLoading: true,
-      importanceOptions: [1, 2, 3],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
       dialogFormVisible: false,
       dialogStatus: '',
       dialogPvVisible: false,
@@ -269,100 +127,61 @@ export default {
       },
       viewer: 'VirtualMachine',
       value: '',
-      ip: '',
       dialogTableVisible: false,
-      modelType: '',
-      options: [
-        { value: '队列模型', label: '队列模型' },
-        { value: '最小费用最大流模型', label: '最小费用最大流模型' }
+      createRSJson: {},
+      createResource: "创建虚拟机资源",
+      catalog_kind: "Catalog",
+      catalog_operator: "virtualmachine",
+      tabMapOptions: [
+        
       ],
-      vmVariables: ["hh","kk"],
-      vncIp: '133.133.135.35',
-      createVMJson:{},
-      vm: "",
-      listTemp: [],
+      activeName: '',
+      kind: '',
+      createdTimes: 0
     }
   },
   mounted() {
    
   },
   created() {
-    this.ip = getIp(this.viewer,this.name)
-
-    getColumns(this.viewer).then(response => {
-      this.columns = response.data
-      
-        getListAllData({viewerName: this.viewer}).then(response3 => {
-          this.listTemp = response3.data
-          //this.total = response3.total
-          this.listLoading = false
-          console.log(this.listTemp)
-          getVMActions({viewer: this.viewer}).then(response => {
-            console.log(this.listTemp[0])
-      this.actions = response.data
-      for(var i = 0; i < this.listTemp.length; i++) {
-        console.log(this.listTemp[0])
-        this.list.push({});
-          this.list[i].json = this.listTemp[i]
-          this.list[i].actions = this.actions
-          this.list[i].val = ""        
-      }
-        })
-    })
-
-    })
-
-    getTemp({viewer: this.viewer}).then(response => {
-      this.temp = response.data
-    })
-    getLittleDataSource({viewer: this.viewer}).then(response => {
-      this.littleDataSource = response.data
-    })
-    getRules({viewer: this.viewer}).then(response => {
-      this.rules = response.data
-    })
-    getFilterForm({viewer: this.viewer}).then(response => {
-      this.filterForm = response.data
-    })
-    
-    getJsonData({viewerName: "vmTemplates"}).then(response => {
-      this.value = response.data
-      for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == "createAndStartVMFromISO") {
-           this.createVMJson = this.value[i].json
-           this.vmVariables = this.value[i].createVariables
-        }
-      }
-    })    
+    getJsonData({kind: this.catalog_kind ,operator: this.catalog_operator}).then(response => {
+      this.tabMapOptions = response.data.tabMapOptions;
+      this.activeName = response.data.activeName
+      console.log(this.tabMapOptions)     
+    })   
+    // getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+    //   this.value = response.data
+    //   for(var i = 0; i < this.value.length; i++) {
+    //     if(this.value[i].action == "Pod") {
+    //        this.createPodJson = this.value[i].json
+    //        this.kind = "Pod"
+    //        //console.log(this.createPodJson)
+    //        //this.containerVariables = this.value[i].createVariables
+    //     }
+    //   }
+    // })
   },
   methods: {
-    popJson() {
+    handleClick(tab, event) {
+        console.log(tab.name, event);
+        this.kind = tab.name
+        console.log(this.kind)
+      },
+    showDialog(row) {
       this.dialogTableVisible = true
-
+      var podName = row.metadata.name      
     },
-    openUrl(row) {
-      console.log(row)
-      var vmName = row.json.metadata.name
-      var host = this.vncIp
-      window.open("http://"+host+":6080/vnc.html?path=websockify/?token="+vmName)
-    },
-    clickA() {
+    createJson() {
       this.dialogTableVisible = true
-      getJsonData({viewerName: "vmTemplates"}).then(response => {
-      this.value = response.data
-      for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == "createAndStartVMFromISO") {
-           this.createVMJson = this.value[i].json
-           this.vmVariables = this.value[i].createVariables
-        }
-      }
-    })   
+    //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+    //   this.value = response.data      
+    //   this.createPodJson = response.data       
+    //})
+          
     },
-    clickB() {
+    create() {
       this.dialogTableVisible = false
-      this.schedulingType = this.modelType
-      var str = this.toRawJson(this.createVMJson)
-      createSthFromTemplate({ip: this.ip, json: str, kind:"VirtualMachine"})
+      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind})
     },
     toRawJson(val){
       var str = JSON.stringify(val)
@@ -377,7 +196,13 @@ export default {
      handleDrag() {
       this.$refs.select.blur()
     },
-
+    openUrl(row) {
+      //console.log(row)
+      var podName = row.metadata.name
+      var host = this.ip
+      var namespace = row.metadata.namespace
+      window.open("http://"+host+":9000?host="+host+"&podName="+podName+"&namespace="+namespace)
+    },
     getList() {
       this.listLoading = true
     },
@@ -427,19 +252,8 @@ export default {
         }
       })
     },
-    handleUpdate(event, row) {
-      console.log("event"+event);
-      console.log(row)
-      this.dialogTableVisible = true
-      var deleteJson;
-      for(var i = 0; i < this.value.length; i++) {
-        if(this.value[i].action == event) {
-           this.createVMJson = this.value[i].json
-           this.vmVariables = this.value[i].createVariables
-           this.createVMJson.metadata.name = row.metadata.name
-          //var str = this.toRawJson(this.createVMJson)
-          //createSthFromTemplate({ip: this.ip, json: str, kind:row.kind})
-        }
+    handleUpdate(row, event) {
+    
       if (event === 'update') {
         this.temp = Object.assign({}, row) // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)
@@ -450,12 +264,7 @@ export default {
         })
       }
       if (event === 'delete') {
-        
         this.handleDelete(row)
-        //console.log(row)
-        
-      }
-        
       }
     },
     updateData() {
@@ -543,7 +352,15 @@ export default {
           res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
         }
         else{
-          res = res[element]
+          if(res.hasOwnProperty(element)){
+              console.log(res)
+            res = res[element]
+          }else {
+res = "unknown"
+          }
+            
+        
+
         }
       });
       //console.log(res)
@@ -567,6 +384,11 @@ export default {
         }
       }
       obj[keys[keys.length-1]] = event
+    },
+    deleteMenu(){
+      // console.log(constantRoutes[9])
+      // constantRoutes.splice(9,1)
+      Bus.$emit('deleteMenuTest')
     }
   },
 }
@@ -581,5 +403,13 @@ a:hover{
 }
 input {
   height: 35px;
+}
+.json-editor{
+  height: 538px;
+  position: relative;
+}
+.json-editor >>> .CodeMirror {
+  height: 538px;
+  min-height: 300px;
 }
 </style>
