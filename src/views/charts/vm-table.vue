@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
-    <div class="filter-container" style="margin-bottom:50px">
+    <div style="width:70%;float:left">
+      <div class="filter-container" style="margin-bottom:50px">
       <el-button  style="float:right" type="primary" class="filter-item" @click.native="createJson">
         {{this.createResource}}
       </el-button>
@@ -10,10 +11,10 @@
     </div>
     <div class="tab-container">
     <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
-    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card" @tab-click="handleClick">
+    <el-tabs v-model="activeName" style="margin-top:15px;width:100%" type="border-card" @tab-click="handleClick">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key"/>
+          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key" :successCreate="successCreate"/>
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -62,6 +63,8 @@
       </div>
       </div>
     </el-dialog>
+    </div>
+    <div style="width:30%;float:left"><timeline/></div>   
   </div>
 </template>
 
@@ -76,10 +79,13 @@ import JsonEditor from '@/components/JsonEditor'
 import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
 import Bus from '@/utils/Bus'
 import tabPane from './VMTabPane'
+import timeline from '@/components/timeline'
+
+
 
 export default {
   name: 'vmTable',
-  components: { Pagination, JsonEditor, tabPane},
+  components: { Pagination, JsonEditor, tabPane, timeline},
   directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
@@ -103,6 +109,62 @@ export default {
   },
   data() {
     return {
+            timeline: [
+            {
+                id: 5,
+                icon_class: 'glyphicon glyphicon-comment',
+                icon_status: '',
+                title: 'Admin added a comment.',
+                controls: [
+                    { 
+                        method: 'edit', 
+                        icon_class: 'glyphicon glyphicon-pencil' 
+                    },
+                    { 
+                        method: 'delete', 
+                        icon_class: 'glyphicon glyphicon-trash' 
+                    }
+                ],
+                created: '24. Sep 17:03',
+                body: '<p><i>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Totam, maxime alias nam dignissimos natus voluptate iure deleniti. Doloremque, perspiciatis voluptas dignissimos ex, ullam et, reprehenderit similique possimus iste commodi minima fugiat non culpa, veniam temporibus laborum. Distinctio ipsam cupiditate debitis aliquid deleniti consectetur voluptates corporis officiis tempora minus veniam, accusamus cum optio nesciunt illo nulla odio? Quidem nesciunt, omnis at quo aliquam porro amet fugit mollitia minus explicabo, possimus deserunt rem ut commodi laboriosam quia. Numquam, est facilis rem iste voluptatum. Cupiditate porro fuga saepe quis nulla mollitia, magni dicta soluta distinctio tempore voluptate quo perferendis. Maiores eveniet deleniti, nemo.</i></p>'
+            },
+            {
+                id: 4,
+                icon_class: 'glyphicon glyphicon-edit',
+                icon_status: 'success',
+                title: 'Started editing',
+                controls: [],
+                created: '24. Sep 14:48',
+                body: '<p>Someone has started editing.</p>'
+            },
+            {
+                id: 3,
+                icon_class: 'glyphicon glyphicon-hand-right',
+                icon_status: 'warning',
+                title: 'Message delegated',
+                controls: [],
+                created: '23. Sep 11:12',
+                body: '<p>This message has been delegated.</p>'
+            },
+            {
+                id: 2,
+                icon_class: 'glyphicon glyphicon-map-marker',
+                icon_status: 'danger',
+                title: 'Message approved and forwarded',
+                controls: [],
+                created: '20. Sep 15:56',
+                body: '<p>Message has been approved and forwarded to responsible.</p>'
+            },
+            {
+                id: 1,
+                icon_class: 'glyphicon glyphicon-map-marker',
+                icon_status: '',
+                title: 'Message forwarded for approval',
+                controls: [],
+                created: '19. Sep 19:49',
+                body: '<p>Message has been forwarded for approval.</p>'
+            },
+        ],
       tableKey: 0,
       list: null,
       listLoading: true,
@@ -129,7 +191,7 @@ export default {
       value: '',
       dialogTableVisible: false,
       createRSJson: {},
-      createResource: "创建虚拟机资源",
+      createResource: "创建",
       catalog_kind: "Catalog",
       catalog_operator: "virtualmachine",
       tabMapOptions: [
@@ -181,7 +243,11 @@ export default {
     },
     create() {
       this.dialogTableVisible = false
-      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind})
+      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind}).then(response => {
+        if(response.code == 20000) {
+          this.handleSuccess()
+        }
+      })
     },
     toRawJson(val){
       var str = JSON.stringify(val)
@@ -266,6 +332,14 @@ export default {
       if (event === 'delete') {
         this.handleDelete(row)
       }
+    },
+    handleSuccess() {
+      this.$notify({
+        title: "Success",
+        message: "操作成功",
+        type: "success",
+        duration: 2000
+      });
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {

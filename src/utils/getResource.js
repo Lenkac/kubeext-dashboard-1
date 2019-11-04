@@ -20,3 +20,12 @@ export function getMonitorInfo(kind, name) {
     }
     return monitor_rs     
   }
+
+  export function handleSuccess() {
+    this.$notify({
+      title: "Success",
+      message: "操作成功",
+      type: "success",
+      duration: 2000
+    })
+  }

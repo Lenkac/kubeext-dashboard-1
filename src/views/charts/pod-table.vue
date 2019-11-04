@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
-    <div class="filter-container" style="margin-bottom:50px">
+    <div style="width:70%;float:left">
+      <div class="filter-container" style="margin-bottom:50px">
       <el-button  style="float:right" type="primary" class="filter-item" @click.native="createJson">
         {{this.createResource}}
       </el-button>
@@ -10,10 +11,10 @@
     </div>
     <div class="tab-container">
     <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
-    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card" @tab-click="handleClick">
+    <el-tabs v-model="activeName" style="margin-top:15px;width:100%" type="border-card" @tab-click="handleClick">
       <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
         <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key"/>
+          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key" :successCreate="successCreate"/>
         </keep-alive>
       </el-tab-pane>
     </el-tabs>
@@ -62,6 +63,8 @@
       </div>
       </div>
     </el-dialog>
+    </div>
+    <div style="width:30%;float:left"><timeline/></div>   
   </div>
 </template>
 
@@ -76,10 +79,11 @@ import JsonEditor from '@/components/JsonEditor'
 import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
 import Bus from '@/utils/Bus'
 import tabPane from './PodTabPane'
+import timeline from '@/components/timeline'
 
 export default {
   name: 'podTable',
-  components: { Pagination, JsonEditor, tabPane},
+  components: { Pagination, JsonEditor, tabPane, timeline},
   directives: { waves, elDragDialog },
   computed: {
     ...mapGetters([
@@ -129,7 +133,7 @@ export default {
       value: '',
       dialogTableVisible: false,
       createRSJson: {},
-      createResource: "创建容器资源",
+      createResource: "创建",
       catalog_kind: "Catalog",
       catalog_operator: "container",
       tabMapOptions: [
@@ -137,7 +141,8 @@ export default {
       ],
       activeName: '',
       kind: '',
-      createdTimes: 0
+      createdTimes: 0,
+      successCreate: ''
     }
   },
   mounted() {
@@ -181,7 +186,12 @@ export default {
     },
     create() {
       this.dialogTableVisible = false
-      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind})
+      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind}).then(response => {
+        if(response.code == 20000) {
+          this.handleSuccess()
+          this.successCreate = 'success'
+        }
+      })
     },
     toRawJson(val){
       var str = JSON.stringify(val)
@@ -244,6 +254,14 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+    },
+    handleSuccess() {
+      this.$notify({
+        title: "Success",
+        message: "操作成功",
+        type: "success",
+        duration: 2000
+      });
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {

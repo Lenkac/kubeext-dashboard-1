@@ -56,12 +56,12 @@ export default {
 .refresh{
     float: right;
     font-size: smaller;
-    background-color: rgb(25, 25, 26);
-    color:white;   
+    background-color: rgb(255, 255, 255);
+    color:black;   
 }
 .bar{
     width: 100%;
-    background-color:rgb(25, 25, 26);
+    background-color:rgb(255, 255, 255);
     height: 20px;
 }
 .iframe{

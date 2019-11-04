@@ -9,7 +9,7 @@ import Layout from '@/layout'
 /* Router Modules */
 import workloadsRouter from './modules/workload'
 import chartsRouter from './modules/charts'
-import tableRouter from './modules/table'
+import configRouter from './modules/config'
 import templateRouter from './modules/template'
 
 /**
@@ -129,6 +129,7 @@ export const asyncRoutes = [
   //tableRouter,
   workloadsRouter,
   templateRouter,
+  configRouter,
   
   { path: '*', redirect: '/404', hidden: true }
 ]

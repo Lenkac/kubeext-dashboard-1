@@ -148,6 +148,10 @@ export default {
     tabName: {
       type: String,
       default: "VirtualMachine"
+    },
+    successCreate: {
+      type: String,
+      default: ""
     }
   },
   filters: {
@@ -231,6 +235,32 @@ export default {
       this.filterForm = response.data;
     });
   },
+  watch: {
+      successCreate(val) {
+        if(this.successCreate == 'success') {
+          getColumns(this.tabName).then(response => {
+      this.columns = response.data;
+      getListAllData({ viewerName: this.tabName }).then(response3 => {
+        this.listTemp = response3.data;
+        this.listLoading = false;
+        console.log(this.listTemp);
+        getJsonData({
+          kind: this.action_kind,
+          operator: this.tabName
+        }).then(response => {
+          this.actions = response.data;
+          for (var i = 0; i < this.listTemp.length; i++) {
+            this.list.push({});
+            this.list[i].json = this.listTemp[i];
+            this.list[i].actions = this.actions;
+            this.list[i].val = "";
+          }
+        });
+      });
+    });
+        }
+      }
+    },
   methods: {
     showDialog(row) {
       console.log(row);
