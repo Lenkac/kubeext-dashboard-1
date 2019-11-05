@@ -14,7 +14,7 @@ const configRouter = {
   children: [
     {
       path: 'api-analysis',
-      component: () => import('@/components/timeline'),
+      component: () => import('@/views/config/apiAnalysis'),
       name: 'apiAnalysis',
       meta: { title: 'api分析' }
     },

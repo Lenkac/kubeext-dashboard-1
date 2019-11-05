@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <div style="width:70%;float:left">
     <div class="tab-container">
       <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
       <el-tabs
@@ -72,8 +71,6 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    </div>
-    <div style="width:30%;float:left"><timeline/></div>
   </div>
 </template>
 
@@ -82,13 +79,12 @@ import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 // import Kanban from '@/components/Kanban'
 import EditableJson from "@/components/EditableJson";
 import { getJsonData, updateJsonData } from "@/api/commonData";
-import timeline from '@/components/timeline'
 
 export default {
   name: "Template",
   directives: { elDragDialog },
   components: {
-    EditableJson, timeline
+    EditableJson
   },
   data() {
     return {
@@ -148,7 +144,7 @@ export default {
       }).then(response => {
         this.value = response.data;
         if (this.activeName == "virtualmachine") {
-          this.height = "height: 280px";
+          this.height = "height: 250px";
         } else if (this.activeName == "container") {
           this.height = "height: 200px";
         }

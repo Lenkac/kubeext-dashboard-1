@@ -113,7 +113,7 @@ export default {
   created() {
     this.getUser()
     this.key = this.$route.query.taskid
-    this.vmName = this.$route.query.vm
+    this.vmName = this.$route.query.pod
     this.node = this.$route.query.node.substring(3)
 
     this.monitor_rs = getMonitorInfo(this.kind, this.vmName)

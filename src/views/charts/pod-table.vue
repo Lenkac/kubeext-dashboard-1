@@ -2,116 +2,191 @@
   <div class="app-container">
     <div style="width:70%;float:left">
       <div class="filter-container" style="margin-bottom:50px">
-      <el-button  style="float:right" type="primary" class="filter-item" @click.native="createJson">
-        {{this.createResource}}
-      </el-button>
-    <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
-        删除最后一个菜单
-    </el-button> -->
-    </div>
-    <div class="tab-container">
-    <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
-    <el-tabs v-model="activeName" style="margin-top:15px;width:100%" type="border-card" @tab-click="handleClick">
-      <el-tab-pane v-for="item in tabMapOptions" :key="item.key" :label="item.label" :name="item.key">
-        <keep-alive>
-          <tab-pane v-if="activeName==item.key" :type="item.key" :tabName="item.key" :successCreate="successCreate"/>
-        </keep-alive>
-      </el-tab-pane>
-    </el-tabs>
-  </div>
-    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item v-for="efi in columns" :key="efi.key" :label="efi.label" :prop="efi.row" :style='efi.itemStyle'>
-          <el-input v-if="efi.type == 'input'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
-          <el-select v-if="efi.type == 'select'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style">
-            <el-option v-for="lds in littleDataSource[efi.dataSource]" :key="lds.key" :label="lds.label" :value="lds.value" />
-          </el-select>
-          <el-input v-if="efi.type == undefined" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
-    <el-dialog v-el-drag-dialog :visible.sync="dialogTableVisible" :title="this.createResource" @dragDialog="handleDrag">
-      <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="createRSJson" />
-        <div style="width:100%;height:50px;">
         <el-button
+          style="float:left"
           type="primary"
-          style="float:right;margin-top:20px;height:40px;display:inline;"
-          @click.native="create"
-        >确认</el-button>
-        <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
+          class="filter-item"
+          @click.native="createJson"
+        >{{this.createResource}}</el-button>
+        <el-button
+          style="float:left;margin-right:20px"
+          type="primary"
+          class="filter-item"
+          @click.native="refresh"
+        >刷新</el-button>
+        <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
+        删除最后一个菜单
+        </el-button>-->
       </div>
+      <div class="tab-container">
+        <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
+        <el-tabs
+          v-model="activeName"
+          style="margin-top:15px;width:100%"
+          type="border-card"
+          @tab-click="handleClick"
+        >
+          <el-tab-pane
+            v-for="item in tabMapOptions"
+            :key="item.key"
+            :label="item.label"
+            :name="item.key"
+          >
+            <keep-alive>
+              <tab-pane
+                v-if="activeName==item.key"
+                :type="item.key"
+                :tabName="item.key"
+                :successCreate="successCreate"
+              />
+            </keep-alive>
+          </el-tab-pane>
+        </el-tabs>
       </div>
-    </el-dialog>
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.pageNum"
+        :limit.sync="listQuery.pageSize"
+        @pagination="getList"
+      />
+
+      <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+        <el-form
+          ref="dataForm"
+          :rules="rules"
+          :model="temp"
+          label-position="left"
+          label-width="100px"
+          style="width: 400px; margin-left:50px;"
+        >
+          <el-form-item
+            v-for="efi in columns"
+            :key="efi.key"
+            :label="efi.label"
+            :prop="efi.row"
+            :style="efi.itemStyle"
+          >
+            <el-input
+              v-if="efi.type == 'input'"
+              v-model="temp[efi.row]"
+              :placeholder="efi.ph"
+              :style="efi.style"
+            />
+            <el-select
+              v-if="efi.type == 'select'"
+              v-model="temp[efi.row]"
+              :placeholder="efi.ph"
+              :style="efi.style"
+            >
+              <el-option
+                v-for="lds in littleDataSource[efi.dataSource]"
+                :key="lds.key"
+                :label="lds.label"
+                :value="lds.value"
+              />
+            </el-select>
+            <el-input
+              v-if="efi.type == undefined"
+              v-model="temp[efi.row]"
+              :placeholder="efi.ph"
+              :style="efi.style"
+            />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+        <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
+          <el-table-column prop="key" label="Channel" />
+          <el-table-column prop="pv" label="Pv" />
+        </el-table>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+        v-el-drag-dialog
+        :visible.sync="dialogTableVisible"
+        :title="this.createResource"
+        @dragDialog="handleDrag"
+      >
+        <div class="card-editor-container">
+          <json-editor ref="jsonEditor" v-model="createRSJson" />
+          <div style="width:100%;height:50px;">
+            <el-button
+              type="primary"
+              style="float:right;margin-top:20px;height:40px;display:inline;"
+              @click.native="create"
+            >确认</el-button>
+            <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
+          </div>
+        </div>
+      </el-dialog>
     </div>
-    <div style="width:30%;float:left"><timeline/></div>   
+    <div style="width:30%;float:left">
+      <timeline />
+    </div>
   </div>
 </template>
 
 <script>
-import { getJsonData, getListAllData, getColumns, getFilterForm, getLittleDataSource, getRules, getTemp, createSthFromTemplate} from '@/api/commonData'
-import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { mapGetters } from 'vuex'
-import elDragDialog from '@/directive/el-drag-dialog'
-import JsonEditor from '@/components/JsonEditor'
-import {resetRouter, router, constantRoutes,setNewRouter} from '@/router/index'
-import Bus from '@/utils/Bus'
-import tabPane from './PodTabPane'
-import timeline from '@/components/timeline'
+import {
+  getJsonData,
+  getListAllData,
+  getColumns,
+  getFilterForm,
+  getLittleDataSource,
+  getRules,
+  getTemp,
+  createSthFromTemplate
+} from "@/api/commonData";
+import waves from "@/directive/waves"; // waves directive
+import { parseTime } from "@/utils";
+import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import { mapGetters } from "vuex";
+import elDragDialog from "@/directive/el-drag-dialog";
+import JsonEditor from "@/components/JsonEditor";
+import {
+  resetRouter,
+  router,
+  constantRoutes,
+  setNewRouter
+} from "@/router/index";
+import Bus from "@/utils/Bus";
+import tabPane from "./PodTabPane";
+import timeline from "@/components/timeline";
 
 export default {
-  name: 'podTable',
-  components: { Pagination, JsonEditor, tabPane, timeline},
+  name: "podTable",
+  components: { Pagination, JsonEditor, tabPane, timeline },
   directives: { waves, elDragDialog },
   computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'roles'
-    ])
+    ...mapGetters(["name", "avatar", "roles"])
   },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
+        published: "success",
+        draft: "info",
+        deleted: "danger"
+      };
+      return statusMap[status];
     },
     typeFilter(type) {
-      return calendarTypeKeyValue[type]
+      return calendarTypeKeyValue[type];
     }
   },
   data() {
     return {
-      tableKey: 0,
-      list: null,
+      list: [],
       listLoading: true,
       dialogFormVisible: false,
-      dialogStatus: '',
+      dialogStatus: "",
       dialogPvVisible: false,
       pvData: [],
       downloadLoading: false,
@@ -121,39 +196,35 @@ export default {
       filterForm: [],
       listQuery: {},
       total: 0,
-      rules: {
-      },
-      temp: {
-      },
+      rules: {},
+      temp: {},
       textMap: {
-        update: '更新数据',
-        create: '创建新记录'
+        update: "更新数据",
+        create: "创建新记录"
       },
-      viewer: 'VirtualMachine',
-      value: '',
+      viewer: "VirtualMachine",
+      value: "",
       dialogTableVisible: false,
       createRSJson: {},
       createResource: "创建",
       catalog_kind: "Catalog",
       catalog_operator: "container",
-      tabMapOptions: [
-        
-      ],
-      activeName: '',
-      kind: '',
+      tabMapOptions: [],
+      activeName: "",
+      kind: "",
       createdTimes: 0,
-      successCreate: ''
-    }
+      successCreate: ""
+    };
   },
-  mounted() {
-   
-  },
+  mounted() {},
   created() {
-    getJsonData({kind: this.catalog_kind ,operator: this.catalog_operator}).then(response => {
+    getJsonData({
+      kind: this.catalog_kind,
+      operator: this.catalog_operator
+    }).then(response => {
       this.tabMapOptions = response.data.tabMapOptions;
-      this.activeName = response.data.activeName
-      console.log(this.tabMapOptions)     
-    })   
+      this.activeName = response.data.activeName;
+    });
     // getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
     //   this.value = response.data
     //   for(var i = 0; i < this.value.length; i++) {
@@ -168,92 +239,112 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-        console.log(tab.name, event);
-        this.kind = tab.name
-        console.log(this.kind)
-      },
+      console.log(tab.name, event);
+      this.kind = tab.name;
+      console.log(this.kind);
+    },
     showDialog(row) {
-      this.dialogTableVisible = true
-      var podName = row.metadata.name      
+      this.dialogTableVisible = true;
+      var podName = row.metadata.name;
     },
     createJson() {
-      this.dialogTableVisible = true
-    //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-    //   this.value = response.data      
-    //   this.createPodJson = response.data       
-    //})
-          
+      this.dialogTableVisible = true;
+      //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+      //   this.value = response.data
+      //   this.createPodJson = response.data
+      //})
+    },
+    refresh() {
+      this.successCreate = "success";
+      setTimeout(
+        function() {
+          this.successCreate = "fail";
+        }.bind(this),
+        500
+      );
     },
     create() {
-      this.dialogTableVisible = false
-      createSthFromTemplate({json: JSON.parse(this.createRSJson),kind: JSON.parse(this.createRSJson).kind}).then(response => {
-        if(response.code == 20000) {
-          this.handleSuccess()
-          this.successCreate = 'success'
+      this.dialogTableVisible = false;
+      createSthFromTemplate({
+        json: JSON.parse(this.createRSJson),
+        kind: JSON.parse(this.createRSJson).kind
+      }).then(response => {
+        if (response.code == 20000) {
+          this.handleSuccess();
+          this.successCreate = "success";
         }
-      })
+      });
     },
-    toRawJson(val){
-      var str = JSON.stringify(val)
-      str = str.replace(/ +/g,"")
-      str = str.replace(/\\n/g,"")
-      if(str[0] == "\"") {
-        str = str.substring(1,str.length-1)
-      }     
-      str = str.replace(/\\/g,"")
+    toRawJson(val) {
+      var str = JSON.stringify(val);
+      str = str.replace(/ +/g, "");
+      str = str.replace(/\\n/g, "");
+      if (str[0] == '"') {
+        str = str.substring(1, str.length - 1);
+      }
+      str = str.replace(/\\/g, "");
       return str;
     },
-     handleDrag() {
-      this.$refs.select.blur()
+    handleDrag() {
+      this.$refs.select.blur();
     },
     openUrl(row) {
       //console.log(row)
-      var podName = row.metadata.name
-      var host = this.ip
-      var namespace = row.metadata.namespace
-      window.open("http://"+host+":9000?host="+host+"&podName="+podName+"&namespace="+namespace)
+      var podName = row.metadata.name;
+      var host = this.ip;
+      var namespace = row.metadata.namespace;
+      window.open(
+        "http://" +
+          host +
+          ":9000?host=" +
+          host +
+          "&podName=" +
+          podName +
+          "&namespace=" +
+          namespace
+      );
     },
     getList() {
-      this.listLoading = true
+      this.listLoading = true;
     },
     handleFilter() {
-      this.listQuery.pageNum = 1
-      this.getList()
+      this.listQuery.pageNum = 1;
+      this.getList();
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
+        message: "操作成功",
+        type: "success"
+      });
+      row.status = status;
     },
     sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
+      const { prop, order } = data;
+      if (prop === "id") {
+        this.sortByID(order);
       }
     },
     sortByID(order) {
-      this.handleFilter()
+      this.handleFilter();
     },
     resetTemp() {
       this.temp = {
         id: undefined,
         importance: 1,
-        remark: '',
+        remark: "",
         timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
+        title: "",
+        status: "published",
+        type: ""
+      };
     },
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.resetTemp();
+      this.dialogStatus = "create";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     handleSuccess() {
       this.$notify({
@@ -264,162 +355,178 @@ export default {
       });
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          
         }
-      })
+      });
     },
     handleUpdate(row, event) {
-    
-      if (event === 'update') {
-        this.temp = Object.assign({}, row) // copy obj
+      if (event === "update") {
+        this.temp = Object.assign({}, row); // copy obj
         //this.temp.timestamp = new Date(this.temp.timestamp)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
+        this.dialogStatus = "update";
+        this.dialogFormVisible = true;
         this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
+          this.$refs["dataForm"].clearValidate();
+        });
       }
-      if (event === 'delete') {
-        this.handleDelete(row)
+      if (event === "delete") {
+        this.handleDelete(row);
       }
     },
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          const tempData = Object.assign({}, this.temp);
+          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateArticle(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
+                const index = this.list.indexOf(v);
+                this.list.splice(index, 1, this.temp);
+                break;
               }
             }
-            this.dialogFormVisible = false
+            this.dialogFormVisible = false;
             this.$notify({
-              title: 'Success',
-              message: '更新成功',
-              type: 'success',
+              title: "Success",
+              message: "更新成功",
+              type: "success",
               duration: 2000
-            })
-          })
+            });
+          });
         }
-      })
+      });
     },
     handleDelete(row) {
       this.$notify({
-        title: 'Success',
-        message: '删除成功',
-        type: 'success',
+        title: "Success",
+        message: "删除成功",
+        type: "success",
         duration: 2000
-      })
-      const index = this.list.indexOf(row)
-      this.list.splice(index, 1)
+      });
+      const index = this.list.indexOf(row);
+      this.list.splice(index, 1);
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
+        this.pvData = response.data.pvData;
+        this.dialogPvVisible = true;
+      });
     },
     handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = []
-        const filterVal = []
-        for( var i = 0 ;i < this.columns.length;i++){
-          tHeader.push(this.columns[i].label)
-          filterVal.push(this.columns[i].row)
+      this.downloadLoading = true;
+      import("@/vendor/Export2Excel").then(excel => {
+        const tHeader = [];
+        const filterVal = [];
+        for (var i = 0; i < this.columns.length; i++) {
+          tHeader.push(this.columns[i].label);
+          filterVal.push(this.columns[i].row);
         }
-        const data = this.formatJson(filterVal, this.list)
+        const data = this.formatJson(filterVal, this.list);
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
+          filename: "table-list"
+        });
+        this.downloadLoading = false;
+      });
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+      return jsonData.map(v =>
+        filterVal.map(j => {
+          if (j === "timestamp") {
+            return parseTime(v[j]);
+          } else {
+            return v[j];
+          }
+        })
+      );
     },
-    getInputValue(scope,longKey){
-      if( JSON.stringify(scope)=='{}'){
-        return ''
+    getInputValue(scope, longKey) {
+      if (JSON.stringify(scope) == "{}") {
+        return "";
       }
-      if( longKey == "" || longKey == undefined || longKey == null || !longKey){
-        return ''
+      if (
+        longKey == "" ||
+        longKey == undefined ||
+        longKey == null ||
+        !longKey
+      ) {
+        return "";
       }
-      if( longKey.indexOf('\.') < 0 ){
-        return scope[longKey]
+      if (longKey.indexOf(".") < 0) {
+        return scope[longKey];
       }
-      var keys = longKey.split("\.")
-      var res =scope;
+      var keys = longKey.split(".");
+      var res = scope;
       keys.forEach(element => {
-        if(element.indexOf('\[') > 0){
-          res = res[element.substring(0,element.indexOf('\['))]
-          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
-        }
-        else{
-          if(res.hasOwnProperty(element)){
-            res = res[element]
-          }else [
-            res = "unknown"
-          ]
-
+        if (element.indexOf("[") > 0) {
+          res = res[element.substring(0, element.indexOf("["))];
+          res =
+            res[
+              parseInt(
+                element.substring(
+                  element.indexOf("[") + 1,
+                  element.indexOf("]")
+                )
+              )
+            ];
+        } else {
+          if (res.hasOwnProperty(element)) {
+            res = res[element];
+          } else [(res = "unknown")];
         }
       });
       //console.log(res)
-      return res
+      return res;
     },
-    updateInputValue(scope,longKey,event){
-      if( longKey.indexOf('\.') < 0 ){
-         scope[longKey] = event
-         return 
+    updateInputValue(scope, longKey, event) {
+      if (longKey.indexOf(".") < 0) {
+        scope[longKey] = event;
+        return;
       }
-      var keys = longKey.split("\.")
-      var obj = scope
-      for (var i=0 ;i < keys.length -1 ;i++){
-        var element = keys[i]
-        if(element.indexOf('\[') > 0){
-          obj = obj[element.substring(0,element.indexOf('\['))]
-          obj = obj[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
-        }
-        else{
-          obj = obj[element]
+      var keys = longKey.split(".");
+      var obj = scope;
+      for (var i = 0; i < keys.length - 1; i++) {
+        var element = keys[i];
+        if (element.indexOf("[") > 0) {
+          obj = obj[element.substring(0, element.indexOf("["))];
+          obj =
+            obj[
+              parseInt(
+                element.substring(
+                  element.indexOf("[") + 1,
+                  element.indexOf("]")
+                )
+              )
+            ];
+        } else {
+          obj = obj[element];
         }
       }
-      obj[keys[keys.length-1]] = event
+      obj[keys[keys.length - 1]] = event;
     },
-    deleteMenu(){
+    deleteMenu() {
       // console.log(constantRoutes[9])
       // constantRoutes.splice(9,1)
-      Bus.$emit('deleteMenuTest')
+      Bus.$emit("deleteMenuTest");
     }
-  },
-}
+  }
+};
 </script>
 
 <style scoped>
-.link{
+.link {
   color: red;
 }
-a:hover{
+a:hover {
   text-decoration: underline;
 }
 input {
   height: 35px;
 }
-.json-editor{
+.json-editor {
   height: 538px;
   position: relative;
 }

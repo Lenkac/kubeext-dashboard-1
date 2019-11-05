@@ -40,7 +40,7 @@
       <el-table-column
         label="Actions"
         align="center"
-        width="230"
+        width="130"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{row}">
@@ -90,11 +90,14 @@
                 <el-radio :label="true">true</el-radio>
                 <el-radio :label="false">false</el-radio>
               </el-radio-group>
-              <el-input
+              <input
+                style="border-radius:8px;border:1px solid grey;outline:none"
+                class="el-input"
                 v-if="row.placeholder != true"
                 :placeholder="row.placeholder"
-                v-model="row.value"
-              ></el-input>
+                :value="getInputValue(row,'value')"
+                @input="updateInputValue(row,'value',$event.target.value)"
+              />
             </template>
           </el-table-column>
         </el-table>
@@ -148,6 +151,10 @@ export default {
     tabName: {
       type: String,
       default: "Pod"
+    },
+    successCreate: {
+      type: String,
+      default: ""
     }
   },
   filters: {
@@ -182,7 +189,7 @@ export default {
       value: "",
       dialogTableVisible: false,
       createPodJson: {},
-      createResource: "创建虚拟机资源",
+      createResource: "创建",
       catalog_kind: "Catalog",
       catalog_operator: "virtualmachine",
       action_kind: "Action",
@@ -230,6 +237,30 @@ export default {
     getFilterForm({ viewer: this.viewer }).then(response => {
       this.filterForm = response.data;
     });
+  },
+  watch: {
+    successCreate(val) {
+      if (this.successCreate == "success") {
+        this.list = [];
+        getListAllData({ viewerName: this.tabName }).then(response3 => {
+          this.listTemp = response3.data;
+          this.listLoading = false;
+          console.log(this.listTemp);
+          getJsonData({
+            kind: this.action_kind,
+            operator: this.tabName
+          }).then(response => {
+            this.actions = response.data;
+            for (var i = 0; i < this.listTemp.length; i++) {
+              this.list.push({});
+              this.list[i].json = this.listTemp[i];
+              this.list[i].actions = this.actions;
+              this.list[i].val = "";
+            }
+          });
+        });
+      }
+    }
   },
   methods: {
     showDialog(row) {
@@ -322,30 +353,29 @@ export default {
           kind: this.tabName
         }).then(response => {
           this.Variables = [];
-          if(response.hasOwnProperty("data")) {
-              if (response.data.spec.hasOwnProperty("lifecycle")) {
-            this.lifecycle = true;
-            this.createJsonData = response.data;
-            let nameVariables = Object.keys(
-              response.data.spec.lifecycle[event]
-            );
-            let values = this.getObjectValues(
-              response.data.spec.lifecycle[event]
-            );
-            for (var i = 0; i < nameVariables.length; i++) {
-              this.Variables.push({});
-              this.Variables[i].nameVariable = nameVariables[i];
-              if (values[i] == true) {
-                this.Variables[i].value = values[i];
-                this.Variables[i].placeholder = values[i];
-              } else {
-                this.Variables[i].value = "";
-                this.Variables[i].placeholder = values[i];
+          if (response.hasOwnProperty("data")) {
+            if (response.data.spec.hasOwnProperty("lifecycle")) {
+              this.lifecycle = true;
+              this.createJsonData = response.data;
+              let nameVariables = Object.keys(
+                response.data.spec.lifecycle[event]
+              );
+              let values = this.getObjectValues(
+                response.data.spec.lifecycle[event]
+              );
+              for (var i = 0; i < nameVariables.length; i++) {
+                this.Variables.push({});
+                this.Variables[i].nameVariable = nameVariables[i];
+                if (values[i] == true) {
+                  this.Variables[i].value = values[i];
+                  this.Variables[i].placeholder = values[i];
+                } else {
+                  this.Variables[i].value = "";
+                  this.Variables[i].placeholder = values[i];
+                }
               }
             }
-          }
-          }
-           else {
+          } else {
             this.lifecycle = false;
           }
         });
@@ -374,7 +404,7 @@ export default {
           for (var key in this.list) {
             this.list[key].val = "";
           }
-          this.handleSuccess()  
+          this.handleSuccess();
         }
       });
     },
@@ -390,7 +420,7 @@ export default {
       this.list.splice(index, 1);
     },
 
-     handleSuccess() {
+    handleSuccess() {
       this.$notify({
         title: "Success",
         message: "操作成功",
@@ -403,6 +433,32 @@ export default {
       var values = [];
       for (var property in object) values.push(object[property]);
       return values;
+    },
+    updateInputValue(scope, longKey, event) {
+      if (longKey.indexOf(".") < 0) {
+        scope[longKey] = event;
+        return;
+      }
+      var keys = longKey.split(".");
+      var obj = scope;
+      for (var i = 0; i < keys.length - 1; i++) {
+        var element = keys[i];
+        if (element.indexOf("[") > 0) {
+          obj = obj[element.substring(0, element.indexOf("["))];
+          obj =
+            obj[
+              parseInt(
+                element.substring(
+                  element.indexOf("[") + 1,
+                  element.indexOf("]")
+                )
+              )
+            ];
+        } else {
+          obj = obj[element];
+        }
+      }
+      obj[keys[keys.length - 1]] = event;
     },
     getInputValue(scope, longKey) {
       if (JSON.stringify(scope) == "{}") {
@@ -435,8 +491,10 @@ export default {
             ];
         } else {
           if (res.hasOwnProperty(element)) {
-            res = res[element]
-          } else {(res = "unknown")};
+            res = res[element];
+          } else {
+            res = "unknown";
+          }
         }
       });
       //console.log(res)

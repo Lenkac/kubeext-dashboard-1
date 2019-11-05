@@ -129,7 +129,7 @@ export const asyncRoutes = [
   //tableRouter,
   workloadsRouter,
   templateRouter,
-  configRouter,
+  //configRouter,
   
   { path: '*', redirect: '/404', hidden: true }
 ]
