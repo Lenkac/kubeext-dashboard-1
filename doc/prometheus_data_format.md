@@ -176,6 +176,6 @@ docker run -d  -p 9090:9090 -v /Users/tangting/Desktop/prometheus_grafana/test/p
 ```
 http://localhost:9090/targets
 ```   
-prometheus界面,成功取到数据
-<img width="900" src="https://github.com/kubesys/kubeext-dashboard/tree/master/doc/img/prometheus.png">    
-<img width="900" src="https://github.com/kubesys/kubeext-dashboard/tree/master/doc/img/prometheusData.png">
+prometheus界面,成功取到数据    
+![](./img/prometheus.png)    
+![](./img/prometheusData.png)
