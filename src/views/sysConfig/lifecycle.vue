@@ -23,7 +23,7 @@
             >
               <el-row :gutter="20" style="margin:5px;">
                 <el-col
-                  :span="7"
+                  :span="8"
                   v-for="(item,index) in value"
                   :key="item.name"
                   style="margin-bottom:30px"
@@ -144,9 +144,9 @@ export default {
       }).then(response => {
         this.value = response.data;
         if (this.activeName == "virtualmachine") {
-          this.height = "height: 250px";
+          this.height = "height: 240px";
         } else if (this.activeName == "container") {
-          this.height = "height: 200px";
+          this.height = "height: 190px";
         }
         console.log(this.value);
       });

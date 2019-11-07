@@ -32,16 +32,12 @@ export default {
       'roles'
     ])
   },
-  mounted() {
-    getGrafanaLink().then(response => {
-      this.grafanaLink = response.data
-    })
+  mounted() { 
+      this.grafanaLink = getGrafanaLink() 
   },
   methods: {
-    refresh() {
-      getGrafanaLink().then(response => {
-        this.grafanaLink = response.data
-      })
+    refresh() {     
+        this.grafanaLink = getGrafanaLink()
     }
   }
 }

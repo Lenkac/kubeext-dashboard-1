@@ -346,7 +346,6 @@ export default {
           }
         });
       } else {
-        this.dialogTableVisible = true;
         queryOperation({
           name: name,
           operator: event,
@@ -357,21 +356,36 @@ export default {
             if (response.data.spec.hasOwnProperty("lifecycle")) {
               this.lifecycle = true;
               this.createJsonData = response.data;
-              let nameVariables = Object.keys(
-                response.data.spec.lifecycle[event]
-              );
-              let values = this.getObjectValues(
-                response.data.spec.lifecycle[event]
-              );
-              for (var i = 0; i < nameVariables.length; i++) {
-                this.Variables.push({});
-                this.Variables[i].nameVariable = nameVariables[i];
-                if (values[i] == true) {
-                  this.Variables[i].value = values[i];
-                  this.Variables[i].placeholder = values[i];
-                } else {
-                  this.Variables[i].value = "";
-                  this.Variables[i].placeholder = values[i];
+              if (JSON.stringify(response.data.spec.lifecycle[event]) == "{}") {
+                updateSthFromTemplate({
+                  json: this.createJsonData,
+                  kind: this.tabName
+                }).then(response => {
+                  if (response.code == 20000) {
+                    for (var key in this.list) {
+                      this.list[key].val = "";
+                    }
+                    this.handleSuccess();
+                  }
+                });
+              } else {
+                  this.dialogTableVisible = true;
+                let nameVariables = Object.keys(
+                  response.data.spec.lifecycle[event]
+                );
+                let values = this.getObjectValues(
+                  response.data.spec.lifecycle[event]
+                );
+                for (var i = 0; i < nameVariables.length; i++) {
+                  this.Variables.push({});
+                  this.Variables[i].nameVariable = nameVariables[i];
+                  if (values[i] == true) {
+                    this.Variables[i].value = values[i];
+                    this.Variables[i].placeholder = values[i];
+                  } else {
+                    this.Variables[i].value = "";
+                    this.Variables[i].placeholder = values[i];
+                  }
                 }
               }
             }

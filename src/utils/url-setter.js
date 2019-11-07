@@ -1,5 +1,9 @@
 export const urlPrefix = 'http://133.133.133.125:32000/kubesys/v1/'
 
+export function getIp() {
+  return '133.133.135.35'
+}
+
 export function getListURL() {
   return urlPrefix+'kube/query'
 }

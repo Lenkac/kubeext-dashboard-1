@@ -115,7 +115,7 @@ export default {
 
     this.monitor_rs = getMonitorInfo(this.kind, this.nodeName)
     
-    getColumns(this.viewerName,'columns').then(response => {
+    getColumns(this.viewerName).then(response => {
       this.columns = response.data      
         getListAllData({viewerName: this.viewerName}).then(response3 => {
           var data = response3.data

@@ -33,7 +33,7 @@ const templateRouter = {
       },
       {
         path: 'testcase',
-        component: () => import('@/views/charts/testcase'),
+        component: () => import('@/views/testcase/testcase'),
         name: 'VMTemplate',
         meta: { title: '测试用例' }
       }
