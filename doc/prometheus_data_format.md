@@ -146,8 +146,8 @@ if __name__ == '__main__':
     thread.join()
 ```    
 
-9092端口暴露出来的数据
-<img width="900" src="https://github.com/kubesys/kubeext-dashboard/tree/master/doc/img/example.png">    
+9092端口暴露出来的数据  
+![](https://github.com/kubesys/kubeext-dashboard/tree/master/doc/img/example.png)   
 
 ### prometheus.yml   
 需修改例子运行的ip
