@@ -23,12 +23,6 @@ const componentsRouter = {
       meta: { title: '调度模型配置' }
     }
     // {
-    //   path: 'drag-kanban',
-    //   component: () => import('@/views/components-demo/drag-kanban'),
-    //   name: 'DragKanbanDemo',
-    //   meta: { title: 'Drag Kanban' }
-    // },
-    // {
     //   path: 'mixin',
     //   component: () => import('@/views/components-demo/mixin'),
     //   name: 'ComponentMixinDemo',
@@ -69,12 +63,6 @@ const componentsRouter = {
     //   component: () => import('@/views/components-demo/dropzone'),
     //   name: 'DropzoneDemo',
     //   meta: { title: 'Dropzone' }
-    // },
-    // {
-    //   path: 'sticky',
-    //   component: () => import('@/views/components-demo/sticky'),
-    //   name: 'StickyDemo',
-    //   meta: { title: 'Sticky' }
     // },
     // {
     //   path: 'back-to-top',

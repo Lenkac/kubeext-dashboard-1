@@ -50,32 +50,26 @@ const constantRoutes = [
       ]
     },
     {
-      path: '/profile',
+      path: '/resourceInfo',
       component: Layout,
-      redirect: '/profile/index',
+      redirect: '/resourceInfo',
       hidden: true,
       children: [
         {
-          path: 'index',
-          component: () => import('@/views/profile/index'),
-          name: 'Profile',
-          meta: { title: '个人信息', icon: 'user', noCache: true }
-        },
-        {
-          path: 'taskProfile',
-          component: () => import('@/views/profile/taskProfile'),
-          name: 'taskProfile',
+          path: 'nodeInfo',
+          component: () => import('@/views/resourceInfo/nodeInfo'),
+          name: 'nodeInfo',
           meta: { title: '任务信息', icon: 'user', noCache: true }
         },
         {
           path: 'containerInfo',
-          component: () => import('@/views/profile/containerInfo'),
+          component: () => import('@/views/resourceInfo/containerInfo'),
           name: 'containerInfo',
           meta: { title: '容器信息', icon: 'user', noCache: true }
         },
         {
           path: 'vmInfo',
-          component: () => import('@/views/profile/vmInfo'),
+          component: () => import('@/views/resourceInfo/vmInfo'),
           name: 'vmInfo',
           meta: { title: 'vm信息', icon: 'user', noCache: true }
         }

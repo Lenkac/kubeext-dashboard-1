@@ -39,7 +39,7 @@
       </el-card>      
       </el-col>   
     </el-row>
-    <!-- <el-row> 
+    <el-row> 
     <el-card>
           <div>
             <el-table
@@ -52,36 +52,31 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-    <el-table-column label="容器名称" width="130px" align="center">
-        <template  slot-scope="scope">
-          <span v-for="x in scope.row.spec.containers" :key="x.name" >{{ x.name }}</span>
-        </template>
-      </el-table-column>
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
+          <router-link :to="{path:'/resourceInfo/nodeInfo'}" v-if="item.kind == 'a'" tag="a" class="link" >
+            {{ getInputValue(scope.row,item.row) }}
+          </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
         </template>
       </el-table-column>
       </el-table>
       </div>
         </el-card>
-    </el-row> -->
+    </el-row>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import UserCard from './components/UserCard'
-import Activity from './components/Activity'
-import Timeline from './components/Timeline'
-import Account from './components/Account'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
 
+
 export default {
-  name: 'vmInfo',
-  components: { UserCard, Activity, Timeline, Account,JsonEditor },
+  name: 'nodeInfo',
+  components: { JsonEditor },
   data() {
     return {
       tableKey: 0,
@@ -91,16 +86,15 @@ export default {
       key: '',
       monitor_rs:{},
       node:'',
-      objectName:'link',
-      viewerName:'vms',
+      viewerName:'Node',
       nodeName:'',
       podList:'',
       listQuery:'',
       listLoading:'',
       columns:'',
       ip:'',
-      value: {},
-      kind: 'VirtualMachine'
+      value: '',
+      kind: 'Node'
     }
   },
   computed: {
@@ -113,29 +107,25 @@ export default {
   created() {
     this.getUser()
     this.key = this.$route.query.taskid
-    this.vmName = this.$route.query.pod
-    this.node = this.$route.query.node.substring(3)
+    this.nodeName = this.$route.query.node;
 
-    this.monitor_rs = getMonitorInfo(this.kind, this.vmName)
-          
-    getColumns(this.kind).then(response => {
-      this.columns = response.data
-        getListAllData({viewerName: this.kind}).then(response3 => {
+    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName)
+    
+    getColumns(this.viewerName).then(response => {
+      this.columns = response.data      
+        getListAllData({viewerName: this.viewerName}).then(response3 => {
           var data = response3.data
           //this.total = response3.total
           this.listLoading = false
-        console.log(data)
-
           for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name == this.vmName) {
-                this.list = data[i]
+              if(data[i].metadata.name == this.nodeName) {
+                this.value = data[i]
               }
             }
-                this.value = this.list
-            console.log(this.list)
-        })
+            this.list = data
+            //console.log(data)
     })
-
+    })
   },
   mounted() {
     
@@ -151,11 +141,6 @@ export default {
     },
     getList() {
       this.listLoading = true
-      // getListAllData(this.listQuery).then(response => {
-      //   this.list = response.data
-      //   this.total = response.total
-      //   this.listLoading = false
-      // })
     },
     handleFilter() {
       this.listQuery.pageNum = 1
@@ -184,19 +169,11 @@ export default {
       var res =scope;
       keys.forEach(element => {
         if(element.indexOf('\[') > 0){
-            if(res[element.substring(0,element.indexOf('\['))]) {
-                res = res[element.substring(0,element.indexOf('\['))]
-                res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
-            } else {
-                res = ""
-            }           
+          res = res[element.substring(0,element.indexOf('\['))]
+          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
         }
         else{
-            if(res[element]) {
-                res = res[element]
-            }else {
-                res = ""
-            }          
+          res = res[element]
         }
       });
       //console.log(res)

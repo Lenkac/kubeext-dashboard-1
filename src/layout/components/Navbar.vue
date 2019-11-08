@@ -25,9 +25,6 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
-            <el-dropdown-item>个人信息</el-dropdown-item>
-          </router-link>
           <router-link to="/">
             <el-dropdown-item>仪表盘</el-dropdown-item>
           </router-link>

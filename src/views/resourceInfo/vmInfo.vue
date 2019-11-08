@@ -39,7 +39,7 @@
       </el-card>      
       </el-col>   
     </el-row>
-    <el-row> 
+    <!-- <el-row> 
     <el-card>
           <div>
             <el-table
@@ -65,23 +65,19 @@
       </el-table>
       </div>
         </el-card>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import UserCard from './components/UserCard'
-import Activity from './components/Activity'
-import Timeline from './components/Timeline'
-import Account from './components/Account'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
 
 export default {
-  name: 'containerInfo',
-  components: { UserCard, Activity, Timeline, Account,JsonEditor },
+  name: 'vmInfo',
+  components: { JsonEditor },
   data() {
     return {
       tableKey: 0,
@@ -92,7 +88,7 @@ export default {
       monitor_rs:{},
       node:'',
       objectName:'link',
-      viewerName:'Pod',
+      viewerName:'vms',
       nodeName:'',
       podList:'',
       listQuery:'',
@@ -100,7 +96,7 @@ export default {
       columns:'',
       ip:'',
       value: {},
-      tabName: ''
+      kind: 'VirtualMachine'
     }
   },
   computed: {
@@ -113,23 +109,26 @@ export default {
   created() {
     this.getUser()
     this.key = this.$route.query.taskid
-    this.podName = this.$route.query.pod;
-    this.node = this.$route.query.node;
-    this.tabName = this.$route.query.tabName;
+    this.vmName = this.$route.query.pod
+    this.node = this.$route.query.node.substring(3)
 
-    this.monitor_rs = getMonitorInfo(this.viewerName, this.podName)
-      
-    getColumns(this.tabName).then(response => {
+    this.monitor_rs = getMonitorInfo(this.kind, this.vmName)
+          
+    getColumns(this.kind).then(response => {
       this.columns = response.data
-        getListAllData({viewerName: this.tabName}).then(response3 => {
+        getListAllData({viewerName: this.kind}).then(response3 => {
           var data = response3.data
           //this.total = response3.total
           this.listLoading = false
+        console.log(data)
+
           for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name == this.podName) {
-                this.value = data[i]
+              if(data[i].metadata.name == this.vmName) {
+                this.list = data[i]
               }
-            }           
+            }
+                this.value = this.list
+            console.log(this.list)
         })
     })
 
@@ -181,11 +180,19 @@ export default {
       var res =scope;
       keys.forEach(element => {
         if(element.indexOf('\[') > 0){
-          res = res[element.substring(0,element.indexOf('\['))]
-          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+            if(res[element.substring(0,element.indexOf('\['))]) {
+                res = res[element.substring(0,element.indexOf('\['))]
+                res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+            } else {
+                res = ""
+            }           
         }
         else{
-          res = res[element]
+            if(res[element]) {
+                res = res[element]
+            }else {
+                res = ""
+            }          
         }
       });
       //console.log(res)

@@ -99,16 +99,6 @@
           <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
         </div>
       </el-dialog>
-
-      <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-        <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-          <el-table-column prop="key" label="Channel" />
-          <el-table-column prop="pv" label="Pv" />
-        </el-table>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
-        </span>
-      </el-dialog>
       <el-dialog
         v-el-drag-dialog
         :visible.sync="dialogTableVisible"
@@ -187,9 +177,6 @@ export default {
       listLoading: true,
       dialogFormVisible: false,
       dialogStatus: "",
-      dialogPvVisible: false,
-      pvData: [],
-      downloadLoading: false,
       columns: [],
       actions: [],
       littleDataSource: {},
@@ -287,22 +274,6 @@ export default {
     },
     handleDrag() {
       this.$refs.select.blur();
-    },
-    openUrl(row) {
-      //console.log(row)
-      var podName = row.metadata.name;
-      var host = this.ip;
-      var namespace = row.metadata.namespace;
-      window.open(
-        "http://" +
-          host +
-          ":9000?host=" +
-          host +
-          "&podName=" +
-          podName +
-          "&namespace=" +
-          namespace
-      );
     },
     getList() {
       this.listLoading = true;
@@ -408,30 +379,7 @@ export default {
       const index = this.list.indexOf(row);
       this.list.splice(index, 1);
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData;
-        this.dialogPvVisible = true;
-      });
-    },
-    handleDownload() {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then(excel => {
-        const tHeader = [];
-        const filterVal = [];
-        for (var i = 0; i < this.columns.length; i++) {
-          tHeader.push(this.columns[i].label);
-          filterVal.push(this.columns[i].row);
-        }
-        const data = this.formatJson(filterVal, this.list);
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: "table-list"
-        });
-        this.downloadLoading = false;
-      });
-    },
+    
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
         filterVal.map(j => {

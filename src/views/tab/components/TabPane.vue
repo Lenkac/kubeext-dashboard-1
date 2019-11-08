@@ -11,7 +11,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/containerInfo',query:{pod:getInputValue(scope.row,item.row),node:scope.row.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
+          <router-link :to="{path:'/resourceInfo/containerInfo',query:{pod:getInputValue(scope.row,item.row),node:scope.row.spec.nodeName}}" v-if="item.kind == 'a'" tag="a" class="link" >
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -77,9 +77,6 @@ export default {
       showReviewer: false,
       dialogFormVisible: false,
       dialogStatus: '',
-      dialogPvVisible: false,
-      pvData: [],
-      downloadLoading: false,
       columns: [],
       actions: [],
       podVariables: [{'key':1,'name':'name'},{'key':2,'name':'image'}],
@@ -300,30 +297,7 @@ export default {
       const index = this.list.indexOf(row)
       this.list.splice(index, 1)
     },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = []
-        const filterVal = []
-        for( var i = 0 ;i < this.columns.length;i++){
-          tHeader.push(this.columns[i].label)
-          filterVal.push(this.columns[i].row)
-        }
-        const data = this.formatJson(filterVal, this.list)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
-    },
+    
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
         if (j === 'timestamp') {

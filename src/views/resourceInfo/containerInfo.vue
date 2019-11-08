@@ -52,11 +52,13 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
+    <el-table-column label="容器名称" width="130px" align="center">
+        <template  slot-scope="scope">
+          <span v-for="x in scope.row.spec.containers" :key="x.name" >{{ x.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/profile/taskProfile'}" v-if="item.kind == 'a'" tag="a" class="link" >
-            {{ getInputValue(scope.row,item.row) }}
-          </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
         </template>
       </el-table-column>
@@ -69,18 +71,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import UserCard from './components/UserCard'
-import Activity from './components/Activity'
-import Timeline from './components/Timeline'
-import Account from './components/Account'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
 
-
 export default {
-  name: 'taskProfile',
-  components: { UserCard, Activity, Timeline, Account,JsonEditor },
+  name: 'containerInfo',
+  components: {JsonEditor },
   data() {
     return {
       tableKey: 0,
@@ -90,15 +87,16 @@ export default {
       key: '',
       monitor_rs:{},
       node:'',
-      viewerName:'Node',
+      objectName:'link',
+      viewerName:'Pod',
       nodeName:'',
       podList:'',
       listQuery:'',
       listLoading:'',
       columns:'',
       ip:'',
-      value: '',
-      kind: 'Node'
+      value: {},
+      tabName: ''
     }
   },
   computed: {
@@ -111,25 +109,26 @@ export default {
   created() {
     this.getUser()
     this.key = this.$route.query.taskid
-    this.nodeName = this.$route.query.node;
+    this.podName = this.$route.query.pod;
+    this.node = this.$route.query.node;
+    this.tabName = this.$route.query.tabName;
 
-    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName)
-    
-    getColumns(this.viewerName).then(response => {
-      this.columns = response.data      
-        getListAllData({viewerName: this.viewerName}).then(response3 => {
+    this.monitor_rs = getMonitorInfo(this.viewerName, this.podName)
+      
+    getColumns(this.tabName).then(response => {
+      this.columns = response.data
+        getListAllData({viewerName: this.tabName}).then(response3 => {
           var data = response3.data
           //this.total = response3.total
           this.listLoading = false
           for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name == this.nodeName) {
+              if(data[i].metadata.name == this.podName) {
                 this.value = data[i]
               }
-            }
-            this.list = data
-            //console.log(data)
+            }           
+        })
     })
-    })
+
   },
   mounted() {
     
@@ -145,6 +144,11 @@ export default {
     },
     getList() {
       this.listLoading = true
+      // getListAllData(this.listQuery).then(response => {
+      //   this.list = response.data
+      //   this.total = response.total
+      //   this.listLoading = false
+      // })
     },
     handleFilter() {
       this.listQuery.pageNum = 1

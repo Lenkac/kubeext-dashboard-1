@@ -34,7 +34,7 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{row}">
-          <svg-icon @click="openUrl(row)" icon-class="pc" class-name="custom-class" />
+          <svg-icon @click="openTerminal(row)" icon-class="pc" class-name="custom-class" />
         </template>
       </el-table-column>
       <el-table-column
@@ -139,6 +139,7 @@ import {
   setNewRouter
 } from "@/router/index";
 import Bus from "@/utils/Bus";
+import {connectTerminal} from '@/api/commonKindMethod'
 
 export default {
   name: "podTable",
@@ -169,15 +170,12 @@ export default {
   },
   data() {
     return {
-      path: "/profile/vmInfo",
+      path: "/resourceInfo/vmInfo",
       tableKey: 0,
       list: [],
       listLoading: true,
       dialogFormVisible: false,
       dialogStatus: "",
-      dialogPvVisible: false,
-      pvData: [],
-      downloadLoading: false,
       columns: [],
       actions: [],
       littleDataSource: {},
@@ -292,22 +290,11 @@ export default {
     handleDrag() {
       this.$refs.select.blur();
     },
-    openUrl(row) {
-      console.log(row);
-      var podName = row.metadata.name;
-      var host = this.ip;
-      var namespace = row.metadata.namespace;
-      window.open(
-        "http://" +
-          host +
-          ":9000?host=" +
-          host +
-          "&podName=" +
-          podName +
-          "&namespace=" +
-          namespace
-      );
+    
+    openTerminal(row) {
+        connectTerminal(this.tabName, row)
     },
+
     getList() {
       this.listLoading = true;
     },

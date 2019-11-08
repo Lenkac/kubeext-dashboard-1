@@ -46,18 +46,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/documentation',
-    component: 'layout/Layout',
-    children: [
-      {
-        path: 'index',
-        component: 'views/documentation/index',
-        name: 'Documentation',
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
     path: '/guide',
     component: 'layout/Layout',
     redirect: '/guide/index',
@@ -98,80 +86,6 @@ export const asyncRoutes = [
         meta: { title: 'Page 404', noCache: true }
       }
     ]
-  },
-
-  
-
-  {
-    path: '/excel',
-    component: 'layout/Layout',
-    redirect: '/excel/export-excel',
-    name: 'Excel',
-    meta: {
-      title: 'Excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: 'views/excel/export-excel',
-        name: 'ExportExcel',
-        meta: { title: 'Export Excel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: 'views/excel/select-excel',
-        name: 'SelectExcel',
-        meta: { title: 'Select Excel' }
-      },
-      {
-        path: 'export-merge-header',
-        component: 'views/excel/merge-header',
-        name: 'MergeHeader',
-        meta: { title: 'Merge Header' }
-      },
-      {
-        path: 'upload-excel',
-        component: 'views/excel/upload-excel',
-        name: 'UploadExcel',
-        meta: { title: 'Upload Excel' }
-      }
-    ]
-  },
-
-  {
-    path: '/zip',
-    component: 'layout/Layout',
-    redirect: '/zip/download',
-    alwaysShow: true,
-    meta: { title: 'Zip', icon: 'zip' },
-    children: [
-      {
-        path: 'download',
-        component: 'views/zip/index',
-        name: 'ExportZip',
-        meta: { title: 'Export Zip' }
-      }
-    ]
-  },
-
-  {
-    path: '/pdf',
-    component: 'layout/Layout',
-    redirect: '/pdf/index',
-    children: [
-      {
-        path: 'index',
-        component: 'views/pdf/index',
-        name: 'PDF',
-        meta: { title: 'PDF', icon: 'pdf' }
-      }
-    ]
-  },
-  {
-    path: '/pdf/download',
-    component: 'views/pdf/download',
-    hidden: true
   },
 
   {

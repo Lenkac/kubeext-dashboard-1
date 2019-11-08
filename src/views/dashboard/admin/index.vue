@@ -14,12 +14,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import PanThumb from '@/components/PanThumb'
-import GithubCorner from '@/components/GithubCorner'
 import { getGrafanaLink } from '@/utils/getResource'
 
 export default {
   name: 'DashboardEditor',
-  components: { PanThumb, GithubCorner },
+  components: { PanThumb },
   data() {
     return {
       grafanaLink: ''
