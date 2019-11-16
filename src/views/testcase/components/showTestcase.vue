@@ -98,6 +98,7 @@
         </el-select>超分比例：
         <el-input v-model="rate" :placeholder="1" style="width:50px;margin-right:20px;"></el-input>
         <el-button class="filter-item" type="primary" style="margin-top:9px;" @click="fetchData">执行</el-button>
+        <el-button class="filter-item" type="primary" style="margin-top:9px;" @click="fetchStatus">刷新</el-button>
       </div>
       <div style="width:550px;float:left">
         <el-table :data="list" style="width: 500px;padding-top: 15px;">
@@ -190,26 +191,20 @@ let echarts = require("echarts");
 var children = [
   {
     name: "busybox1",
-    collapsed: true,
     itemStyle: {
       color: "#33cc33",
-      borderWidth: 0
     }
   },
   {
     name: "busybox2",
-    collapsed: true,
     itemStyle: {
       color: "#33cc33",
-      borderWidth: 0
     }
   },
   {
     name: "busybox3",
-    collapsed: true,
     itemStyle: {
       color: "#ff3300",
-      borderWidth: 0
     }
   }
 ];
@@ -369,6 +364,7 @@ export default {
         { value: "anti-affinity", label: "反亲和性" }
       ],
       kind: "",
+      strategy: "",
       rate: 1,
       activeName: "",
       index: 0,
@@ -438,8 +434,15 @@ export default {
       return str;
     },
     getVal(val) {
-      this.kind = val;
+      this.strategy = val;//调度策略
     },
+
+    fetchStatus() {
+      createSthFromTemplate({operator:"update",json: JSON.parse(res), kind:this.kind}).then(response => {
+        console.log(response.code)
+      })
+    },
+
     fetchData() {
       this.$message({
         message: "开始测试！",
@@ -452,23 +455,54 @@ export default {
               {
                 name: "testcase1",
                 strategy: "priority",
-                status1: "success",
-                status2: "success",
-                status3: "fail"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
               },
               {
                 name: "testcase2",
                 strategy: "priority",
-                status1: "success",
-                status2: "success",
-                status3: "fail"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                }]
               },
               {
                 name: "testcase3",
                 strategy: "priority",
-                status1: "success",
-                status2: "success",
-                status3: "fail"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                }]
               }
             ];
           }.bind(this),

@@ -820,7 +820,7 @@ export default [
         count: 10,
         data: [
           //key：自增整数 width：每列初始宽度 label：表头 row：key值 style：表单样式 type：表单控件类型 
-          { key: 1, width: '259', label: '名称', row: 'metaData.name', style: 'width:150px;', type: 'input', kind: 'a', link: '/profile/nodeInfo'},
+          { key: 1, width: '259', label: '名称', row: 'metaData.name', style: 'width:150px;', type: 'input', kind: 'a', link: '/resourceInfo/nodeInfo'},
           { key: 2, width: '130', label: '类型', row: 'type', style: 'width:250px;', type: 'select', dataSource: 'types' },
           { key: 3, width: '120', label: 'Ready数量', row: 'ready' },
           { key: 4, width: '110', label: '运行状态', row: 'status' },
@@ -1525,32 +1525,26 @@ export default [
       return {
         code: 20000,
         data: [{
-          path: '/profile',
+          path: '/resourceInfo',
           component: 'Layout',
-          redirect: '/profile/index',
+          redirect: '/resourceInfo',
           hidden: true,
           children: [
             {
-              path: 'index',
-              component: 'profile/index',
-              name: 'Profile',
-              meta: { title: '个人信息', icon: 'user', noCache: true }
-            },
-            {
               path: 'nodeInfo',
-              component: 'profile/nodeInfo',
+              component: 'resourceInfo/nodeInfo',
               name: 'nodeInfo',
               meta: { title: '任务信息', icon: 'user', noCache: true }
             },
             {
               path: 'containerInfo',
-              component: 'profile/containerInfo',
+              component: 'resourceInfo/containerInfo',
               name: 'containerInfo',
               meta: { title: '容器信息', icon: 'user', noCache: true }
             },
             {
               path: 'vmInfo',
-              component: 'profile/vmInfo',
+              component: 'resourceInfo/vmInfo',
               name: 'vmInfo',
               meta: { title: 'vm信息', icon: 'user', noCache: true }
             }
