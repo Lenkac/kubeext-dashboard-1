@@ -8,18 +8,19 @@
           :key="item.title"
           style="margin-bottom:30px"
         >
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
+          <el-card class="box-card" style="height:130px">
+            <div slot="header" class="clearfix" style="height:10px;padding:0px">
               <span>
-                <p style="display:inline;font-size:18px;">
+                <p style="display:inline;font-size:12px;">
                   <strong>{{ value[index].title }}</strong>
                 </p>
               </span>
             </div>
-            <p style="font-size:12px;">此处配置项用于操作{{item.title}}</p>
+            <p style="font-size:10px; margin:2px">此处配置项用于操作{{item.title}}</p>
             <el-button
               type="primary"
-              style="float:right;margin:20px;"
+              size="mini"
+              style="float:right;margin:2px;"
               @click.native="clickA(index)"
             >编辑配置</el-button>
           </el-card>
@@ -108,19 +109,14 @@
           <el-table-column label="调度策略" width="100px">
             <template slot-scope="scope">{{ scope.row.strategy }}</template>
           </el-table-column>
-          <el-table-column label="busbox1" width="100px" align="center">
+          <el-table-column  label="任务" width="100px" align="center">
             <template slot-scope="{row}">
-              <el-tag :type="row.status1 | statusFilter">{{ row.status1 }}</el-tag>
+              <el-tag v-for="item in row.task" :key="item.name">{{ item.name }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="busbox2" width="100px" align="center">
+          <el-table-column  label="状态" width="100px" align="center">
             <template slot-scope="{row}">
-              <el-tag :type="row.status2 | statusFilter">{{ row.status2 }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="busbox3" width="100px" align="center">
-            <template slot-scope="{row}">
-              <el-tag :type="row.status3 | statusFilter">{{ row.status3 }}</el-tag>
+              <el-tag v-for="item in row.task" :key="item.name" :type="item.status | statusFilter">{{ item.status }}</el-tag>
             </template>
           </el-table-column>
         </el-table>
@@ -341,7 +337,7 @@ export default {
         name: "testcase3",
         children: children
       },
-      list: null,
+      list: [],
       listLoading: true,
       importanceOptions: [1, 2, 3],
       statusOptions: ["published", "draft", "deleted"],
@@ -448,9 +444,7 @@ export default {
         message: "开始测试！",
         type: "success"
       });
-      if (this.kind == "priority" && this.rate == 1) {
-        setTimeout(
-          function() {
+      if (this.strategy == "priority" && this.rate == 1) {
             this.list = [
               {
                 name: "testcase1",
@@ -504,10 +498,7 @@ export default {
                     status: "fail",
                 }]
               }
-            ];
-          }.bind(this),
-          9500
-        );
+            ]
 
         setTimeout(
           function() {
@@ -525,16 +516,6 @@ export default {
             });
           }.bind(this),
           3500
-        );
-
-        setTimeout(
-          function() {
-            this.$message({
-              message: "卸载环境！",
-              type: "success"
-            });
-          }.bind(this),
-          7000
         );
 
         setTimeout(
@@ -659,30 +640,66 @@ export default {
           }.bind(this),
           9000
         );
-      } else if (this.kind == "default" && this.rate == 1) {
+      } else if (this.strategy == "default" && this.rate == 1) {
         setTimeout(
           function() {
             this.list = [
               {
                 name: "testcase1",
                 strategy: "default",
-                status1: "success",
-                status2: "success",
-                status3: "fail"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
+                
               },
               {
                 name: "testcase2",
                 strategy: "default",
-                status1: "success",
-                status2: "fail",
-                status3: "success"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
+                
               },
               {
                 name: "testcase3",
                 strategy: "default",
-                status1: "fail",
-                status2: "success",
-                status3: "success"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
+                
               }
             ];
           }.bind(this),
@@ -843,23 +860,56 @@ export default {
               {
                 name: "testcase1",
                 strategy: "priority",
-                status1: "success",
-                status2: "success",
-                status3: "success"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
               },
               {
                 name: "testcase2",
                 strategy: "priority",
-                status1: "success",
-                status2: "success",
-                status3: "success"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
               },
               {
                 name: "testcase3",
                 strategy: "priority",
-                status1: "success",
-                status2: "success",
-                status3: "success"
+                task: [
+                {
+                    name: "busybox1",
+                    status: "success",
+                },
+                {
+                    name: "busybox2",
+                    status: "success",
+                },
+                {
+                    name: "busybox3",
+                    status: "fail",
+                },
+            ]
               }
             ];
           }.bind(this),
@@ -1086,5 +1136,8 @@ a:hover {
 }
 input {
   height: 35px;
+}
+.el-card__header {
+  padding: 5px 5px;
 }
 </style>
