@@ -4,6 +4,7 @@ ENV TZ Asia/Shanghai
 COPY . /home/kubeext-dashboard
 WORKDIR /home/kubeext-dashboard
 EXPOSE 9527
-RUN npm install
+RUN npm config set registry https://registry.npm.taobao.org \
+    && npm install
 CMD ["npm", "run", "dev"]
 
