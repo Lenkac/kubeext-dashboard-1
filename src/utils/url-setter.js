@@ -1,4 +1,6 @@
 export const urlPrefix = process.env.VUE_APP_BACKEND
+export const projectTitle = 
+
 
 export function getIp() {
   return '133.133.135.35'

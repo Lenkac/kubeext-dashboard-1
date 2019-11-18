@@ -3,7 +3,8 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">面向飞腾的虚拟化架构与系统平台技术(2018YFB103602)</h3>
+        <!-- //面向飞腾的虚拟化架构与系统平台技术(2018YFB103602) -->
+        <h3 class="title">{{ process.env.VUE_APP_PROJECTTITLE }}</h3>
       </div>
 
       <el-form-item prop="username">
