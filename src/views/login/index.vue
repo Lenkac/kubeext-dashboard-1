@@ -111,7 +111,7 @@ export default {
       showDialog: false,
       redirect: undefined,
       otherQuery: {},
-      title = process.env.VUE_APP_PROJECTTITLE
+      title: process.env.VUE_APP_PROJECTTITLE
     }
   },
   watch: {
