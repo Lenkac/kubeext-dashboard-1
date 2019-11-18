@@ -4,7 +4,7 @@
 
       <div class="title-container">
         <!-- //面向飞腾的虚拟化架构与系统平台技术(2018YFB103602) -->
-        <h3 class="title">{{ title }}</h3>
+        <h3 class="title">{{ this.title }}</h3>
       </div>
 
       <el-form-item prop="username">
