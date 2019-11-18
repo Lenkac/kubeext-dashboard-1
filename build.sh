@@ -1,3 +1,3 @@
-docker pull node
-docker build -t kubeext-dashboard:v1 .
-docker run -d -p 9527:9527 kubeext-dashboard:v1
+docker pull node:12.0.0
+docker build -t kubeext-dashboard:v2 .
+docker run -d --net=host --env-file ./env.list kubeext-dashboard:v2
