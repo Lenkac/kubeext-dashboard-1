@@ -171,6 +171,7 @@ export default {
   data() {
     return {
       path: "/resourceInfo/vmInfo",
+      listTemp: [],
       tableKey: 0,
       list: [],
       listLoading: true,
@@ -205,7 +206,14 @@ export default {
     getColumns(this.tabName).then(response => {
       this.columns = response.data;
       getListAllData({ viewerName: this.tabName }).then(response3 => {
-        this.listTemp = response3.data;
+        console.log(response3)
+        if(response3.code == 50000) {
+          
+          this.listTemp = []
+          this.listTemp.length = 0
+          this.listLoading = false
+        }else {
+          this.listTemp = response3.data;
         this.listLoading = false;
         console.log(this.listTemp);
         getJsonData({
@@ -220,6 +228,8 @@ export default {
             this.list[i].val = "";
           }
         });
+        }
+        
       });
     });
 
