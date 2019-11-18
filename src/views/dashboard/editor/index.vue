@@ -14,7 +14,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import PanThumb from '@/components/PanThumb'
-import { getGrafanaLink } from '@/api/taskData'
+import { getGrafanaLink } from '@/utils/getResource'
 
 export default {
   name: 'DashboardEditor',

@@ -111,12 +111,12 @@
           </el-table-column>
           <el-table-column  label="任务" width="100px" align="center">
             <template slot-scope="{row}">
-              <el-tag v-for="item in row.task" :key="item.name">{{ item.name }}</el-tag>
+              <el-tag style="margin-bottom:5px" v-for="item in row.task" :key="item.name">{{ item.name }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column  label="状态" width="100px" align="center">
             <template slot-scope="{row}">
-              <el-tag v-for="item in row.task" :key="item.name" :type="item.status | statusFilter">{{ item.status }}</el-tag>
+              <el-tag style="width:70px; margin-bottom:5px" v-for="item in row.task" :key="item.name" :type="item.status | statusFilter">{{ item.status }}</el-tag>
             </template>
           </el-table-column>
         </el-table>

@@ -19,7 +19,7 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 import echarts from 'echarts'
-import '../node_modules/timeline-vuejs/dist/timeline-vuejs.css'
+//import '../node_modules/timeline-vuejs/dist/timeline-vuejs.css'
 Vue.prototype.$echarts = echarts
 
 /**
