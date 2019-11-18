@@ -1,4 +1,4 @@
-export const urlPrefix = 'http://133.133.133.125:32000/kubesys/v1/'
+export const urlPrefix = 'http://172.17.104.190:32000/kubesys/v1/'
 
 export function getIp() {
   return '133.133.135.35'
