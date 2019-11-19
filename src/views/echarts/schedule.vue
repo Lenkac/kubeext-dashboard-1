@@ -162,9 +162,8 @@ export default {
             }
           }
         ],
-        animation: false,
-        //animationDurationUpdate: 100,
-        //animationEasingUpdate: 'quadraticOut',
+        animationDurationUpdate: 1000,
+        animationEasingUpdate: 'quadraticOut',
         // graphic: [
         //   {
         //     type: "group",

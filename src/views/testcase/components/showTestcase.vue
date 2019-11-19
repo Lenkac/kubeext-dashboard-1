@@ -63,15 +63,15 @@
           @click="fetchStatus"
         >刷新</el-button>
       </div>
-      <div style="width:350px;float:left">
-        <el-table :data="list" style="width: 300px;padding-top: 15px;">
-          <el-table-column label="用例名称" width="100px">
+      <div style="width:450px;float:left">
+        <el-table :data="list" style="width: 400px;padding-top: 15px;">
+          <el-table-column label="用例名称" width="150px">
             <template slot-scope="scope">{{ scope.row.name }}</template>
           </el-table-column>
           <!-- <el-table-column label="调度策略" width="120px">
             <template>{{ this.tabName }}</template>
           </el-table-column>-->
-          <el-table-column label="任务" width="100px" align="center">
+          <el-table-column label="任务" width="150px" align="center">
             <template slot-scope="{row}">
               <el-tag
                 style="margin-bottom:5px"
@@ -94,17 +94,25 @@
       </div>
 
       <iframe
-        v-if="this.tabName == this.image"
-        style="width:700px;height:400px;display:block;float:right"
+        v-if="this.tabName == this.lazyImage"
+        style="width:650px;height:400px;display:block;float:right"
         :src="monitor_rs"
       ></iframe>
 
-      <div
+      <iframe
+        v-if="this.tabName == this.defaultImage"
+        style="width:650px;height:400px;display:block;float:right"
+        :src="monitor_rs"
+      ></iframe>
+    <div v-if="this.tabName != this.defaultImage && this.tabName != this.lazyImage">
+      <div      
         v-for="item in this.chart"
         :key="item.name"
         :id="item.name"
         :style="{width: '200px', height: '250px',float:'left'}"
       ></div>
+    </div>
+      
     </div>
   </div>
 </template>
@@ -120,7 +128,7 @@ import {
 import { mapGetters } from "vuex";
 import elDragDialog from "@/directive/el-drag-dialog";
 import EditableJson from "@/components/EditableJson";
-import {getMonitorInfo} from '@/utils/getResource'
+import { getMonitorInfo } from "@/utils/getResource";
 
 let echarts = require("echarts");
 
@@ -151,7 +159,8 @@ export default {
   data() {
     return {
       chart: [],
-      image: "lazyImagePull",
+      lazyImage: "lazyImagePull",
+      defaultImage: "defaultImagePull",
       testData: {
         name: "",
         children: []
@@ -177,7 +186,7 @@ export default {
       this.chart = response.data.spec.testcases;
     });
 
-    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName)
+    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName);
   },
   methods: {
     handleDrag() {
@@ -213,42 +222,74 @@ export default {
     },
 
     fetchStatus() {
-      getSthFromTemplate({
-        kind: this.kind,
-        name: this.tabName.toLowerCase()
-      }).then(response => {
-        if (response.data.spec.hasOwnProperty("results")) {
-          var listtemp = [];
-          var results = response.data.spec.results;
-          for (let i = 0; i < results.length; i++) {
-            if (results[i].status == "Complete") {
-              listtemp.push(results[i]);
-              var children = results[i].podResults;
-              for (let j = 0; j < children.length; j++) {
-                if (children[j].deployed == true) {
-                  children[j].itemStyle = {
-                    color: "#33cc33"
-                  };
-                } else {
-                  children[j].itemStyle = {
-                    color: "#ff3300"
-                  };
-                }
+      if (this.tabName == "defaultImagePull" || this.tabName == "lazyImagePull") {
+        this.monitor_rs = getMonitorInfo(this.kind, this.nodeName);
+        getSthFromTemplate({
+          kind: this.kind,
+          name: this.tabName.toLowerCase()
+        }).then(response => {
+          if(!response.hasOwnProperty("data")){
+            this.list = []
+          }else{
+            if (response.data.spec.hasOwnProperty("results")) {
+            var listtemp = [];
+            var results = response.data.spec.results;
+            for (let i = 0; i < results.length; i++) {
+              if (results[i].status == "Complete") {
+                listtemp.push(results[i]);
               }
-              this.testData.name = results[i].name;
-              this.testData.children = children;
-              this.drawLine(this.testData);
             }
+            this.list = listtemp;
+            console.log(this.list);
+          } else {
+            this.$message({
+              message: "正在执行！",
+              type: "success"
+            });
           }
-          this.list = listtemp;
-          console.log(this.list);
-        } else {
-          this.$message({
-            message: "正在执行！",
-            type: "success"
-          });
-        }
-      });
+          }
+          
+        });
+      } else {
+        getSthFromTemplate({
+          kind: this.kind,
+          name: this.tabName.toLowerCase()
+        }).then(response => {
+          if (response.data.spec.hasOwnProperty("results")) {
+            var listtemp = [];
+            var results = response.data.spec.results;
+            for (let i = 0; i < results.length; i++) {
+              if (results[i].status == "Complete") {
+                listtemp.push(results[i]);
+                var children = results[i].podResults;
+                for (let j = 0; j < children.length; j++) {
+                  if (children[j].deployed == true) {
+                    children[j].itemStyle = {
+                      color: "#33cc33"
+                    };
+                  } else {
+                    children[j].itemStyle = {
+                      color: "#ff3300"
+                    };
+                  }
+                }
+                this.testData.name = results[i].name;
+                this.testData.children = children;
+                this.drawLine(this.testData);
+              }
+            }
+            this.list = listtemp;
+            console.log(this.list);
+          } else {
+            this.$message({
+              message: "正在执行！",
+              type: "success"
+            });
+          }
+        });
+      }
+        
+      
     },
 
     deleteTestcase() {
@@ -259,7 +300,9 @@ export default {
         deletSthFromTemplate({
           json: response.data,
           kind: this.kind
-        }).then(response => {});
+        }).then(response => {
+          this.fetchStatus()
+        });
       });
     },
 
