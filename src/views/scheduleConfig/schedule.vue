@@ -37,7 +37,7 @@ import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 // import Kanban from '@/components/Kanban'
 import EditableJson from '@/components/EditableJson'
 import { getScheduleData} from '@/api/taskData'
-import {getIp,getJsonData,saveContianerConfig } from '@/api/commonData'
+import {getJsonData,saveContianerConfig } from '@/api/commonData'
 
 const jsonData = '[{"items":[{"market_type":"forexdata","symbol":"XAUUSD"},{"market_type":"forexdata","symbol":"UKOIL"},{"market_type":"forexdata","symbol":"CORN"}],"name":""}]'
 
@@ -80,11 +80,6 @@ export default {
     })
   },
   created() {
-    this.ip = getIp(this.viewerName,this.name)
-    // getJsonData({viewerName: "templates"}).then(response => {
-    //   this.value = response.data;
-    //   console.log(this.value)
-    // })
   
   },
 

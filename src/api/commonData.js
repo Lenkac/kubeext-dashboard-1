@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {queryOperationURL, getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getUpdateSthURL,getDeleteSthURL} from '@/utils/url-setter'
+import {getScheduleURL,getGetSthURL,queryOperationURL, getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getUpdateSthURL,getDeleteSthURL} from '@/utils/url-setter'
 
 export function getListAllData(data) {
   return request({
@@ -7,6 +7,7 @@ export function getListAllData(data) {
     method: 'get',
     params: {
       "kind": data.viewerName,
+      "name": data.name,
     }
   })
 }
@@ -38,6 +39,15 @@ export function getVMActions(query) {
     url: '/list/getVMActions',
     method: 'get',
     params: query
+  })
+  return res
+}
+
+export function getScheduleData(data) {
+  var res = request({
+    url: getScheduleURL(),
+    method: 'post',
+    data
   })
   return res
 }
@@ -86,6 +96,16 @@ export function deletSthFromTemplate(data) {
   var res = request({
     // url: '/list/getJsonData',
     url: getDeleteSthURL(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function getSthFromTemplate(data) {
+  var res = request({
+    // url: '/list/getJsonData',
+    url: getGetSthURL(),
     method: 'post',
     data
   })

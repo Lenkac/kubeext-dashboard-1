@@ -1,8 +1,4 @@
 <template>  
-      <!-- <div class="info-container">
-        <span class="display_name">{{ name }}</span>
-        <span style="font-size:20px;padding-top:20px;display:inline-block;">演示系统默认界面，请点击左侧导航栏操作</span>
-      </div> -->
       <div class="chart-container" >
       <div class="bar">
         <span class="refresh" @click="refresh">刷新</span>

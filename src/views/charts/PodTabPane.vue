@@ -132,7 +132,6 @@ import Pagination from "@/components/Pagination"; // secondary package based on 
 import { mapGetters } from "vuex";
 import elDragDialog from "@/directive/el-drag-dialog";
 import JsonEditor from "@/components/JsonEditor";
-import {getIp} from '@/utils/url-setter'
 import {
   resetRouter,
   router,
@@ -140,7 +139,7 @@ import {
   setNewRouter
 } from "@/router/index";
 import Bus from "@/utils/Bus";
-import {connectTerminal} from '@/api/commonKindMethod'
+import { connectTerminal } from "@/api/commonKindMethod";
 
 export default {
   name: "podTable",
@@ -293,7 +292,7 @@ export default {
     },
 
     openTerminal(row) {
-        connectTerminal(this.tabName, row)
+      connectTerminal(this.tabName, row);
     },
 
     getList() {
@@ -340,6 +339,7 @@ export default {
           operator: event,
           kind: this.tabName
         }).then(response => {
+          console.log(response);
           this.Variables = [];
           if (response.hasOwnProperty("data")) {
             if (response.data.spec.hasOwnProperty("lifecycle")) {
@@ -365,6 +365,16 @@ export default {
             }
           } else {
             this.lifecycle = false;
+            getListAllData({viewerName: this.tabName}).then(response3 => {
+          var data = response3.data
+          //this.total = response3.total
+          this.listLoading = false
+          for(var i = 0; i < data.length; i++) {
+              if(data[i].metadata.name == name) {
+                this.createJsonData = data[i]
+              }
+            }           
+        })
           }
         });
         for (var key in this.list) {
@@ -382,6 +392,8 @@ export default {
         }
         this.createJsonData = JSON.parse(this.createJsonData);
         this.createJsonData.spec.lifecycle[this.operator] = temp;
+      }else{
+        this.createJsonData = JSON.parse(this.createJsonData);
       }
 
       updateSthFromTemplate({

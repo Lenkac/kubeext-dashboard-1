@@ -1,9 +1,5 @@
 export const urlPrefix = process.env.VUE_APP_BACKEND
 
-export function getIp() {
-  return '133.133.135.35'
-}
-
 export function getListURL() {
   return urlPrefix+'kube/query'
 }
@@ -14,6 +10,10 @@ export function getCreateSthURL() {
 
 export function getUpdateSthURL() {
   return urlPrefix+'kube/update'
+}
+
+export function getGetSthURL() {
+  return urlPrefix+'kube/get'
 }
 
 export function getDeleteSthURL() {
@@ -55,6 +55,11 @@ export function createJsonDataURL() {
 export function queryOperationURL() {
   return urlPrefix+'exec/query'
 }
+
+export function getScheduleURL() {
+  return urlPrefix+'networkFlow/solveBase'
+}
+
 
 
 

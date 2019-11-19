@@ -31,7 +31,7 @@
 <script>
 import elDragDialog from '@/directive/el-drag-dialog' // base on element-ui
 import EditableJson from '@/components/EditableJson'
-import {getIp,getJsonData,saveContianerConfig,getListAllData } from '@/api/commonData'
+import {getJsonData,saveContianerConfig,getListAllData } from '@/api/commonData'
 import { getPriorityData} from '@/api/taskData'
 
 
@@ -77,9 +77,8 @@ export default {
     })
   },
   created() {
-    this.ip = getIp(this.viewerName,this.name)
       
-        getListAllData({pageNum: 1, pageSize: 10, ip: this.ip,viewerName: this.viewer}).then(response3 => {
+        getListAllData({viewerName: this.viewer}).then(response3 => {
           console.log(response3.data)
           for(var i = 0; i < response3.data.length;i++) {
               var a ={title: response3.data[i].metadata.name,json:response3.data[i]}
