@@ -12,7 +12,7 @@
       <!-- <json-editor ref="EditableJson" v-model="value" /> -->
       <EditableJson v-model="json" />
     </div>
-    <div id="myChart" style="width: 60%; height: 700px;float: left;"></div>
+    <div id="myChart" style="width: 65%; height: 700px;float: left;"></div>
     <!-- <div id="column" :style="{width: '1200px', height: '800px',float:'left'}">
       <div :style="{ width: '1200px', height: '30px',float:'left'}">调度失败任务</div>
       <el-table
