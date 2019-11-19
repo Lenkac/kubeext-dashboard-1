@@ -121,11 +121,29 @@ export default {
               setInterval(function(){
                 if(this.counter < this.animations.length){
                     var temp = this.animations[this.counter]
-                    if(temp.type == 'link'){
+                    if(temp.type == 'link' && temp.action == "reset"){
                         for( var j = 0;j< this.echartsData.length;j++){
                           if(this.echartsData[j].source == temp.link.source &&
                             this.echartsData[j].target == temp.link.target){
                             this.echartsData[j] = temp.link
+                            this.drawLine();
+                            break;
+                          }
+                        }
+                    }
+                    if(temp.type == 'link' && temp.action == 'add'){
+                      this.echartsData.push(temp.link)
+                      this.drawLine();
+                    }
+                    if(temp.type == 'data' && temp.action == 'add'){
+                      this.symbol.push(temp.data)
+                      console.log(this.symbol)
+                      this.drawLine();
+                    }
+                    if(temp.type == 'data' && temp.action == 'reset'){
+                      for( var j = 0;j< this.symbol.length;j++){
+                          if(this.symbol[j].name == temp.data.name){
+                            this.symbol[j].symbolSize = temp.data.symbolSize
                             this.drawLine();
                             break;
                           }
