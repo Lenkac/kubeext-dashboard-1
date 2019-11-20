@@ -35,7 +35,7 @@ const templateRouter = {
         path: 'testcase',
         component: () => import('@/views/testcase/testcase'),
         name: 'VMTemplate',
-        meta: { title: '测试用例' }
+        meta: { title: '功能演示' }
       }
   ]
 }
