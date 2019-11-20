@@ -109,7 +109,6 @@ export default {
         // this.num = 1;
         // this.color = ["#ff9999", "#67b55b", "MediumTurquoise", "#0399d3"];
         getScheduleData(JSON.parse(this.json)).then(response => {
-              console.log(response.data);
               // this.failure = response.data.failure
               // this.tipData = response.data.tipData
               this.symbol = response.data.dm.data;
@@ -117,6 +116,7 @@ export default {
               this.animations = response.data.dm.animations
               this.categories = response.data.dm.categories
               this.colors = response.data.dm.colors
+              this.counter = 0
                this.drawLine();
               setInterval(function(){
                 if(this.counter < this.animations.length){
@@ -163,6 +163,7 @@ export default {
     drawLine() {
       // 基于准备好的dom，初始化echarts实例
       let myChart = this.$echarts.init(document.getElementById("myChart"));
+    
       myChart.setOption({
         title: {
           text: ""
@@ -251,7 +252,7 @@ export default {
             links: this.echartsData
           }
         ]
-      });
+      },true);
     }
   }
 };
