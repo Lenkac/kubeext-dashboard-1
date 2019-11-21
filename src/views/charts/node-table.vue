@@ -302,10 +302,12 @@ export default {
         else{
           if(res.hasOwnProperty(element)){
             res = res[element]
+            if(res == undefined) {
+              res = "unknown"
+            }
           }else [
             res = "unknown"
           ]
-
         }
       });
       //console.log(res)

@@ -21,6 +21,18 @@
               :type="item.key"
               :tabName="item.key"
             >
+              <el-button
+                type="primary"
+                style="float:left;margin:10px;margin-top:0px;margin-left:15px"
+                @click.native="analyze"
+              >分析</el-button>
+              <p style="line-height:30px;height:50px">当前SDK：{{SDK}} &nbsp;&nbsp; 版本：{{version}}</p>
+              <api-analysis
+                ref="liuhuan"
+                :message="parentMessage"
+                v-show="test1!=test"
+                v-on:childByValue="childByValue"
+              />
               <el-row :gutter="20" style="margin:5px;">
                 <el-col
                   :span="8"
@@ -79,16 +91,27 @@ import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 // import Kanban from '@/components/Kanban'
 import EditableJson from "@/components/EditableJson";
 import { getJsonData, updateJsonData } from "@/api/commonData";
+import apiAnalysis from "@/views/config/apiAnalysis";
 
 export default {
   name: "Template",
   directives: { elDragDialog },
   components: {
-    EditableJson
+    EditableJson,
+    apiAnalysis
+  },
+  props: {
+    tabName: {
+      type: String,
+      default: "VirtualMachine"
+    }
   },
   data() {
     return {
       schedulingType: "未选择",
+      test: "hhh",
+      test1: "hhh",
+      parentMessage: "",
       dialogTableVisible: false,
       options: [{ value: "", label: "" }],
       modelType: "",
@@ -102,7 +125,9 @@ export default {
       height: "height: 200px",
       title: "",
       activeName: "",
-      tabMapOptions: []
+      tabMapOptions: [],
+      SDK: "",
+      version: ""
     };
   },
 
@@ -126,29 +151,65 @@ export default {
       this.activeName = response.data.activeName;
       console.log(this.tabMapOptions);
       getJsonData({
+        kind: "api",
+        operator: this.activeName
+      }).then(response => {
+        this.SDK = response.data.git;
+        this.version = response.data.version;
+        getJsonData({
+          kind: this.lifecycle_kind,
+          operator: this.activeName
+        }).then(response => {
+          this.value = response.data;
+          console.log(this.value);
+        });
+      });
+    });
+  },
+
+  methods: {
+    analyze() {
+      this.value = [];
+      this.parentMessage = "aaa";
+      this.test = "hh"
+    },
+    childByValue: function(childValue) {
+      if (childValue == "hh") {
+        this.test = "hhh";
+        this.analyzeTemplete();
+      }
+    },
+    analyzeTemplete() {
+      getJsonData({
         kind: this.lifecycle_kind,
         operator: this.activeName
       }).then(response => {
         this.value = response.data;
         console.log(this.value);
       });
-    });
-  },
+      this.parentMessage = "bbb";
+    },
 
-  methods: {
     handleClick(tab, event) {
       console.log(tab.name, event);
       getJsonData({
-        kind: this.lifecycle_kind,
+        kind: "api",
         operator: this.activeName
       }).then(response => {
-        this.value = response.data;
-        if (this.activeName == "virtualmachine") {
-          this.height = "height: 240px";
-        } else if (this.activeName == "container") {
-          this.height = "height: 190px";
-        }
-        console.log(this.value);
+        this.SDK = response.data.git;
+        this.version = response.data.version;
+        getJsonData({
+          kind: this.lifecycle_kind,
+          operator: this.activeName
+        }).then(response => {
+          this.value = response.data;
+          if (this.activeName == "virtualmachine") {
+            this.height = "height: 240px";
+          } else if (this.activeName == "container") {
+            this.height = "height: 190px";
+          }
+          console.log(this.value);
+        });
       });
     },
     showDialog(index) {

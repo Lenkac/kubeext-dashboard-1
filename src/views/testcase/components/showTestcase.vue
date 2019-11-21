@@ -104,15 +104,21 @@
         style="width:650px;height:400px;display:block;float:right"
         :src="monitor_rs"
       ></iframe>
-    <div v-if="this.tabName != this.defaultImage && this.tabName != this.lazyImage">
-      <div      
-        v-for="item in this.chart"
-        :key="item.name"
-        :id="item.name"
-        :style="{width: '200px', height: '250px',float:'left'}"
+      <div
+        v-if="this.tabName != this.defaultImage && this.tabName != this.lazyImage && this.tabName != this.vmMigrate"
+      >
+        <div
+          v-for="item in this.chart"
+          :key="item.name"
+          :id="item.name"
+          :style="{width: '200px', height: '250px',float:'left'}"
+        ></div>
+      </div>
+      <div
+        :id="vmMigrate"
+        v-if="this.tabName == this.vmMigrate"
+        :style="{width: '500px', height: '250px',float:'right'}"
       ></div>
-    </div>
-      
     </div>
   </div>
 </template>
@@ -173,7 +179,8 @@ export default {
       kind: "TestCase",
       index: 0,
       monitor_rs: "",
-      nodeName: ""
+      nodeName: "",
+      vmMigrate: "vmmigration"
     };
   },
   mounted() {},
@@ -222,35 +229,37 @@ export default {
     },
 
     fetchStatus() {
-      if (this.tabName == "defaultImagePull" || this.tabName == "lazyImagePull") {
+      if (
+        this.tabName == "defaultImagePull" ||
+        this.tabName == "lazyImagePull"
+      ) {
         this.monitor_rs = getMonitorInfo(this.kind, this.nodeName);
         getSthFromTemplate({
           kind: this.kind,
           name: this.tabName.toLowerCase()
         }).then(response => {
-          if(!response.hasOwnProperty("data")){
-            this.list = []
-          }else{
-            if (response.data.spec.hasOwnProperty("results")) {
-            var listtemp = [];
-            var results = response.data.spec.results;
-            for (let i = 0; i < results.length; i++) {
-              if (results[i].status == "Complete") {
-                listtemp.push(results[i]);
-              }
-            }
-            this.list = listtemp;
-            console.log(this.list);
+          if (!response.hasOwnProperty("data")) {
+            this.list = [];
           } else {
-            this.$message({
-              message: "正在执行！",
-              type: "success"
-            });
+            if (response.data.spec.hasOwnProperty("results")) {
+              var listtemp = [];
+              var results = response.data.spec.results;
+              for (let i = 0; i < results.length; i++) {
+                if (results[i].status == "Complete") {
+                  listtemp.push(results[i]);
+                }
+              }
+              this.list = listtemp;
+              console.log(this.list);
+            } else {
+              this.$message({
+                message: "正在执行！",
+                type: "success"
+              });
+            }
           }
-          }
-          
         });
-      } else {
+      } else if (this.tabName == this.vmMigrate) {
         getSthFromTemplate({
           kind: this.kind,
           name: this.tabName.toLowerCase()
@@ -287,23 +296,95 @@ export default {
             });
           }
         });
+      } else {
+        getSthFromTemplate({
+          kind: this.kind,
+          name: this.tabName.toLowerCase()
+        }).then(response => {
+          if (response.data.spec.hasOwnProperty("results")) {
+            var listtemp = [];
+            var results = response.data.spec.results;
+            for (let i = 0; i < results.length; i++) {
+              if (results[i].status == "Complete") {
+                listtemp.push(results[i]);
+                var children = results[i].podResults;
+                for (let j = 0; j < children.length; j++) {
+                  if (children[j].deployed == true) {
+                    children[j].itemStyle = {
+                      color: "#33cc33"
+                    };
+                  } else {
+                    children[j].itemStyle = {
+                      color: "#ff3300"
+                    };
+                  }
+                  if (children[j].deployed == true && children[j].x == 800) {
+                    this.testData.link = [
+                      {
+                        source: 0,
+                        target: 1,
+                        lineStyle: {
+                          normal: {
+                            width: 5,
+                            curveness: 0.2
+                          }
+                        }
+                      }
+                    ];
+                  } else {
+                    var links = [
+                      [
+                        {
+                          source: 0,
+                          target: 1,
+                          lineStyle: {
+                            normal: {
+                              width: 5,
+                              curveness: 0.2
+                            }
+                          }
+                        }
+                      ],
+                      []
+                    ];
+                  }
+                }
+                this.testData.children = children;
+                setInterval(
+                  function() {
+                    var flag = 0;
+                    this.testData.link = [links[i]];
+                    this.migrateVM(this.testData);
+                  }.bind(this),
+                  500
+                );
+              }
+            }
+            this.list = listtemp;
+            console.log(this.list);
+          } else {
+            this.$message({
+              message: "正在执行！",
+              type: "success"
+            });
+          }
+        });
       }
-        
-      
     },
 
     deleteTestcase() {
-      getJsonData({
-        kind: this.kind,
-        operator: this.tabName
-      }).then(response => {
-        deletSthFromTemplate({
-          json: response.data,
-          kind: this.kind
-        }).then(response => {
-          this.fetchStatus()
-        });
-      });
+      // getJsonData({
+      //   kind: this.kind,
+      //   operator: this.tabName
+      // }).then(response => {
+      //   deletSthFromTemplate({
+      //     json: response.data,
+      //     kind: this.kind
+      //   }).then(response => {
+      //     this.fetchStatus();
+      //   });
+      // });
+      this.migrateVM();
     },
 
     fetchData() {
@@ -335,7 +416,7 @@ export default {
           {
             type: "tree",
 
-            data: [this.testData],
+            data: [testData.children],
 
             left: "2%",
             right: "2%",
@@ -373,6 +454,40 @@ export default {
               }
             },
             animationDurationUpdate: 750
+          }
+        ]
+      });
+    },
+
+    migrateVM(testData) {
+      // 基于准备好的dom，初始化echarts实例
+      if (flag == 0) {
+        flag++;
+      } else {
+        flag--;
+      }
+
+      let myChart = this.$echarts.init(document.getElementById(this.vmMigrate));
+
+      myChart.setOption({
+        animationDurationUpdate: 1500,
+        animationEasingUpdate: "quinticInOut",
+        series: [
+          {
+            type: "graph",
+            layout: "none",
+            symbolSize: 50,
+            roam: true,
+            label: {
+              normal: {
+                show: true
+              }
+            },
+            edgeSymbol: ["circle", "arrow"],
+            edgeSymbolSize: [4, 10],
+
+            data: [testData.children],
+            links: [testData.link]
           }
         ]
       });
