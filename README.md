@@ -53,6 +53,20 @@ Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/gui
 
 [Preview](https://panjiachen.github.io/vue-element-admin)
 
+## Startup
+
+```
+vncserver
+
+cd /home/iscas/VM-terminal/websockify
+./websockify.py --web ../ --target-config=./token/token.conf 6080
+
+cd /home/iscas/kubeext-backend
+java -jar kubeext-backend-1.4.0.jar
+
+cd /home/iscas/apache-tomcat-8.5.47/bin
+```
+
 ## License
 
 [MIT](https://github.com/PanJiaChen/vue-element-admin/blob/master/LICENSE)
