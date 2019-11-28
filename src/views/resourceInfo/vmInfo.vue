@@ -82,21 +82,19 @@ export default {
     return {
       tableKey: 0,
       list: null,
-      user: {},
       activeTab: 'activity',
       key: '',
       monitor_rs:{},
       node:'',
       objectName:'link',
-      viewerName:'vms',
+      viewerName:'VirtualMachine',
       nodeName:'',
       podList:'',
       listQuery:'',
       listLoading:'',
       columns:'',
-      ip:'',
       value: {},
-      kind: 'VirtualMachine'
+      kind: ''
     }
   },
   computed: {
@@ -107,16 +105,18 @@ export default {
     ])
   },
   created() {
-    this.getUser()
     this.key = this.$route.query.taskid
     this.vmName = this.$route.query.pod
     this.node = this.$route.query.node.substring(3)
+    this.kind = this.$route.query.tabName
 
-    this.monitor_rs = getMonitorInfo(this.kind, this.vmName)
+    this.monitor_rs = getMonitorInfo(this.viewerName, this.vmName, null)
           
     getColumns(this.kind).then(response => {
+      if (this.validateRes(response) == 1) {
       this.columns = response.data
         getListAllData({viewerName: this.kind}).then(response3 => {
+          if (this.validateRes(response3) == 1) {
           var data = response3.data
           //this.total = response3.total
           this.listLoading = false
@@ -129,7 +129,9 @@ export default {
             }
                 this.value = this.list
             console.log(this.list)
+          }
         })
+      }
     })
 
   },
@@ -137,14 +139,20 @@ export default {
     
   },
   methods: {
-    getUser() {
-      this.user = {
-        name: this.name,
-        role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
       }
     },
+   
     getList() {
       this.listLoading = true
       // getListAllData(this.listQuery).then(response => {

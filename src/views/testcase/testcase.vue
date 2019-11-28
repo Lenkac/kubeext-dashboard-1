@@ -23,10 +23,7 @@
 </template>
 
 <script>
-import {
-  getJsonData,
-  createSthFromTemplate
-} from "@/api/commonData";
+import { getJsonData, createSthFromTemplate } from "@/api/commonData";
 import { mapGetters } from "vuex";
 import InnerPane from "./components/showTestcase";
 
@@ -43,7 +40,7 @@ export default {
         fail: "danger"
       };
       return statusMap[status];
-    },
+    }
   },
   data() {
     return {
@@ -52,28 +49,38 @@ export default {
       catalog_operator: "testcase",
       tabMapOptions: [],
       activeName: "testcase1",
-      innerTab: "left",
-    }
+      innerTab: "left"
+    };
   },
-  mounted() {
-    
-  },
+  mounted() {},
   created() {
-
     getJsonData({
       kind: this.catalog_kind,
       operator: this.catalog_operator
     }).then(response => {
-      this.tabMapOptions = response.data.tabMapOptions;
-      this.activeName = response.data.activeName;
-    });
+      if (this.validateRes(response) == 1) {
+        this.tabMapOptions = response.data.tabMapOptions;
+        this.activeName = response.data.activeName;
+      }
+    })
   },
   methods: {
-    handleClick() {
+    validateRes(res) {
+      if (res.code == 20000) {
+        return 1
+      } else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
+    },
 
-    }
+    handleClick() {}
   }
- 
 };
 </script>
 

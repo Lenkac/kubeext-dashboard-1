@@ -847,24 +847,6 @@ export default [
           hosts: [
             { key: 1, label: 'node1', value: 'node11' },
             { key: 2, label: 'node2', value: 'node2' }
-          ],
-          types: [
-            { key: 1, label: 'Deployment', value: 'Deployment' },
-            { key: 2, label: 'ReplicationController', value: 'ReplicationController' },
-            { key: 3, label: 'ReplicationSet', value: 'ReplicationSet' },
-            { key: 4, label: 'DaemonSet', value: 'DaemonSet' },
-            { key: 5, label: 'StatefulSet', value: 'StatefulSet' }
-          ],
-          vmActions: [
-            { key: 1, label: '更新VM操作系统', value: 'updateVmOs'},
-            { key: 2, label: '创建switch', value: 'createSwitch'},
-            { key: 3, label: 'startPool', value: 'startPool'},
-            { key: 4, label: '删除switch', value: 'deleteSwitch'},
-            { key: 5, label: 'deleteSwPort', value: 'deleteSwPort'},
-            { key: 6, label: '删除VM', value: 'deleteVM'},
-            { key: 7, label: 'createSwPort', value: 'createSwPort'},
-            { key: 8, label: '创建快照', value: 'createSnapshot'},
-            
           ]
         }
       }

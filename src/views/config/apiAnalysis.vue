@@ -60,6 +60,20 @@ export default {
       
     },
 
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
+    },
+
     drawLine(i) {
       let myChart = this.$echarts.init(document.getElementById("myChart"));
       myChart.setOption({

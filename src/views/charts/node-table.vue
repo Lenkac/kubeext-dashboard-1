@@ -38,13 +38,6 @@
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button v-for="item in actions" :key="item.key" :type="item.type" @click="handleUpdate(row, item.event)">
-            {{ item.name }}
-          </el-button>
-        </template>
-      </el-table-column>
     </el-table>
 
     <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
@@ -116,7 +109,6 @@ export default {
       dialogStatus: '',
       downloadLoading: false,
       columns: [],
-      actions: [],
       littleDataSource: {},
       filterForm: [],
       listQuery: {},
@@ -139,12 +131,16 @@ export default {
   },
   created() {
     getColumns(this.viewer).then(response => {
+      if (this.validateRes(response) == 1) {
       this.columns = response.data
         getListAllData({viewerName: this.viewer}).then(response3 => {
+          if (this.validateRes(response3) == 1) {
           this.list = response3.data
           //this.total = response3.total
           this.listLoading = false
+          }
         })
+      }
     })
 
     getTemp({viewer: this.viewer}).then(response => {
@@ -159,12 +155,22 @@ export default {
     getFilterForm({viewer: this.viewer}).then(response => {
       this.filterForm = response.data
     })
-    getActions({viewer: this.viewer}).then(response => {
-      this.actions = response.data
-    })
 
   },
   methods: {
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
+    },
     deleteMenu(){
       // console.log(constantRoutes[9])
       // constantRoutes.splice(9,1)

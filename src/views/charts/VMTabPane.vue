@@ -139,7 +139,7 @@ import {
   setNewRouter
 } from "@/router/index";
 import Bus from "@/utils/Bus";
-import {connectTerminal} from '@/api/commonKindMethod'
+import { connectTerminal } from "@/api/commonKindMethod";
 
 export default {
   name: "podTable",
@@ -206,30 +206,28 @@ export default {
     getColumns(this.tabName).then(response => {
       this.columns = response.data;
       getListAllData({ viewerName: this.tabName }).then(response3 => {
-        console.log(response3)
-        if(response3.code == 50000) {
-          
-          this.listTemp = []
-          this.listTemp.length = 0
-          this.listLoading = false
-        }else {
+        console.log(response3);
+        if (response3.code == 50000) {
+          this.listTemp = [];
+          this.listTemp.length = 0;
+          this.listLoading = false;
+        } else {
           this.listTemp = response3.data;
-        this.listLoading = false;
-        console.log(this.listTemp);
-        getJsonData({
-          kind: this.action_kind,
-          operator: this.tabName
-        }).then(response => {
-          this.actions = response.data;
-          for (var i = 0; i < this.listTemp.length; i++) {
-            this.list.push({});
-            this.list[i].json = this.listTemp[i];
-            this.list[i].actions = this.actions;
-            this.list[i].val = "";
-          }
-        });
+          this.listLoading = false;
+          console.log(this.listTemp);
+          getJsonData({
+            kind: this.action_kind,
+            operator: this.tabName
+          }).then(response => {
+            this.actions = response.data;
+            for (var i = 0; i < this.listTemp.length; i++) {
+              this.list.push({});
+              this.list[i].json = this.listTemp[i];
+              this.list[i].actions = this.actions;
+              this.list[i].val = "";
+            }
+          });
         }
-        
       });
     });
 
@@ -251,26 +249,43 @@ export default {
       if (this.successCreate == "success") {
         this.list = [];
         getListAllData({ viewerName: this.tabName }).then(response3 => {
-          this.listTemp = response3.data;
-          this.listLoading = false;
-          console.log(this.listTemp);
-          getJsonData({
-            kind: this.action_kind,
-            operator: this.tabName
-          }).then(response => {
-            this.actions = response.data;
-            for (var i = 0; i < this.listTemp.length; i++) {
-              this.list.push({});
-              this.list[i].json = this.listTemp[i];
-              this.list[i].actions = this.actions;
-              this.list[i].val = "";
-            }
-          });
+          if (this.validateRes(response3) == 1) {
+            this.listTemp = response3.data;
+            this.listLoading = false;
+            console.log(this.listTemp);
+            getJsonData({
+              kind: this.action_kind,
+              operator: this.tabName
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                this.actions = response.data;
+                for (var i = 0; i < this.listTemp.length; i++) {
+                  this.list.push({});
+                  this.list[i].json = this.listTemp[i];
+                  this.list[i].actions = this.actions;
+                  this.list[i].val = "";
+                }
+              }
+            });
+          }
         });
       }
     }
   },
   methods: {
+    validateRes(res) {
+      if (res.code == 20000) {
+        return 1;
+      } else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0;
+      }
+    },
     showDialog(row) {
       console.log(row);
     },
@@ -300,9 +315,9 @@ export default {
     handleDrag() {
       this.$refs.select.blur();
     },
-    
+
     openTerminal(row) {
-        connectTerminal(this.tabName, row)
+      connectTerminal(this.tabName, row);
     },
 
     getList() {
@@ -366,7 +381,7 @@ export default {
                   }
                 });
               } else {
-                  this.dialogTableVisible = true;
+                this.dialogTableVisible = true;
                 let nameVariables = Object.keys(
                   response.data.spec.lifecycle[event]
                 );

@@ -211,22 +211,26 @@ export default {
       kind: this.catalog_kind,
       operator: this.catalog_operator
     }).then(response => {
+      if (this.validateRes(response) == 1) {
       this.tabMapOptions = response.data.tabMapOptions;
       this.activeName = response.data.activeName;
-    });
-    // getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-    //   this.value = response.data
-    //   for(var i = 0; i < this.value.length; i++) {
-    //     if(this.value[i].action == "Pod") {
-    //        this.createPodJson = this.value[i].json
-    //        this.kind = "Pod"
-    //        //console.log(this.createPodJson)
-    //        //this.containerVariables = this.value[i].createVariables
-    //     }
-    //   }
-    // })
+      }
+    })
   },
   methods: {
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
+    },
     handleClick(tab, event) {
       console.log(tab.name, event);
       this.kind = tab.name;

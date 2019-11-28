@@ -28,7 +28,6 @@
               >分析</el-button>
               <p style="line-height:30px;height:50px">当前SDK：{{SDK}} &nbsp;&nbsp; 版本：{{version}}</p>
               <api-analysis
-                ref="liuhuan"
                 :message="parentMessage"
                 v-show="test1!=test"
                 v-on:childByValue="childByValue"
@@ -88,7 +87,6 @@
 
 <script>
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
-// import Kanban from '@/components/Kanban'
 import EditableJson from "@/components/EditableJson";
 import { getJsonData, updateJsonData } from "@/api/commonData";
 import apiAnalysis from "@/views/config/apiAnalysis";
@@ -122,6 +120,7 @@ export default {
       catalog_operator: "lifecycle",
       lifecycle_kind: "lifecycle",
       lifecycle_operator: "container",
+      api_kind: "api",
       height: "height: 200px",
       title: "",
       activeName: "",
@@ -131,47 +130,57 @@ export default {
     };
   },
 
-  mounted() {
-    this.$store
-      .dispatch("taskData/getAllTaskData")
-      .then((resolve, reject) => {
-        console.log("resolve:", resolve);
-        this.list1 = resolve["data"];
-      })
-      .catch((resolve, reject) => {
-        console.log("reject:", reject);
-      });
-  },
+  mounted() {},
   created() {
     getJsonData({
       kind: this.catalog_kind,
       operator: this.catalog_operator
     }).then(response => {
-      this.tabMapOptions = response.data.tabMapOptions;
-      this.activeName = response.data.activeName;
-      console.log(this.tabMapOptions);
-      getJsonData({
-        kind: "api",
-        operator: this.activeName
-      }).then(response => {
-        this.SDK = response.data.git;
-        this.version = response.data.version;
+      if (this.validateRes(response) == 1) {
+        this.tabMapOptions = response.data.tabMapOptions;
+        this.activeName = response.data.activeName;
+
         getJsonData({
-          kind: this.lifecycle_kind,
+          kind: this.api_kind,
           operator: this.activeName
         }).then(response => {
-          this.value = response.data;
-          console.log(this.value);
+          if (this.validateRes(response) == 1) {
+            this.SDK = response.data.git;
+            this.version = response.data.version;
+
+            getJsonData({
+              kind: this.lifecycle_kind,
+              operator: this.activeName
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                this.value = response.data;
+                console.log(this.value);
+              }
+            });
+          }
         });
-      });
+      }
     });
   },
 
   methods: {
+    validateRes(res) {
+      if (res.code == 20000) {
+        return 1;
+      } else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0;
+      }
+    },
     analyze() {
       this.value = [];
       this.parentMessage = "aaa";
-      this.test = "hh"
+      this.test = "hh";
     },
     childByValue: function(childValue) {
       if (childValue == "hh") {

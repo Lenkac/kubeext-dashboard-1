@@ -189,15 +189,31 @@ export default {
       kind: this.kind,
       operator: this.tabName
     }).then(response => {
-      this.value = response.data.spec.testcases;
-      this.chart = response.data.spec.testcases;
+      if (this.validateRes(response) == 1) {
+        this.value = response.data.spec.testcases;
+        this.chart = response.data.spec.testcases;
+      }
     });
 
-    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName);
+    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName, null);
   },
   methods: {
     handleDrag() {
       this.$refs.select.blur();
+    },
+
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
     },
 
     editTestcase(index) {
@@ -259,7 +275,11 @@ export default {
             }
           }
         });
-      } else if (this.tabName == this.vmMigrate) {
+      } else if (
+        this.tabName == "defaultSched" ||
+        this.tabName == "prioritySched" ||
+        this.tabName == "overpSched"
+      ) {
         getSthFromTemplate({
           kind: this.kind,
           name: this.tabName.toLowerCase()
@@ -319,6 +339,7 @@ export default {
                     };
                   }
                   if (children[j].deployed == true && children[j].x == 800) {
+                    flag = 1;
                     this.testData.link = [
                       {
                         source: 0,
@@ -373,18 +394,17 @@ export default {
     },
 
     deleteTestcase() {
-      // getJsonData({
-      //   kind: this.kind,
-      //   operator: this.tabName
-      // }).then(response => {
-      //   deletSthFromTemplate({
-      //     json: response.data,
-      //     kind: this.kind
-      //   }).then(response => {
-      //     this.fetchStatus();
-      //   });
-      // });
-      this.migrateVM();
+      getJsonData({
+        kind: this.kind,
+        operator: this.tabName
+      }).then(response => {
+        deletSthFromTemplate({
+          json: response.data,
+          kind: this.kind
+        }).then(response => {
+          this.fetchStatus();
+        });
+      });
     },
 
     fetchData() {
@@ -416,7 +436,7 @@ export default {
           {
             type: "tree",
 
-            data: [testData.children],
+            data: [testData],
 
             left: "2%",
             right: "2%",

@@ -5,9 +5,10 @@
       style="display:block;margin-left: 20px;margin-top: 20px;"
       @click="execute()"
     >执行</el-button>
+    <p style="margin-left:20px">注意：index必须从1开始且连续，注意任务应用关联性！</p>
     <div
       class="card-editor-container"
-      style="width: 30%; height: 400px;float: left;margin-top:20px;margin-left:20px"
+      style="width: 30%; height: 400px;float: left;margin-top:10px;margin-left:20px"
     >
       <!-- <json-editor ref="EditableJson" v-model="value" /> -->
       <EditableJson v-model="json" />
@@ -59,7 +60,6 @@ export default {
       tipData: [],
       data: [],
       json: {},
-      num: 0,
       colors: [],
       failure: [],
       animations: [],
@@ -80,10 +80,25 @@ export default {
   mounted() {
     getJsonData({ kind: "mcmf", operator: "simpleparameter" }).then(
           response => {
+            if (this.validateRes(response) == 1) {
             this.json = response.data
+            }
           })
   },
   methods: {
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
+    },
     execute() {
         //                 AgetScheduleData().then(response => {
         //           console.log(response.data)
@@ -106,11 +121,13 @@ export default {
         //         type: 'success'
         //       })}.bind(this),5000)
 
-        // this.num = 1;
         // this.color = ["#ff9999", "#67b55b", "MediumTurquoise", "#0399d3"];
         getScheduleData(JSON.parse(this.json)).then(response => {
               // this.failure = response.data.failure
               // this.tipData = response.data.tipData
+              this.symbol = []
+              this.echartsData = []
+              this.animations = []
               this.symbol = response.data.dm.data;
               this.echartsData = response.data.dm.links;
               this.animations = response.data.dm.animations
@@ -156,9 +173,7 @@ export default {
               }.bind(this),500)
               
             });
-        
             
-            this.num = 0;
     },
     drawLine() {
       // 基于准备好的dom，初始化echarts实例

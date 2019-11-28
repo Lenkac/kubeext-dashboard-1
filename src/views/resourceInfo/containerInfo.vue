@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">    
+    <el-row :gutter="20">
       <el-col :span="13" style="margin-bottom:32px;">
         <el-card>
           <div class="card-editor-container">
@@ -8,8 +8,8 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="11" style="margin-bottom:32px;"> 
-        <el-card>       
+      <el-col :span="11" style="margin-bottom:32px;">
+        <el-card>
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="24">
               <iframe class="rate_iframe" :src="monitor_rs.cpu"></iframe>
@@ -17,214 +17,242 @@
           </el-row>
         </el-card>
         <el-card>
-        <el-row type="flex" class="row-bg">
-          <el-col :span="24">
-            <iframe class="rate_iframe" :src="monitor_rs.memory"></iframe>
-          </el-col>
-        </el-row>
-      </el-card>
-      <el-card>
-        <el-row type="flex" class="row-bg" justify="center">
-          <el-col :span="24">
-            <iframe class="rate_iframe" :src="monitor_rs.fs"></iframe>
-          </el-col>
-        </el-row>
-      </el-card>
-      <el-card> 
-        <el-row>
-          <el-col :span="24">
-            <iframe class="IO_iframe" :src="monitor_rs.network"></iframe>
-          </el-col>
-        </el-row>  
-      </el-card>      
-      </el-col>   
-    </el-row>
-    <el-row> 
-    <el-card>
-          <div>
-            <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-    <el-table-column label="容器名称" width="130px" align="center">
-        <template  slot-scope="scope">
-          <span v-for="x in scope.row.spec.containers" :key="x.name" >{{ x.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
-        <template  slot-scope="scope">
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
-        </template>
-      </el-table-column>
-      </el-table>
-      </div>
+          <el-row type="flex" class="row-bg">
+            <el-col :span="24">
+              <iframe class="rate_iframe" :src="monitor_rs.memory"></iframe>
+            </el-col>
+          </el-row>
         </el-card>
+        <el-card>
+          <el-row type="flex" class="row-bg" justify="center">
+            <el-col :span="24">
+              <iframe class="rate_iframe" :src="monitor_rs.fs"></iframe>
+            </el-col>
+          </el-row>
+        </el-card>
+        <el-card>
+          <el-row>
+            <el-col :span="24">
+              <iframe class="IO_iframe" :src="monitor_rs.network"></iframe>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-card>
+        <div>
+          <el-table
+            :key="tableKey"
+            v-loading="listLoading"
+            :data="list"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%;"
+            @sort-change="sortChange"
+          >
+            <el-table-column label="容器名称" width="130px" align="center">
+              <template slot-scope="scope">
+                <span v-for="x in scope.row.spec.containers" :key="x.name">{{ x.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-for="item in columns"
+              :key="item.key"
+              :label="item.label"
+              :width="item.width"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-card>
     </el-row>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import {getMonitorInfo} from '@/utils/getResource'
-import JsonEditor from '@/components/JsonEditor'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
+import { mapGetters } from "vuex";
+import { getMonitorInfo } from "@/utils/getResource";
+import JsonEditor from "@/components/JsonEditor";
+import {
+  getListAllData,
+  getColumns,
+  getActions,
+  getFilterForm,
+  getLittleDataSource,
+  getRules,
+  getTemp
+} from "@/api/commonData";
 
 export default {
-  name: 'containerInfo',
-  components: {JsonEditor },
+  name: "containerInfo",
+  components: { JsonEditor },
   data() {
     return {
       tableKey: 0,
       list: null,
-      user: {},
-      activeTab: 'activity',
-      key: '',
-      monitor_rs:{},
-      node:'',
-      objectName:'link',
-      viewerName:'Pod',
-      nodeName:'',
-      podList:'',
-      listQuery:'',
-      listLoading:'',
-      columns:'',
-      ip:'',
+      activeTab: "activity",
+      key: "",
+      monitor_rs: {},
+      node: "",
+      objectName: "link",
+      viewerName: "Pod",
+      nodeName: "",
+      podList: "",
+      listQuery: "",
+      listLoading: "",
+      columns: "",
       value: {},
-      tabName: ''
-    }
+      tabName: ""
+    };
   },
   computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'roles'
-    ])
+    ...mapGetters(["name", "avatar", "roles"])
   },
   created() {
-    this.getUser()
-    this.key = this.$route.query.taskid
+    this.key = this.$route.query.taskid;
     this.podName = this.$route.query.pod;
-    this.node = this.$route.query.node;
+    this.nodeName = this.$route.query.node;
     this.tabName = this.$route.query.tabName;
 
-    this.monitor_rs = getMonitorInfo(this.viewerName, this.podName)
-      
-    getColumns(this.tabName).then(response => {
-      this.columns = response.data
-        getListAllData({viewerName: this.tabName}).then(response3 => {
-          var data = response3.data
-          //this.total = response3.total
-          this.listLoading = false
-          for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name == this.podName) {
-                this.value = data[i]
-              }
-            }           
-        })
-    })
+    this.monitor_rs = getMonitorInfo(this.viewerName, this.nodeName, this.podName);
 
+    getColumns(this.tabName).then(response => {
+      if (this.validateRes(response) == 1) {
+        this.columns = response.data;
+        getListAllData({ viewerName: this.tabName }).then(response3 => {
+          if (this.validateRes(response3) == 1) {
+            var data = response3.data;
+            //this.total = response3.total
+            this.listLoading = false;
+            for (var i = 0; i < data.length; i++) {
+              if (data[i].metadata.name == this.podName) {
+                this.value = data[i];
+              }
+            }
+          }
+        });
+      }
+    });
   },
-  mounted() {
-    
-  },
+  mounted() {},
   methods: {
-    getUser() {
-      this.user = {
-        name: this.name,
-        role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar
+    validateRes(res) {
+      if (res.code == 20000) {
+        return 1;
+      } else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0;
       }
     },
+
     getList() {
-      this.listLoading = true
-      // getListAllData(this.listQuery).then(response => {
-      //   this.list = response.data
-      //   this.total = response.total
-      //   this.listLoading = false
-      // })
+      this.listLoading = true;
     },
     handleFilter() {
-      this.listQuery.pageNum = 1
-      this.getList()
+      this.listQuery.pageNum = 1;
+      this.getList();
     },
     sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
+      const { prop, order } = data;
+      if (prop === "id") {
+        this.sortByID(order);
       }
     },
     sortByID(order) {
-      this.handleFilter()
+      this.handleFilter();
     },
-    getInputValue(scope,longKey){
-      if( JSON.stringify(scope)=='{}'){
-        return ''
+    getInputValue(scope, longKey) {
+      if (JSON.stringify(scope) == "{}") {
+        return "";
       }
-      if( longKey == "" || longKey == undefined || longKey == null || !longKey){
-        return ''
+      if (
+        longKey == "" ||
+        longKey == undefined ||
+        longKey == null ||
+        !longKey
+      ) {
+        return "";
       }
-      if( longKey.indexOf('\.') < 0 ){
-        return scope[longKey]
+      if (longKey.indexOf(".") < 0) {
+        return scope[longKey];
       }
-      var keys = longKey.split("\.")
-      var res =scope;
+      var keys = longKey.split(".");
+      var res = scope;
       keys.forEach(element => {
-        if(element.indexOf('\[') > 0){
-          res = res[element.substring(0,element.indexOf('\['))]
-          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
-        }
-        else{
-          res = res[element]
+        if (element.indexOf("[") > 0) {
+          res = res[element.substring(0, element.indexOf("["))];
+          res =
+            res[
+              parseInt(
+                element.substring(
+                  element.indexOf("[") + 1,
+                  element.indexOf("]")
+                )
+              )
+            ];
+        } else {
+          res = res[element];
         }
       });
       //console.log(res)
-      return res
+      return res;
     },
-    updateInputValue(scope,longKey,event){
-      if( longKey.indexOf('\.') < 0 ){
-         scope[longKey] = event
-         return 
+    updateInputValue(scope, longKey, event) {
+      if (longKey.indexOf(".") < 0) {
+        scope[longKey] = event;
+        return;
       }
-      var keys = longKey.split("\.")
-      var obj = scope
-      for (var i=0 ;i < keys.length -1 ;i++){
-        var element = keys[i]
-        if(element.indexOf('\[') > 0){
-          obj = obj[element.substring(0,element.indexOf('\['))]
-          obj = obj[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
-        }
-        else{
-          obj = obj[element]
+      var keys = longKey.split(".");
+      var obj = scope;
+      for (var i = 0; i < keys.length - 1; i++) {
+        var element = keys[i];
+        if (element.indexOf("[") > 0) {
+          obj = obj[element.substring(0, element.indexOf("["))];
+          obj =
+            obj[
+              parseInt(
+                element.substring(
+                  element.indexOf("[") + 1,
+                  element.indexOf("]")
+                )
+              )
+            ];
+        } else {
+          obj = obj[element];
         }
       }
-      obj[keys[keys.length-1]] = event
+      obj[keys[keys.length - 1]] = event;
     }
-  },
-}
+  }
+};
 </script>
 <style lang="scss" scoped>
-.iframe{
+.iframe {
   width: 280px;
   height: 135px;
   border: 0ch;
-  }
-.rate_iframe{
+}
+.rate_iframe {
   width: 562px;
   height: 150px;
   border: 0ch;
-  }
-.IO_iframe{
+}
+.IO_iframe {
   width: 562px;
   height: 150px;
   border: 0ch;
-  }
+}
 .board {
   margin-left: 20px;
   margin-bottom: 20px;
@@ -233,7 +261,7 @@ export default {
   flex-direction: row;
   align-items: flex-start;
 }
-.card-editor-container{
+.card-editor-container {
   position: relative;
   width: 100%;
   height: 70%;

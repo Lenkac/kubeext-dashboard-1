@@ -241,26 +241,43 @@ export default {
       if (this.successCreate == "success") {
         this.list = [];
         getListAllData({ viewerName: this.tabName }).then(response3 => {
-          this.listTemp = response3.data;
-          this.listLoading = false;
-          console.log(this.listTemp);
-          getJsonData({
-            kind: this.action_kind,
-            operator: this.tabName
-          }).then(response => {
-            this.actions = response.data;
-            for (var i = 0; i < this.listTemp.length; i++) {
-              this.list.push({});
-              this.list[i].json = this.listTemp[i];
-              this.list[i].actions = this.actions;
-              this.list[i].val = "";
-            }
-          });
+          if (this.validateRes(response3) == 1) {
+            this.listTemp = response3.data;
+            this.listLoading = false;
+            console.log(this.listTemp);
+            getJsonData({
+              kind: this.action_kind,
+              operator: this.tabName
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                this.actions = response.data;
+                for (var i = 0; i < this.listTemp.length; i++) {
+                  this.list.push({});
+                  this.list[i].json = this.listTemp[i];
+                  this.list[i].actions = this.actions;
+                  this.list[i].val = "";
+                }
+              }
+            });
+          }
         });
       }
     }
   },
   methods: {
+    validateRes(res) {
+      if (res.code == 20000) {
+        return 1;
+      } else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0;
+      }
+    },
     showDialog(row) {
       console.log(row);
     },
@@ -365,16 +382,16 @@ export default {
             }
           } else {
             this.lifecycle = false;
-            getListAllData({viewerName: this.tabName}).then(response3 => {
-          var data = response3.data
-          //this.total = response3.total
-          this.listLoading = false
-          for(var i = 0; i < data.length; i++) {
-              if(data[i].metadata.name == name) {
-                this.createJsonData = data[i]
+            getListAllData({ viewerName: this.tabName }).then(response3 => {
+              var data = response3.data;
+              //this.total = response3.total
+              this.listLoading = false;
+              for (var i = 0; i < data.length; i++) {
+                if (data[i].metadata.name == name) {
+                  this.createJsonData = data[i];
+                }
               }
-            }           
-        })
+            });
           }
         });
         for (var key in this.list) {
@@ -392,7 +409,7 @@ export default {
         }
         this.createJsonData = JSON.parse(this.createJsonData);
         this.createJsonData.spec.lifecycle[this.operator] = temp;
-      }else{
+      } else {
         this.createJsonData = JSON.parse(this.createJsonData);
       }
 

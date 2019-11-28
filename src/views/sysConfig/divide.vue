@@ -34,9 +34,6 @@ import EditableJson from '@/components/EditableJson'
 import {getJsonData,saveContianerConfig,getListAllData } from '@/api/commonData'
 import { getPriorityData} from '@/api/taskData'
 
-
-
-
 export default {
   name: 'Template',
   directives: { elDragDialog },
@@ -69,29 +66,20 @@ export default {
   },
   
   mounted() {
-    this.$store.dispatch('taskData/getAllTaskData').then((resolve, reject) => {
-      console.log('resolve:', resolve)
-      this.list1 = resolve['data']
-    }).catch((resolve, reject) => {
-      console.log('reject:', reject)
-    })
   },
   created() {
       
         getListAllData({viewerName: this.viewer}).then(response3 => {
-          console.log(response3.data)
+          if (this.validateRes(response3) == 1) {
           for(var i = 0; i < response3.data.length;i++) {
               var a ={title: response3.data[i].metadata.name,json:response3.data[i]}
             this.value.push(a)
         }
         console.log(this.value)
+          }
          
         })
         
-        
-    
-
-
     
     // getJsonData({viewerName: "templates"}).then(response => {
     //   this.value = response.data;
@@ -102,6 +90,19 @@ export default {
   },
 
   methods: {
+    validateRes(res) {
+      if(res.code == 20000) {
+        return 1
+      }else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0
+      }
+    },
       applyA(index) {
       this.$message({
         message: '主机被设置为可配置超分！',

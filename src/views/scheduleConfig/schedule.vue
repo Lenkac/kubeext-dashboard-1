@@ -72,12 +72,6 @@ export default {
   },
   
   mounted() {
-    this.$store.dispatch('taskData/getAllTaskData').then((resolve, reject) => {
-      console.log('resolve:', resolve)
-      this.list1 = resolve['data']
-    }).catch((resolve, reject) => {
-      console.log('reject:', reject)
-    })
   },
   created() {
   
