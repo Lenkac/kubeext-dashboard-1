@@ -84,15 +84,6 @@ router.beforeEach(async (to, from, next) => {
         try {
           var roles = store.dispatch('user/getInfo')
           var rResponse = getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute')
-          //   if (!realRouter) {
-          //     .then(response => {
-          //       realRouter = (response.data)
-          //       
-          //       return {realRouter: realRouter, roles: roles}
-          //     })
-          //   }
-          // }).then( obj => {
-          // console.log(obj)
           Promise.all([roles, rResponse]).then(res => {
             console.log(res)
 
@@ -105,8 +96,6 @@ router.beforeEach(async (to, from, next) => {
             store.dispatch('permission/setRoutes', { realRouter: realRouter, viewRoles: viewRoles.roles }).then(() => {
               
             })
-
-
           })
           next({ ...to, replace: true })
         } catch (error) {
