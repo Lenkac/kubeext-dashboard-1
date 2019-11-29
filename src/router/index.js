@@ -119,10 +119,10 @@ export const asyncRoutes = [
   
 
   /** when your routing map is too long, you can split it into small modules **/
-  chartsRouter,
+  //chartsRouter,
   //tableRouter,
-  workloadsRouter,
-  templateRouter,
+  //workloadsRouter,
+  //templateRouter,
   //configRouter,
   
   { path: '*', redirect: '/404', hidden: true }

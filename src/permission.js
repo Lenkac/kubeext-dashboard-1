@@ -7,6 +7,7 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 //import {setAsyncRoutes,getAsyncRoutes} from '@/router/modules/asyncRoutes'
 import Layout from '@/layout'
+import { getColumns } from '@/api/commonData'
 
 const _import = require('@/router/_import_development')
 const whiteList = ['/login', '/auth-redirect']
@@ -57,9 +58,9 @@ let additionalRouter = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-var realRouter 
+var realRouter
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // start progress bar
   NProgress.start()
 
@@ -69,10 +70,13 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
-  if(!realRouter){
-    realRouter = additionalRouter
-    realRouter = filterAsyncRouter(realRouter)
-    router.addRoutes(realRouter)
+  if (!realRouter) {
+    getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute').then(response => {
+      realRouter = filterAsyncRouter(response.data)
+      router.addRoutes(realRouter)
+      console.log(realRouter)
+      console.log(router)
+    })
   }
 
   if (hasToken) {
@@ -84,6 +88,8 @@ router.beforeEach(async(to, from, next) => {
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
+              // generate accessible routes map based on roles
+      const accessRoutes = await store.dispatch('permission/setRoutes', realRouter)
         next()
       } else {
         try {

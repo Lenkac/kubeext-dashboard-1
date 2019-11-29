@@ -58,6 +58,12 @@ const actions = {
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
+  },
+  setRoutes({ commit }, realRouter) {
+    return new Promise(resolve => {
+      commit('SET_ROUTES', realRouter)
+      resolve(realRouter)
+    })
   }
 }
 
