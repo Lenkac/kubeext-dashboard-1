@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div>Title{{this.$route.query.title}}</div>
+    <div>Title{{this.$route.name}}</div>
     <div class="tab-container">
       <el-tabs
         v-model="activeName"
@@ -55,9 +55,10 @@ export default {
   },
   mounted() {},
   created() {
+    console.log(this.$route)
     getJsonData({
       kind: this.catalog_kind,
-      operator: this.catalog_operator
+      operator: this.$route.name
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.tabMapOptions = response.data.tabMapOptions;

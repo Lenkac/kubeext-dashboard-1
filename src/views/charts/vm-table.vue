@@ -201,31 +201,20 @@ export default {
       kind: "",
       createdTimes: 0,
       successCreate: ""
+      
     };
   },
   mounted() {},
   created() {
     getJsonData({
       kind: this.catalog_kind,
-      operator: this.catalog_operator
+      operator: this.$route.name
     }).then(response => {
       if (this.validateRes(response) == 1) {
       this.tabMapOptions = response.data.tabMapOptions;
       this.activeName = response.data.activeName;
-      console.log(this.tabMapOptions);
       }
     });
-    // getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-    //   this.value = response.data
-    //   for(var i = 0; i < this.value.length; i++) {
-    //     if(this.value[i].action == "Pod") {
-    //        this.createPodJson = this.value[i].json
-    //        this.kind = "Pod"
-    //        //console.log(this.createPodJson)
-    //        //this.containerVariables = this.value[i].createVariables
-    //     }
-    //   }
-    // })
   },
   methods: {
     validateRes(res) {

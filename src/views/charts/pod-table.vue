@@ -38,6 +38,8 @@
                 :type="item.key"
                 :tabName="item.key"
                 :successCreate="successCreate"
+                :resourceInfo="resourceInfo"
+                :catalog_operator="catalog_operator"
               />
             </keep-alive>
           </el-tab-pane>
@@ -177,7 +179,6 @@ export default {
       listLoading: true,
       dialogFormVisible: false,
       dialogStatus: "",
-      downloadLoading: false,
       columns: [],
       actions: [],
       littleDataSource: {},
@@ -202,14 +203,16 @@ export default {
       kind: "",
       createdTimes: 0,
       successCreate: "",
+      resourceInfo: "",
       ip:"133.133.135.35"
     };
   },
   mounted() {},
   created() {
+    this.resourceInfo = this.$route.meta.resourceInfo
     getJsonData({
       kind: this.catalog_kind,
-      operator: this.catalog_operator
+      operator: this.$route.name
     }).then(response => {
       if (this.validateRes(response) == 1) {
       this.tabMapOptions = response.data.tabMapOptions;

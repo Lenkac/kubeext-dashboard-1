@@ -19,7 +19,7 @@
       >
         <template slot-scope="scope">
           <router-link
-            :to="{path:path,query:{tabName:tabName,pod:getInputValue(scope.row.json,item.row),node:scope.row.json.spec.nodeName}}"
+            :to="{path:resourceInfo,query:{tabName:tabName,pod:getInputValue(scope.row.json,item.row),node:scope.row.json.spec.nodeName}}"
             v-if="item.kind == 'a'"
             tag="a"
             class="link"
@@ -156,6 +156,14 @@ export default {
     successCreate: {
       type: String,
       default: ""
+    },
+    resourceInfo: {
+      type: String,
+      default: "/resourceInfo/containerInfo"
+    },
+    catalog_operator: {
+      type: String,
+      default: "container"
     }
   },
   filters: {
@@ -170,7 +178,6 @@ export default {
   },
   data() {
     return {
-      path: "/resourceInfo/containerInfo",
       tableKey: 0,
       list: [],
       listLoading: true,
@@ -183,15 +190,12 @@ export default {
       listQuery: {},
       rules: {},
       temp: {},
-      viewer: "Pod",
       value: "",
       dialogTableVisible: false,
       createPodJson: {},
       createResource: "创建",
       catalog_kind: "Catalog",
-      catalog_operator: "container",
       action_kind: "Action",
-      action_operator: "container",
       tabMapOptions: [],
       createJsonData: {},
       Variables: [],
@@ -203,38 +207,44 @@ export default {
   mounted() {},
   created() {
     getColumns(this.tabName).then(response => {
-      this.columns = response.data;
-      getListAllData({ viewerName: this.tabName }).then(response3 => {
-        this.listTemp = response3.data;
-        this.listLoading = false;
-        console.log(this.listTemp);
-        getJsonData({
-          kind: this.action_kind,
-          operator: this.tabName
-        }).then(response => {
-          this.actions = response.data;
-          for (var i = 0; i < this.listTemp.length; i++) {
-            this.list.push({});
-            this.list[i].json = this.listTemp[i];
-            this.list[i].actions = this.actions;
-            this.list[i].val = "";
+      if (this.validateRes(response) == 1) {
+        this.columns = response.data;
+        getListAllData({ viewerName: this.tabName }).then(response3 => {
+          if (this.validateRes(response3) == 1) {
+            this.listTemp = response3.data;
+            this.listLoading = false;
+            console.log(this.listTemp);
+            getJsonData({
+              kind: this.action_kind,
+              operator: this.tabName
+            }).then(response => {
+              if (this.validateRes(response3) == 1) {
+                this.actions = response.data;
+                for (var i = 0; i < this.listTemp.length; i++) {
+                  this.list.push({});
+                  this.list[i].json = this.listTemp[i];
+                  this.list[i].actions = this.actions;
+                  this.list[i].val = "";
+                }
+              }
+            });
           }
         });
-      });
+      }
     });
 
-    getTemp({ viewer: this.viewer }).then(response => {
-      this.temp = response.data;
-    });
-    getLittleDataSource({ viewer: this.viewer }).then(response => {
-      this.littleDataSource = response.data;
-    });
-    getRules({ viewer: this.viewer }).then(response => {
-      this.rules = response.data;
-    });
-    getFilterForm({ viewer: this.viewer }).then(response => {
-      this.filterForm = response.data;
-    });
+    // getTemp({ viewer: this.viewer }).then(response => {
+    //   this.temp = response.data;
+    // });
+    // getLittleDataSource({ viewer: this.viewer }).then(response => {
+    //   this.littleDataSource = response.data;
+    // });
+    // getRules({ viewer: this.viewer }).then(response => {
+    //   this.rules = response.data;
+    // });
+    // getFilterForm({ viewer: this.viewer }).then(response => {
+    //   this.filterForm = response.data;
+    // });
   },
   watch: {
     successCreate(val) {
