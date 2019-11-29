@@ -59,10 +59,16 @@ const actions = {
       resolve(accessedRoutes)
     })
   },
-  setRoutes({ commit }, realRouter) {
+  setRoutes({ commit }, realRouter,roles) {
     return new Promise(resolve => {
-      commit('SET_ROUTES', realRouter)
-      resolve(realRouter)
+      let accessedRoutes
+      if (roles.includes('admin')) {
+        accessedRoutes = realRouter || []
+      } else {
+        accessedRoutes = filterAsyncRoutes(realRouter, roles)
+      }
+      commit('SET_ROUTES', accessedRoutes)
+      resolve(accessedRoutes)
     })
   }
 }
