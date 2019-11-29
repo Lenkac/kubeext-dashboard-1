@@ -81,12 +81,14 @@ router.beforeEach(async (to, from, next) => {
     else{
       if(!(store.getters.roles && store.getters.roles.length > 0)){
         try {
+          var acutalRoles
           store.dispatch('user/getInfo').then(roles => {
+            acutalRoles = roles;
             if (!realRouter) {
               getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute').then(response => {
                 realRouter = filterAsyncRouter(response.data)
                 router.addRoutes(realRouter)
-                store.dispatch('permission/setRoutes', realRouter,roles).then(()=>{
+                store.dispatch('permission/setRoutes', realRouter,acutalRoles).then(()=>{
                   console.log(realRouter)
                   next({ ...to, replace: true })
                 })
