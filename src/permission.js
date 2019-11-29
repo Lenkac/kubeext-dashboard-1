@@ -59,6 +59,7 @@ let additionalRouter = [
 ]
 
 var realRouter
+var viewRoles
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar
@@ -69,34 +70,45 @@ router.beforeEach(async (to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-  
-  if(!hasToken){
+
+  if (!hasToken) {
     next(`/login?redirect=${to.path}`)
     NProgress.done()
-  } else{
-    if(to.path === '/login'){
+  } else {
+    if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done()
     }
-    else{
-      if(!(store.getters.roles && store.getters.roles.length > 0)){
+    else {
+      if (!(store.getters.roles && store.getters.roles.length > 0) && !realRouter) {
         try {
-          store.dispatch('user/getInfo').then(roles => {
-            return roles
-          }).then(roles => {
-            if (!realRouter) {
-              getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute').then(response => {
-                realRouter = filterAsyncRouter(response.data)
-                router.addRoutes(realRouter)
-                return {realRouter: realRouter, roles: roles}
-              }).then( obj => {
-                store.dispatch('permission/setRoutes', obj.realRouter,obj.roles).then(()=>{
-                  console.log(realRouter)
-                  next({ ...to, replace: true })
-                })
-              })
-            }
+          var roles = store.dispatch('user/getInfo')
+          var rResponse = getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute')
+          //   if (!realRouter) {
+          //     .then(response => {
+          //       realRouter = (response.data)
+          //       
+          //       return {realRouter: realRouter, roles: roles}
+          //     })
+          //   }
+          // }).then( obj => {
+          // console.log(obj)
+          Promise.all([roles, rResponse]).then(res => {
+            console.log(res)
+
+            console.log(res[0])
+            realRouter = filterAsyncRouter(res[1].data)
+            viewRoles = res[0]
+            console.log(viewRoles)
+
+            router.addRoutes(realRouter)
+            store.dispatch('permission/setRoutes', { realRouter: realRouter, viewRoles: viewRoles.roles }).then(() => {
+              
+            })
+
+
           })
+          next({ ...to, replace: true })
         } catch (error) {
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')
@@ -104,7 +116,7 @@ router.beforeEach(async (to, from, next) => {
           NProgress.done()
         }
       }
-      else{
+      else {
         next()
         NProgress.done()
       }
