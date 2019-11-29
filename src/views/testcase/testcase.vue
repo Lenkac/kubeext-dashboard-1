@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <div>Title{{this.$route.query.title}}</div>
     <div class="tab-container">
       <el-tabs
         v-model="activeName"
