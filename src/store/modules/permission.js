@@ -62,8 +62,8 @@ const actions = {
   setRoutes({ commit }, json) {
     return new Promise(resolve => {
       let accessedRoutes
-      if (json[0].roles.includes('admin')) {
-        accessedRoutes = json.realRouter || []
+      if (json[0].includes('admin')) {
+        accessedRoutes = json[1] || []
       } else {
         accessedRoutes = filterAsyncRoutes(json[1], json[0])
       }

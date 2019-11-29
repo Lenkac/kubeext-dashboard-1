@@ -105,11 +105,6 @@ router.beforeEach(async (to, from, next) => {
   //     }
   //   }
   // }
-  if(!realRouter){
-    realRouter = additionalRouter
-    realRouter = filterAsyncRouter(realRouter)
-    router.addRoutes(realRouter)
-  }
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -126,12 +121,15 @@ router.beforeEach(async (to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
-
+          const { data } = await getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute')
+          console.log(roles)
+          console.log(data)
           // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/setRoutes', [roles,realRouter])
+          const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data)])
 
+          console.log(accessRoutes)
           // dynamically add accessible routes
-         // router.addRoutes(accessRoutes)
+          router.addRoutes(accessRoutes)
 
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
