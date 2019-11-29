@@ -88,9 +88,9 @@ router.beforeEach(async (to, from, next) => {
               getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute').then(response => {
                 realRouter = filterAsyncRouter(response.data)
                 router.addRoutes(realRouter)
-                return realRouter
-              }).then( realRouter => {
-                store.dispatch('permission/setRoutes', realRouter,roles).then(()=>{
+                return {realRouter: realRouter, roles: roles}
+              }).then( obj => {
+                store.dispatch('permission/setRoutes', obj.realRouter,obj.roles).then(()=>{
                   console.log(realRouter)
                   next({ ...to, replace: true })
                 })
