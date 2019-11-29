@@ -1547,11 +1547,6 @@ export default [
               component: 'charts/pod-table',
               name: 'podTable',
               meta: { title: '任务（容器）' }
-            },{
-              path: 'vm-table',
-              component: 'charts/vm-table',
-              name: 'vmTable',
-              meta: { title: '任务（虚拟机）' }
             },
             {
               path: 'testcase',

@@ -18,11 +18,6 @@ const tableRouter = {
       component: () => import('@/views/charts/pod-table'),
       name: 'podTable',
       meta: { title: '容器' }
-    },{
-      path: 'vm-table',
-      component: () => import('@/views/charts/vm-table'),
-      name: 'vmTable',
-      meta: { title: '虚拟机' }
     }
   ]
 }
