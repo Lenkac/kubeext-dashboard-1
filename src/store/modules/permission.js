@@ -60,6 +60,8 @@ const actions = {
     })
   },
   setRoutes({ commit }, realRouter,roles) {
+    console.log(realRouter)
+    console.log(roles)
     return new Promise(resolve => {
       let accessedRoutes
       if (roles.includes('admin')) {
