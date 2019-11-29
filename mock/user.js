@@ -15,13 +15,13 @@ const users = {
   'admin-token': {
     roles: ['admin'],
     introduction: 'I am a super administrator',
-    avatar: 'admin.jpg',
+    avatar: '../../assets/admin.jpg',
     name: 'Super Admin'
   },
   'ladder-token': {
     roles: ['ladder'],
     introduction: 'I am a xuyuanjia',
-    avatar: 'ladder.jpg',
+    avatar: '../../assets/ladder.jpg',
     name: '欢迎演示客户！'
   }
 }
