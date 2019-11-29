@@ -71,6 +71,13 @@ router.beforeEach(async (to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
+  if(!realRouter){
+    getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute').then(response =>{
+      realRouter = filterAsyncRouter(res[1].data)
+      router.addRoutes(realRouter)
+    })
+  }
+
   if (!hasToken) {
     next(`/login?redirect=${to.path}`)
     NProgress.done()
@@ -80,22 +87,14 @@ router.beforeEach(async (to, from, next) => {
       NProgress.done()
     }
     else {
-      if (!(store.getters.roles && store.getters.roles.length > 0) && !realRouter) {
+      if (!(store.getters.roles && store.getters.roles.length > 0)) {
         try {
           var roles = store.dispatch('user/getInfo')
           var rResponse = getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute')
           Promise.all([roles, rResponse]).then(res => {
-            console.log(res)
-
-            console.log(res[0])
-            realRouter = filterAsyncRouter(res[1].data)
+            realRouter = res[1]
             viewRoles = res[0]
-            console.log(viewRoles)
-
-            router.addRoutes(realRouter)
-            store.dispatch('permission/setRoutes', { realRouter: realRouter, viewRoles: viewRoles.roles }).then(() => {
-              
-            })
+            store.dispatch('permission/setRoutes', res)
           })
           next({ ...to, replace: true })
         } catch (error) {
