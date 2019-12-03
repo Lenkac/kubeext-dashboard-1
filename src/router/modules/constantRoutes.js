@@ -1,8 +1,4 @@
 import Layout from '@/layout'
-import workloadsRouter from './workload'
-import chartsRouter from './charts'
-import templateRouter from './template'
-
 
 const constantRoutes = [
     {
@@ -74,9 +70,7 @@ const constantRoutes = [
           meta: { title: 'vm信息', icon: 'user', noCache: true }
         }
       ]
-    },
-    chartsRouter,
-    workloadsRouter, 
+    }
   ]
 
   export default constantRoutes

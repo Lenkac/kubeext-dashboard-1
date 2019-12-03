@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <div>Title{{this.$route.name}}</div>
     <div class="tab-container">
       <el-tabs
         v-model="activeName"

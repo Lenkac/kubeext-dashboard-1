@@ -39,33 +39,6 @@
       </el-card>      
       </el-col>   
     </el-row>
-    <!-- <el-row> 
-    <el-card>
-          <div>
-            <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-    <el-table-column label="容器名称" width="130px" align="center">
-        <template  slot-scope="scope">
-          <span v-for="x in scope.row.spec.containers" :key="x.name" >{{ x.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
-        <template  slot-scope="scope">
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
-        </template>
-      </el-table-column>
-      </el-table>
-      </div>
-        </el-card>
-    </el-row> -->
   </div>
 </template>
 

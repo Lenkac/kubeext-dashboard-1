@@ -121,7 +121,7 @@ router.beforeEach(async (to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
-          const { data } = await getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute')
+          const { data } = await getColumns(process.env.VUE_APP_PROJECTNUM + '-viewroute')
           console.log(roles)
           console.log(data)
           // generate accessible routes map based on roles

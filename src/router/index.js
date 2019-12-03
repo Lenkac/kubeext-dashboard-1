@@ -6,12 +6,6 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
-/* Router Modules */
-import workloadsRouter from './modules/workload'
-import chartsRouter from './modules/charts'
-import configRouter from './modules/config'
-import templateRouter from './modules/template'
-
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -119,11 +113,6 @@ export const asyncRoutes = [
   
 
   /** when your routing map is too long, you can split it into small modules **/
-  //chartsRouter,
-  //tableRouter,
-  //workloadsRouter,
-  //templateRouter,
-  //configRouter,
   
   { path: '*', redirect: '/404', hidden: true }
 ]
