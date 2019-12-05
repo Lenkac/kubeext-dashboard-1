@@ -28,46 +28,43 @@ This will automatically open http://localhost:9527
 ./build.sh   
 #修改本机host文件
 vi /etc/hosts   
-[本机ip] dashboard.cloudplus.io    
-[本机ip] monitor.cloudplus.io
-[本机ip] vm-console.cloudplus.io
-[本机ip] container-console.cloudplus.io
+[host ip] dashboard.cloudplus.io    
+[host ip] monitor.cloudplus.io
+[host ip] vm-console.cloudplus.io
+[host ip] container-console.cloudplus.io
 ```
 
-## Advanced
+## docker-terminal    
+### 镜像运行
 
 ```bash
-# preview the release environment effect
-npm run preview
+# 运行
+docker run -d -e "HOST_URL=[host ip]" --net=host registry.cn-hangzhou.aliyuncs.com/cloudplus-lab/docker-terminal:v1.5.0-arm8 
 
-# preview the release environment effect + static resource analysis
-npm run preview -- --report
-
-# code format check
-npm run lint
-
-# code format check and auto fix
-npm run lint -- --fix
+# 开放非安全端口
+vi /etc/kubernetes/manifests/kube-apiserver.yaml
+    - --insecure-port=8888
+    - --insecure-bind-address=0.0.0.0
 ```
-
-Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
 
 ## Online Demo
 
 [Preview](https://panjiachen.github.io/vue-element-admin)
 
-## Startup
+## vm-terminal    
+### 镜像运行    
 
+```  
+yum -y install tigervnc-server   
+
+docker run -d --net=host registry.cn-hangzhou.aliyuncs.com/cloudplus-lab/kubeext-vnclet:v1.5.0-arm8 
+```     
+### 直接运行
 ```
-vncserver
+yum -y install tigervnc-server  
 
 cd /home/iscas/VM-terminal/websockify
 ./websockify.py --web ../ --target-config=./token/token.conf 6080
-
-cd /home/iscas/kubeext-backend
-java -jar kubeext-backend-1.4.0.jar
-
-cd /home/iscas/apache-tomcat-8.5.47/bin
 ```
 
 ## License
