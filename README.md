@@ -31,7 +31,7 @@ vi /etc/hosts
 [本机ip] dashboard.cloudplus.io    
 [本机ip] monitor.cloudplus.io
 [本机ip] vm-console.cloudplus.io
-[本机ip] dashboardcontainer-console.cloudplus.io
+[本机ip] container-console.cloudplus.io
 ```
 
 ## Advanced
