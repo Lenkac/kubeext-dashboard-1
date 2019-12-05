@@ -294,15 +294,19 @@ export default {
     createJson() {
       this.dialogTableVisible = true;
       getJsonData({ kind: this.kind, operator: "create" }).then(response => {
+        if (this.validateRes(response) == 1) {
         this.value = response.data;
         this.createPodJson = response.data;
         //this.containerVariables = this.value[i].createVariables
+        }
       });
     },
     create() {
       this.dialogTableVisible = false;
       var str = this.toRawJson(this.createPodJson);
-      createSthFromTemplate({ json: JSON.parse(str), kind: this.kind });
+      createSthFromTemplate({ json: JSON.parse(str), kind: this.kind }).then(response => {
+        this.validateRes(response)
+      });
     },
     toRawJson(val) {
       var str = JSON.stringify(val);

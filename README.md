@@ -24,11 +24,14 @@ This will automatically open http://localhost:9527
 ## 镜像运行
 
 ```bash
-# 修改ip
-vi env.list
-
-# 打镜像和运行
-./build.sh
+# 运行
+./build.sh   
+#修改本机host文件
+vi /etc/hosts   
+[本机ip] dashboard.cloudplus.io    
+[本机ip] monitor.cloudplus.io
+[本机ip] vm-console.cloudplus.io
+[本机ip] dashboardcontainer-console.cloudplus.io
 ```
 
 ## Advanced

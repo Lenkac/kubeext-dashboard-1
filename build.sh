@@ -1,3 +1,1 @@
-docker pull node:12.0.0
-docker build -t kubeext-dashboard:v2 .
-docker run -d --net=host --env-file ./env.list kubeext-dashboard:v2
+docker run -d --net=host registry.cn-hangzhou.aliyuncs.com/cloudplus-lab/kubeext-dashboard:v1.5.0-arm8
