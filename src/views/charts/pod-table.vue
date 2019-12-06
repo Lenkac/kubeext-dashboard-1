@@ -210,6 +210,7 @@ export default {
   mounted() {},
   created() {
     this.resourceInfo = this.$route.meta.resourceInfo
+    this.catalog_operator = this.$route.name
     getJsonData({
       kind: this.catalog_kind,
       operator: this.$route.name
