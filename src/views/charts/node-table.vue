@@ -1,8 +1,7 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
+    <!-- <div class="filter-container">
       <span v-for="ff in filterForm" :key="ff.key">
-        <!-- @input="updateJson(listQuery,ff.prop,$event)" -->
         <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop) " 
 　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter"/>
         <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
@@ -18,7 +17,7 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加
       </el-button>
-    </div>
+    </div> -->
 
     <el-table
       :key="tableKey"
@@ -32,7 +31,7 @@
     >
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
         <template  slot-scope="scope">
-          <router-link :to="{path:'/resourceInfo/nodeInfo',query:{node:getInputValue(scope.row,item.row)}}"  v-if="item.kind == 'a'" tag="a" class="link" @click="getData">
+          <router-link :to="{path:'/resourceInfo/nodeInfo',query:{kind: catalog_operator, name:getInputValue(scope.row,item.row)}}"  v-if="item.kind == 'a'" tag="a" class="link" @click="getData">
             {{ getInputValue(scope.row,item.row) }}
           </router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
@@ -66,6 +65,7 @@
 
 <script>
 import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
+import { getObj, listAll } from "@/api/commonData";
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -121,21 +121,28 @@ export default {
         update: '更新数据',
         create: '创建新记录'
       },
-      viewer: 'Node',
+      viewer: 'node',
       value: "",
-      ip: ""
+      ip: "",
+      frontend_kind: "Frontend",
+      table_kind: "table",
+      catalog_operator: "Node"
     }
   },
   mounted() {
-   
+   this.catalog_operator = this.$route.name
   },
   created() {
-    getColumns(this.viewer).then(response => {
+    
+    getObj({
+      kind: this.frontend_kind,
+      name: this.table_kind + '-' + this.viewer
+    }).then(response => {
       if (this.validateRes(response) == 1) {
-      this.columns = response.data
-        getListAllData({viewerName: this.viewer}).then(response3 => {
-          if (this.validateRes(response3) == 1) {
-          this.list = response3.data
+      this.columns = response.data.spec.data
+        listAll({kind: this.viewer}).then(response => {
+          if (this.validateRes(response) == 1) {
+          this.list = response.data
           //this.total = response3.total
           this.listLoading = false
           }
@@ -302,11 +309,17 @@ export default {
       var res =scope;
       keys.forEach(element => {
         if(element.indexOf('\[') > 0){
+          console.log("shibushi")
           res = res[element.substring(0,element.indexOf('\['))]
-          res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+          console.log(res)
+          if(res.length == 0) {
+              res = "unknown"
+            }else {
+              res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+            }
         }
         else{
-          if(res.hasOwnProperty(element)){
+         if(res.hasOwnProperty(element)){
             res = res[element]
             if(res == undefined) {
               res = "unknown"

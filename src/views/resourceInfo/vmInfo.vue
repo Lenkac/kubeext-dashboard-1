@@ -3,13 +3,15 @@
     <el-row :gutter="20">    
       <el-col :span="13" style="margin-bottom:32px;">
         <el-card>
+                    <span style="display:inline-block; margin-bottom:10px; fontSize:16px; font-weight:bold">yaml配置</span>
           <div class="card-editor-container">
             <json-editor ref="jsonEditor" v-model="value" />
           </div>
         </el-card>
       </el-col>
       <el-col :span="11" style="margin-bottom:32px;"> 
-        <el-card>       
+        <el-card>  
+                    <span style="display:inline-block; margin-bottom:10px; fontSize:16px; font-weight:bold">监控信息</span>     
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="24">
               <iframe class="rate_iframe" :src="monitor_rs.cpu"></iframe>
@@ -46,7 +48,7 @@
 import { mapGetters } from 'vuex'
 import {getMonitorInfo} from '@/utils/getResource'
 import JsonEditor from '@/components/JsonEditor'
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
+import { listAll, getObj } from '@/api/commonData'
 
 export default {
   name: 'vmInfo',
@@ -67,7 +69,9 @@ export default {
       listLoading:'',
       columns:'',
       value: {},
-      kind: ''
+      kind: '',
+      table_kind: "table",
+      frontend_kind: "Frontend",
     }
   },
   computed: {
@@ -79,16 +83,16 @@ export default {
   },
   created() {
     this.key = this.$route.query.taskid
-    this.vmName = this.$route.query.pod
-    this.node = this.$route.query.node.substring(3)
+    this.vmName = this.$route.query.name
+    this.node = this.$route.query.nodeName.substring(3)
     this.kind = this.$route.query.tabName
 
     this.monitor_rs = getMonitorInfo(this.viewerName, this.vmName, null)
           
-    getColumns(this.kind).then(response => {
+    getObj({kind: this.frontend_kind , name: this.table_kind + '-' +this.kind.toLowerCase()}).then(response => {
       if (this.validateRes(response) == 1) {
       this.columns = response.data
-        getListAllData({viewerName: this.kind}).then(response3 => {
+        listAll({kind: this.kind}).then(response3 => {
           if (this.validateRes(response3) == 1) {
           var data = response3.data
           //this.total = response3.total
@@ -128,11 +132,6 @@ export default {
    
     getList() {
       this.listLoading = true
-      // getListAllData(this.listQuery).then(response => {
-      //   this.list = response.data
-      //   this.total = response.total
-      //   this.listLoading = false
-      // })
     },
     handleFilter() {
       this.listQuery.pageNum = 1

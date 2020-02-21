@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { getJsonData, createSthFromTemplate } from "@/api/commonData";
+import { getObj } from "@/api/commonData";
 import { mapGetters } from "vuex";
 import InnerPane from "./components/showTestcase";
 
@@ -45,8 +45,9 @@ export default {
   data() {
     return {
       kind: "",
-      catalog_kind: "Catalog",
+      catalog_kind: "catalog",
       catalog_operator: "testcase",
+      frontend_kind: "Frontend",
       tabMapOptions: [],
       activeName: "testcase1",
       innerTab: "left"
@@ -55,13 +56,13 @@ export default {
   mounted() {},
   created() {
     console.log(this.$route)
-    getJsonData({
-      kind: this.catalog_kind,
-      operator: this.$route.name
+    getObj({
+      kind: this.frontend_kind,
+      name: this.catalog_kind + '-' + this.$route.name
     }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.tabMapOptions = response.data.tabMapOptions;
-        this.activeName = response.data.activeName;
+        this.tabMapOptions = response.data.spec.data.tabMapOptions
+        this.activeName = response.data.spec.data.activeName
       }
     })
   },

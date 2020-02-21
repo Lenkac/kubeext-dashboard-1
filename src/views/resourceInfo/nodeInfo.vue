@@ -3,6 +3,9 @@
     <el-row :gutter="20">
       <el-col :span="13" style="margin-bottom:32px;">
         <el-card>
+          <span
+            style="display:inline-block; margin-bottom:10px; fontSize:16px; font-weight:bold"
+          >yaml配置</span>
           <div class="card-editor-container">
             <json-editor ref="jsonEditor" v-model="value" />
           </div>
@@ -10,6 +13,9 @@
       </el-col>
       <el-col :span="11" style="margin-bottom:32px;">
         <el-card>
+          <span
+            style="display:inline-block; margin-bottom:10px; fontSize:16px; font-weight:bold"
+          >监控信息</span>
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="24">
               <iframe class="rate_iframe" :src="monitor_rs.cpu"></iframe>
@@ -40,7 +46,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-card>
+      <el-card v-if="this.kind == 'Node'">
         <div>
           <el-table
             :key="tableKey"
@@ -61,12 +67,31 @@
             >
               <template slot-scope="scope">
                 <router-link
-                  :to="{path:'/resourceInfo/nodeInfo'}"
+                  :to="{path: resourceInfo,query:{tabName: viewerName, name:getInputValue(scope.row,item.row),node:scope.row.spec.nodeName}}"
                   v-if="item.kind == 'a'"
                   tag="a"
                   class="link"
                 >{{ getInputValue(scope.row,item.row) }}</router-link>
                 <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
+                <svg-icon
+                  v-if="item.kind == 'terminal'"
+                  @click="openTerminal(scope.row)"
+                  icon-class="pc"
+                  class-name="custom-class"
+                />
+                <el-select
+                  v-if="item.kind == 'action'"
+                  v-model="scope.row.val"
+                  @change="(handleUpdate($event, scope.row))"
+                  placeholder="更多操作"
+                >
+                  <el-option
+                    v-for="item in actions"
+                    :key="item.key"
+                    :label="item.key"
+                    :value="item.type"
+                  />
+                </el-select>
               </template>
             </el-table-column>
           </el-table>
@@ -80,15 +105,7 @@
 import { mapGetters } from "vuex";
 import { getMonitorInfo } from "@/utils/getResource";
 import JsonEditor from "@/components/JsonEditor";
-import {
-  getListAllData,
-  getColumns,
-  getActions,
-  getFilterForm,
-  getLittleDataSource,
-  getRules,
-  getTemp
-} from "@/api/commonData";
+import { listAll, getObj, removeObj } from "@/api/commonData";
 
 export default {
   name: "nodeInfo",
@@ -101,64 +118,98 @@ export default {
       key: "",
       monitor_rs: {},
       node: "",
-      viewerName: "Pod",
-      nodeName: "",
+      viewerName: "pod",
+      resourceName: "",
       podList: "",
       listQuery: "",
       listLoading: "",
       columns: "",
       value: "",
-      kind: "Node"
+      kind: "",
+      frontend_kind: "Frontend",
+      table_kind: "table",
+      action_kind: "action",
+      resourceInfo: "",
+      tabName: ""
     };
   },
   computed: {
     ...mapGetters(["name", "avatar", "roles"])
   },
   created() {
-    this.key = this.$route.query.taskid;
-    this.nodeName = this.$route.query.node;
-    this.podName = null
+    this.resourceName = this.$route.query.name;
+    if (this.$route.query.tabName) {
+      this.tabName = this.$route.query.tabName;
+    }
 
-    this.monitor_rs = getMonitorInfo(this.kind, this.nodeName, this.podName);
+    if (this.$route.query.nodeName) {
+      this.nodeName = this.$route.query.nodeName;
+      this.innerName = this.resourceName;
+    }
+    if (this.$route.query.kind) {
+      this.kind = this.$route.query.kind;
+    } else {
+      this.kind = this.tabName;
+    }
 
-    getColumns(this.kind).then(response => {
+    console.log(this.kind);
+
+    if (this.resourceName.substring(0, 1) == "vm") {
+      this.viewerName = "virtualmachine";
+      this.resourceInfo = "/resourceInfo/vmInfo";
+    } else {
+      this.viewerName = "pod";
+      this.resourceInfo = "/resourceInfo/containerInfo";
+    }
+
+    this.monitor_rs = getMonitorInfo(
+      this.kind,
+      this.resourceName,
+      this.innerName
+    );
+
+    listAll({ kind: this.kind }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.columns = response.data;
-        getListAllData({ viewerName: this.kind }).then(response => {
+        var data = response.data;
+        this.listLoading = false;
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].metadata.name == this.resourceName) {
+            this.value = data[i];
+          }
+        }
+      }
+    });
+
+    getObj({
+      kind: this.frontend_kind,
+      name: this.table_kind + "-" + this.viewerName
+    }).then(response => {
+      if (this.validateRes(response) == 1) {
+        this.columns = response.data.spec.data;
+        listAll({ kind: this.viewerName }).then(response => {
           if (this.validateRes(response) == 1) {
             var data = response.data;
-            //this.total = response3.total
+            var listtemp = [];
             this.listLoading = false;
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].metadata.name == this.nodeName) {
-                this.value = data[i];
+            getObj({
+              kind: this.frontend_kind,
+              name: this.action_kind + "-" + this.viewerName.toLowerCase()
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                this.actions = response.data.spec.data;
+                for (var i = 0; i < data.length; i++) {
+                  if (data[i].spec.nodeName == this.resourceName) {
+                    listtemp.push(data[i]);
+                  }
+                }
+                this.list = listtemp;
+                console.log(this.list);
               }
-            }
-            this.list = data;
+            });
           }
         });
       }
     });
-
-    getColumns(this.viewerName).then(response => {
-      if (this.validateRes(response) == 1) {
-        this.columns = response.data;
-        getListAllData({ viewerName: this.viewerName }).then(response => {
-          if (this.validateRes(response) == 1) {
-            var data = response.data
-            var listtemp = []
-            //this.total = response3.total
-            this.listLoading = false;
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].spec.nodeName == this.nodeName) {
-                listtemp.push(data[i])
-              }
-            }
-            this.list = listtemp
-          }
-        })
-      }
-    })
   },
   mounted() {},
   methods: {
@@ -174,6 +225,89 @@ export default {
         });
         return 0;
       }
+    },
+
+    openTerminal(row) {
+      connectTerminal(this.viewerName, row);
+    },
+
+    handleUpdate(event, row) {
+      console.log(event);
+      this.operator = event;
+      console.log(row);
+      var name = row.metadata.name;
+      if (event == "delete") {
+        removeObj({
+          json: row,
+          kind: this.viewerName
+        }).then(response => {
+          if (response.code == 20000) {
+            this.handleDelete(row);
+          }
+        });
+      } else {
+        this.dialogTableVisible = true;
+        getObj({
+          type: this.catalog_operator + "Template",
+          lifecycle:
+            this.catalog_operator.toLowerCase() + "-" + event.toLowerCase(),
+          kind: this.viewerName,
+          name: name
+        }).then(response => {
+          console.log(response);
+          this.Variables = [];
+          if (response.hasOwnProperty("data")) {
+            if (response.data.spec.hasOwnProperty("lifecycle")) {
+              this.lifecycle = true;
+              this.createJsonData = response.data;
+              let nameVariables = Object.keys(
+                response.data.spec.lifecycle[event]
+              );
+              console.log(nameVariables);
+              let values = this.getObjectValues(
+                response.data.spec.lifecycle[event]
+              );
+              for (var i = 0; i < nameVariables.length; i++) {
+                this.Variables.push({});
+                this.Variables[i].nameVariable = nameVariables[i];
+                if (values[i] == true) {
+                  this.Variables[i].value = values[i];
+                  this.Variables[i].placeholder = values[i];
+                } else {
+                  this.Variables[i].value = "";
+                  this.Variables[i].placeholder = values[i];
+                }
+              }
+            } else {
+              this.lifecycle = false;
+              listAll({ kind: this.tabName }).then(response => {
+                var data = response.data;
+                //this.total = response3.total
+                this.listLoading = false;
+                for (var i = 0; i < data.length; i++) {
+                  if (data[i].metadata.name == name) {
+                    this.createJsonData = data[i];
+                  }
+                }
+              });
+            }
+          }
+        });
+        for (var key in this.list) {
+          this.list[key].val = "";
+        }
+      }
+    },
+
+    handleDelete(row) {
+      this.$notify({
+        title: "Success",
+        message: "删除成功",
+        type: "success",
+        duration: 2000
+      });
+      const index = this.list.indexOf(row);
+      this.list.splice(index, 1);
     },
 
     getList() {
@@ -210,20 +344,23 @@ export default {
       var keys = longKey.split(".");
       var res = scope;
       keys.forEach(element => {
-        if (element.indexOf("[") > 0) {
-          res = res[element.substring(0, element.indexOf("["))];
-          res =
-            res[
-              parseInt(
-                element.substring(
-                  element.indexOf("[") + 1,
-                  element.indexOf("]")
-                )
-              )
-            ];
-        } else {
+        //console.log(element)
+        // if (element.indexOf("[") > 0) {
+        //   res = res[element.substring(0, element.indexOf("["))];
+        //   res =
+        //     res[
+        //       parseInt(
+        //         element.substring(
+        //           element.indexOf("[") + 1,
+        //           element.indexOf("]")
+        //         )
+        //       )
+        //     ];
+        // } else {
+        if (res.hasOwnProperty(element)) {
           res = res[element];
-        }
+        } else [(res = "unknown")];
+        //}
       });
       //console.log(res)
       return res;

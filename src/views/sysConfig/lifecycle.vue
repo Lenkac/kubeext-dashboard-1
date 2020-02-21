@@ -1,7 +1,9 @@
 <template>
   <div class="app-container">
+    <div class="editor-custom-btn-container">
+      <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK" />
+    </div>
     <div class="tab-container">
-      <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
       <el-tabs
         v-model="activeName"
         style="margin-top:15px;"
@@ -34,7 +36,7 @@
               />
               <el-row :gutter="20" style="margin:5px;">
                 <el-col
-                  :span="8"
+                  :span="6"
                   v-for="(item,index) in value"
                   :key="item.name"
                   style="margin-bottom:30px"
@@ -42,15 +44,15 @@
                   <el-card class="box-card" :style="height">
                     <div slot="header" class="clearfix">
                       <span>
-                        <p style="display:inline;font-size:18px;">
-                          <strong>{{ value[index].name }}</strong>
+                        <p style="display:inline;font-size:16px;">
+                          <strong>{{ value[index].metadata.name }}</strong>
                         </p>
                       </span>
                     </div>
-                    <p style="font-size:12px;">{{item.desc}}</p>
+                    <p style="font-size:12px;">{{item.metadata.name}}</p>
                     <el-button
                       type="primary"
-                      style="float:right;margin:20px;"
+                      style="float:right;margin:15px;"
                       @click.native="showDialog(index)"
                     >查看/修改</el-button>
                   </el-card>
@@ -88,15 +90,17 @@
 <script>
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 import EditableJson from "@/components/EditableJson";
-import { getJsonData, updateJsonData } from "@/api/commonData";
+import { getObj, updateObj, createObj, listAll } from "@/api/commonData";
 import apiAnalysis from "@/views/config/apiAnalysis";
+import editorImage from "./components/EditorImage";
 
 export default {
   name: "Template",
   directives: { elDragDialog },
   components: {
     EditableJson,
-    apiAnalysis
+    apiAnalysis,
+    editorImage
   },
   props: {
     tabName: {
@@ -116,9 +120,10 @@ export default {
       value: [],
       json: {},
       kind: "Container",
-      catalog_kind: "Catalog",
+      catalog_kind: "catalog",
+      frontend_kind: "Frontend",
       catalog_operator: "lifecycle",
-      lifecycle_kind: "lifecycle",
+      lifecycle_kind: "Template",
       lifecycle_operator: "container",
       api_kind: "api",
       height: "height: 200px",
@@ -126,31 +131,34 @@ export default {
       activeName: "",
       tabMapOptions: [],
       SDK: "",
-      version: ""
+      version: "",
+      sdkJson: {},
+      catalogJson: {}
     };
   },
 
   mounted() {},
   created() {
-    getJsonData({
-      kind: this.catalog_kind,
-      operator: this.catalog_operator
+    getObj({
+      kind: this.frontend_kind,
+      name: this.catalog_kind + "-" + this.catalog_operator
     }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.tabMapOptions = response.data.tabMapOptions;
-        this.activeName = response.data.activeName;
+        this.catalogJson = response.data
+        this.tabMapOptions = response.data.spec.data.tabMapOptions;
+        this.activeName = response.data.spec.data.activeName;
 
-        getJsonData({
-          kind: this.api_kind,
-          operator: this.activeName
+        getObj({
+          kind: this.frontend_kind,
+          name: this.api_kind + "-" + this.activeName
         }).then(response => {
           if (this.validateRes(response) == 1) {
-            this.SDK = response.data.git;
-            this.version = response.data.version;
+            this.sdkJson = response.data
+            this.SDK = response.data.spec.data.git;
+            this.version = response.data.spec.data.version;
 
-            getJsonData({
-              kind: this.lifecycle_kind,
-              operator: this.activeName
+            listAll({
+              kind: this.activeName + this.lifecycle_kind,
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 this.value = response.data;
@@ -189,9 +197,8 @@ export default {
       }
     },
     analyzeTemplete() {
-      getJsonData({
-        kind: this.lifecycle_kind,
-        operator: this.activeName
+      listAll({
+        kind: this.activeName + this.lifecycle_kind,
       }).then(response => {
         this.value = response.data;
         console.log(this.value);
@@ -201,15 +208,14 @@ export default {
 
     handleClick(tab, event) {
       console.log(tab.name, event);
-      getJsonData({
-        kind: "api",
-        operator: this.activeName
+      getObj({
+        kind: this.frontend_kind,
+        name: this.api_kind + "-" + this.activeName
       }).then(response => {
-        this.SDK = response.data.git;
-        this.version = response.data.version;
-        getJsonData({
-          kind: this.lifecycle_kind,
-          operator: this.activeName
+        this.SDK = response.data.spec.data.git;
+        this.version = response.data.spec.data.version;
+        listAll({
+          kind: this.activeName + this.lifecycle_kind,
         }).then(response => {
           this.value = response.data;
           if (this.activeName == "virtualmachine") {
@@ -223,13 +229,12 @@ export default {
     },
     showDialog(index) {
       this.dialogTableVisible = true;
-      this.json = JSON.parse(this.value[index].json);
+      this.json = this.value[index];
       this.title = this.value[index].name;
     },
     updateTemplate() {
       this.dialogTableVisible = false;
-      updateJsonData({
-        operator: "update",
+      updateObj({
         json: this.json,
         kind: this.kind
       }).then(response => {
@@ -247,6 +252,29 @@ export default {
       str = str.substring(1, str.length - 1);
       str = str.replace(/\\/g, "");
       return str;
+    },
+    imageSuccessCBK(data) {
+      //向后台发送请求，新增一个sdk
+      console.log(data)
+      this.catalogJson.spec.data.tabMapOptions.push({"label": data.name, "key": data.name})
+      updateObj({
+        json: this.catalogJson,
+        kind: this.frontend_kind
+      }).then(response => {
+        
+      });
+      console.log(this.sdkJson)
+      this.sdkJson.metadata.name = this.api_kind + '-' + data.name
+      this.sdkJson.spec.data.git = data.git
+      this.sdkJson.spec.data.version = data.version
+
+      createObj({
+        json: this.sdkJson,
+        kind: this.frontend_kind
+      }).then(response => {
+        
+      });
+      
     }
   }
 };

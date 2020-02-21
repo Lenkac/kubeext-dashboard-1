@@ -14,33 +14,48 @@
           class="filter-item"
           @click.native="refresh"
         >刷新</el-button>
-        <!-- <el-button  type="primary" class="filter-item" @click.native="deleteMenu">
-        删除最后一个菜单
-        </el-button>-->
       </div>
+
       <div class="tab-container">
-        <!-- <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success" /> -->
         <el-tabs
-          v-model="activeName"
+          v-model="outActiveName"
           style="margin-top:15px;width:100%"
           type="border-card"
-          @tab-click="handleClick"
+          @tab-click="outHandleClick"
         >
           <el-tab-pane
-            v-for="item in tabMapOptions"
+            v-for="item in outTabMapOptions"
             :key="item.key"
             :label="item.label"
             :name="item.key"
           >
             <keep-alive>
-              <tab-pane
-                v-if="activeName==item.key"
-                :type="item.key"
-                :tabName="item.key"
-                :successCreate="successCreate"
-                :resourceInfo="resourceInfo"
-                :catalog_operator="catalog_operator"
-              />
+              <div class="tab-container" v-if="outActiveName==item.key">
+                <el-tabs
+                  v-model="activeName"
+                  style="margin-top:15px;width:100%"
+                  type="border-card"
+                  @tab-click="handleClick"
+                >
+                  <el-tab-pane
+                    v-for="item in tabMapOptions"
+                    :key="item.key"
+                    :label="item.label"
+                    :name="item.key"
+                  >
+                    <keep-alive>
+                      <tab-pane
+                        v-if="activeName==item.key"
+                        :type="item.key"
+                        :tabName="item.key"
+                        :successCreate="successCreate"
+                        :resourceInfo="resourceInfo"
+                        :catalog_operator="outActiveName"
+                      />
+                    </keep-alive>
+                  </el-tab-pane>
+                </el-tabs>
+              </div>
             </keep-alive>
           </el-tab-pane>
         </el-tabs>
@@ -127,16 +142,7 @@
 </template>
 
 <script>
-import {
-  getJsonData,
-  getListAllData,
-  getColumns,
-  getFilterForm,
-  getLittleDataSource,
-  getRules,
-  getTemp,
-  createSthFromTemplate
-} from "@/api/commonData";
+import { getObj, createObj } from "@/api/commonData";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -191,50 +197,92 @@ export default {
         update: "更新数据",
         create: "创建新记录"
       },
-      viewer: "VirtualMachine",
       value: "",
       dialogTableVisible: false,
       createRSJson: {},
       createResource: "创建",
-      catalog_kind: "Catalog",
+      frontend_kind: "Frontend",
       catalog_operator: "container",
+      outcatalog_operator: "lifecycle",
+      catalog_kind: "catalog",
       tabMapOptions: [],
+      outTabMapOptions: [],
       activeName: "",
+      outActiveName: "",
       kind: "",
       createdTimes: 0,
       successCreate: "",
-      resourceInfo: "",
-      ip:"133.133.135.35"
+      resourceInfo: ""
     };
   },
   mounted() {},
   created() {
-    this.resourceInfo = this.$route.meta.resourceInfo
-    this.catalog_operator = this.$route.name
-    getJsonData({
-      kind: this.catalog_kind,
-      operator: this.$route.name
+    
+    // this.catalog_operator = this.$route.name;
+    if(this.$route.query.name == undefined) {
+      this.outcatalog_operator = this.$route.meta.tabName;
+    }else {
+      this.outcatalog_operator = this.$route.query.name;
+    }   
+    console.log(this.outcatalog_operator)
+
+    getObj({
+      kind: this.frontend_kind,
+      name: this.catalog_kind + "-" + this.outcatalog_operator.toLowerCase()
     }).then(response => {
       if (this.validateRes(response) == 1) {
-      this.tabMapOptions = response.data.tabMapOptions;
-      this.activeName = response.data.activeName;
+        this.outTabMapOptions = response.data.spec.data.tabMapOptions;
+        this.outActiveName = response.data.spec.data.activeName;
+        this.resourceInfo = this.$route.meta.resourceInfo[this.outActiveName];
+        getObj({
+          kind: this.frontend_kind,
+          name: this.catalog_kind + "-" + this.outActiveName.toLowerCase()
+        }).then(response => {
+          if (this.validateRes(response) == 1) {
+            this.tabMapOptions = response.data.spec.data.tabMapOptions;
+            this.activeName = response.data.spec.data.activeName;
+          }
+        });
       }
-    })
+    });
   },
   methods: {
     validateRes(res) {
-      if(res.code == 20000) {
-        return 1
-      }else {
+      if (res.code == 20000) {
+        return 1;
+      } else {
         this.$notify({
           title: "error",
           message: res.data,
           type: "warning",
           duration: 3000
         });
-        return 0
+        return 0;
       }
     },
+
+    outHandleClick(tab, event) {
+      console.log(tab.name, event);
+      this.kind = tab.name;
+      console.log(this.kind);
+      this.outActiveName = tab.name;
+      this.resourceInfo = this.$route.meta.resourceInfo[this.outActiveName];
+      getObj({
+        kind: this.frontend_kind,
+        name: this.catalog_kind + "-" + tab.name.toLowerCase()
+      }).then(response => {
+        if (this.validateRes(response) == 1) {
+          if (!response.hasOwnProperty("data")) {
+            this.tabMapOptions = null;
+            this.activeName = "";
+          } else {
+            this.tabMapOptions = response.data.spec.data.tabMapOptions;
+            this.activeName = response.data.spec.data.activeName;
+          }
+        }
+      });
+    },
+
     handleClick(tab, event) {
       console.log(tab.name, event);
       this.kind = tab.name;
@@ -262,13 +310,16 @@ export default {
     },
     create() {
       this.dialogTableVisible = false;
-      createSthFromTemplate({
+      createObj({
         json: JSON.parse(this.createRSJson),
         kind: JSON.parse(this.createRSJson).kind
       }).then(response => {
-        if (response.code == 20000) {
-          this.handleSuccess();
-          this.successCreate = "success";
+        if (this.validateRes(response) == 1) {
+          if (response.code == 20000) {
+            this.handleSuccess();
+            this.successCreate = "success";
+            this.refresh();
+          }
         }
       });
     },
@@ -389,7 +440,7 @@ export default {
       const index = this.list.indexOf(row);
       this.list.splice(index, 1);
     },
-    
+
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
         filterVal.map(j => {

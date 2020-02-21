@@ -3,7 +3,7 @@ export function getMonitorInfo(kind, nodeName, podName) {
     var startTimestamp = new Date().getTime() - 5 * 60 * 1000;
     var node_prefix = "http://"+process.env.VUE_APP_MONITOR_HOST+":31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node="+ nodeName +"&from="+startTimestamp+"&to="+new Date().getTime()+"&panelId="
     var pod_prefix = "http://"+process.env.VUE_APP_MONITOR_HOST+":31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?orgId=1&var-interval=%24__auto_interval_interval&var-datasource=default&var-Node="+ nodeName +"&var-Pod=" + podName +"&from="+startTimestamp+"&to="+new Date().getTime()+"&panelId="
-    var testcase_prefix = "http://"+process.env.VUE_APP_MONITOR_HOST+":31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?refresh=5s&orgId=1&from="+startTimestamp+"&to="+new Date().getTime()+"&panelId=77&var-interval=%24__auto_interval_interval&var-datasource=prometheus&var-Node=All"
+    var testcase_prefix = "http://"+process.env.VUE_APP_MONITOR_HOST+":31000/d-solo/JABGX_-mz/cluster-monitoring-for-kubernetes?refresh=5s&orgId=1&from="+startTimestamp+"&to="+new Date().getTime()+"&panelId=77&var-interval=%24__auto_interval_interval&var-datasource=Prometheus&var-Node=All"
     if(kind == "Node") {
         prefix = node_prefix
         var monitor_rs = {

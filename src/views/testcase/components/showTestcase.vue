@@ -129,7 +129,11 @@ import {
   createSthFromTemplate,
   updateJsonData,
   deletSthFromTemplate,
-  getSthFromTemplate
+  getSthFromTemplate,
+  listAll,
+  getObj,
+  createObj,
+  removeObj
 } from "@/api/commonData";
 import { mapGetters } from "vuex";
 import elDragDialog from "@/directive/el-drag-dialog";
@@ -185,15 +189,17 @@ export default {
   },
   mounted() {},
   created() {
-    getJsonData({
+    getObj({
       kind: this.kind,
-      operator: this.tabName
+      name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
     }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.value = response.data.spec.testcases;
-        this.chart = response.data.spec.testcases;
+        this.value = response.data.spec.data.spec.testcases;
+        this.chart = response.data.spec.data.spec.testcases;
       }
     });
+
+    this.fetchStatus()
 
     this.monitor_rs = getMonitorInfo(this.kind, this.nodeName, null);
   },
@@ -250,7 +256,7 @@ export default {
         this.tabName == "lazyImagePull"
       ) {
         this.monitor_rs = getMonitorInfo(this.kind, this.nodeName);
-        getSthFromTemplate({
+        getObj({
           kind: this.kind,
           name: this.tabName.toLowerCase()
         }).then(response => {
@@ -280,11 +286,13 @@ export default {
         this.tabName == "prioritySched" ||
         this.tabName == "overpSched"
       ) {
-        getSthFromTemplate({
+        getObj({
           kind: this.kind,
           name: this.tabName.toLowerCase()
         }).then(response => {
-          if (response.data.spec.hasOwnProperty("results")) {
+          if (!response.hasOwnProperty("data")) {
+            this.list = [];
+          } else if (response.data.spec.hasOwnProperty("results")) {
             var listtemp = [];
             var results = response.data.spec.results;
             for (let i = 0; i < results.length; i++) {
@@ -317,7 +325,7 @@ export default {
           }
         });
       } else {
-        getSthFromTemplate({
+        getObj({
           kind: this.kind,
           name: this.tabName.toLowerCase()
         }).then(response => {
@@ -394,12 +402,12 @@ export default {
     },
 
     deleteTestcase() {
-      getJsonData({
+      getObj({
         kind: this.kind,
-        operator: this.tabName
+        name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
       }).then(response => {
-        deletSthFromTemplate({
-          json: response.data,
+        removeObj({
+          json: response.spec.data,
           kind: this.kind
         }).then(response => {
           this.fetchStatus();
@@ -412,12 +420,12 @@ export default {
         message: "开始测试！",
         type: "success"
       });
-      getJsonData({
+      getObj({
         kind: this.kind,
-        operator: this.tabName
+        name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
       }).then(response => {
-        createSthFromTemplate({
-          json: response.data,
+        createObj({
+          json: response.spec.data,
           kind: this.kind
         }).then(response => {});
       });

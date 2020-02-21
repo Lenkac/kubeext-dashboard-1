@@ -1,5 +1,5 @@
 module.exports = {
-  title: '天梯云平台',
+  title: process.env.VUE_APP_HEADTITLE,
 
   /**
    * @type {boolean} true | false

@@ -39,7 +39,7 @@
 </template>
 <script>
 import { AgetScheduleData } from "@/api/taskData";
-import { getScheduleData, getJsonData } from "@/api/commonData";
+import { getScheduleData, getObj } from "@/api/commonData";
 import { setInterval } from "timers";
 import elDragDialog from "@/directive/el-drag-dialog";
 import EditableJson from "@/components/EditableJson";
@@ -78,10 +78,10 @@ export default {
     };
   },
   mounted() {
-    getJsonData({ kind: "mcmf", operator: "simpleparameter" }).then(
+    getObj({ kind: "mcmf", name: "simpleparameter" }).then(
           response => {
             if (this.validateRes(response) == 1) {
-            this.json = response.data
+            this.json = response.data.spec.data
             }
           })
   },
@@ -192,7 +192,7 @@ export default {
             itemWidth: 30,
             itemHeight: 20,
             textStyle: {
-              fontSize: 18
+              fontSize: 16
             }
           }
         ],
@@ -251,7 +251,7 @@ export default {
             label: {
               normal: {
                 show: true,
-                fontSize: 15
+                fontSize: 12
               }
             },
             edgeSymbol: ["circle", "arrow"],

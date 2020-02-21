@@ -7,7 +7,8 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 //import {setAsyncRoutes,getAsyncRoutes} from '@/router/modules/asyncRoutes'
 import Layout from '@/layout'
-import { getColumns } from '@/api/commonData'
+import { getObj } from '@/api/commonData'
+import { getKV } from '@/utils/auth'
 
 const _import = require('@/router/_import_development')
 const whiteList = ['/login', '/auth-redirect']
@@ -71,41 +72,6 @@ router.beforeEach(async (to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
-  // if(!realRouter){
-  //   getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute').then(response =>{
-  //     realRouter = filterAsyncRouter(response.data)
-  //     router.addRoutes(realRouter)
-  //   })
-  // }
-  // } else {
-  //   if (to.path === '/login') {
-  //     next({ path: '/' })
-  //     NProgress.done()
-  //   }
-  //   else {
-  //     if (!(store.getters.roles && store.getters.roles.length > 0)) {
-  //       // try {
-  //       //   var roles = store.dispatch('user/getInfo')
-  //       //   //var rResponse = getColumns(process.env.VUE_APP_PROJECTTITLE + '-viewroute')
-  //       //   Promise.all([roles]).then(res => {
-  //       //     viewRoles = res[0]
-  //       //     store.dispatch('permission/setRoutes', [viewRoles,realRouter])
-  //       //   })
-  //       //   next({ ...to, replace: true })
-  //       // } catch (error) {
-  //       //   await store.dispatch('user/resetToken')
-  //       //   Message.error(error || 'Has Error')
-  //       //   next(`/login?redirect=${to.path}`)
-  //       //   NProgress.done()
-  //       // }
-  //     }
-  //     else {
-  //       next()
-  //       NProgress.done()
-  //     }
-  //   }
-  // }
-
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -121,13 +87,11 @@ router.beforeEach(async (to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
-          const { data } = await getColumns(process.env.VUE_APP_PROJECTNUM + '-viewroute')
-          console.log(roles)
-          console.log(data)
+          const { data } = await getObj({"kind": "Frontend" , "name": 'viewroute-' + getKV('projectNum').toLowerCase()})
+         console.log(data.spec.data)
           // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data)])
+          const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data.spec.data)])
 
-          console.log(accessRoutes)
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
 
@@ -138,6 +102,7 @@ router.beforeEach(async (to, from, next) => {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')
+          console.log(error)
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }
@@ -151,6 +116,7 @@ router.beforeEach(async (to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
+      console.log("message")
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
@@ -169,6 +135,7 @@ function filterAsyncRouter(ar) {
       }
     }
     if (route.children && route.children.length) {
+      
       route.children = filterAsyncRouter(route.children)
     }
     return true

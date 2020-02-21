@@ -60,25 +60,6 @@ export function getScheduleURL() {
   return urlPrefix+'networkFlow/solveBase'
 }
 
-export function create() {
-  return urlPrefix + 'kubernetes/create'
-}
-
-export function update() {
-  return urlPrefix + 'kubernetes/update'
-}
-
-export function remove() {
-  return urlPrefix + 'kubernetes/delete'
-}
-
-export function get() {
-  return urlPrefix + 'kubernetes/get'
-}
-
-export function list() {
-  return urlPrefix + 'kubernetes/query'
-}
 
 
 

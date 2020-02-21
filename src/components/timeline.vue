@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { getListAllData } from "@/api/commonData";
+import { listAll } from "@/api/commonData";
 
 export default {
   computed: {},
@@ -23,8 +23,8 @@ export default {
     };
   },
   created() {
-    getListAllData({ viewerName: this.kind }).then(response => {
-      this.events = response.data;
+    listAll({ kind: this.kind }).then(response => {
+      this.events = response.data.reverse()
     });
   },
 

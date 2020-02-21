@@ -19,34 +19,22 @@
       >
         <template slot-scope="scope">
           <router-link
-            :to="{path:resourceInfo,query:{tabName:tabName,pod:getInputValue(scope.row.json,item.row),node:scope.row.json.spec.nodeName}}"
+            :to="{path:resourceInfo,query:{tabName: tabName, name:getInputValue(scope.row.json,item.row),nodeName:scope.row.json.spec.nodeName}}"
             v-if="item.kind == 'a'"
             tag="a"
             class="link"
           >{{ getInputValue(scope.row.json,item.row) }}</router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row.json,item.row) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="远程连接"
-        align="center"
-        width="130"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="{row}">
-          <svg-icon @click="openTerminal(row)" icon-class="pc" class-name="custom-class" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Actions"
-        align="center"
-        width="130"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="{row}">
+          <svg-icon
+            v-if="item.kind == 'terminal'"
+            @click="openTerminal(scope.row)"
+            icon-class="pc"
+            class-name="custom-class"
+          />
           <el-select
-            v-model="row.val"
-            @change="(handleUpdate($event, row.json))"
+            v-if="item.kind == 'action'"
+            v-model="scope.row.val"
+            @change="(handleUpdate($event, scope.row.json))"
             placeholder="更多操作"
           >
             <el-option
@@ -74,7 +62,7 @@
           v-loading="listLoading"
           border
           fit
-          v-if="this.catalog_operator == 'virtualmachine'"
+          v-if="this.catalog_operator == 'VirtualMachine'"
           highlight-current-row
           style="width: 100%;margin-top:20px"
           @sort-change="sortChange"
@@ -114,19 +102,7 @@
   </div>
 </template>
 <script>
-import {
-  getListAllData,
-  getColumns,
-  getFilterForm,
-  getLittleDataSource,
-  getRules,
-  getTemp,
-  getJsonData,
-  createSthFromTemplate,
-  deleteSthFromTemplate,
-  updateSthFromTemplate,
-  queryOperation
-} from "@/api/commonData";
+import { listAll, getObj, createObj, removeObj } from "@/api/commonData";
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
 import { mapGetters } from "vuex";
@@ -159,7 +135,7 @@ export default {
     },
     resourceInfo: {
       type: String,
-      default: "/resourceInfo/containerInfo"
+      default: "/resourceInfo/nodeInfo"
     },
     catalog_operator: {
       type: String,
@@ -194,8 +170,10 @@ export default {
       dialogTableVisible: false,
       createPodJson: {},
       createResource: "创建",
-      catalog_kind: "Catalog",
-      action_kind: "Action",
+      catalog_kind: "catalog",
+      action_kind: "action",
+      table_kind: "table",
+      frontend_kind: "Frontend",
       tabMapOptions: [],
       createJsonData: {},
       Variables: [],
@@ -206,61 +184,63 @@ export default {
   },
   mounted() {},
   created() {
-    getColumns(this.tabName).then(response => {
+    getObj({
+      kind: this.frontend_kind,
+      name: this.table_kind + "-" + this.tabName.toLowerCase()
+    }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.columns = response.data;
-        getListAllData({ viewerName: this.tabName }).then(response3 => {
-          if (this.validateRes(response3) == 1) {
-            this.listTemp = response3.data;
-            this.listLoading = false;
-            console.log(this.listTemp);
-            getJsonData({
-              kind: this.action_kind,
-              operator: this.tabName
-            }).then(response => {
-              if (this.validateRes(response3) == 1) {
-                this.actions = response.data;
-                for (var i = 0; i < this.listTemp.length; i++) {
-                  this.list.push({});
-                  this.list[i].json = this.listTemp[i];
-                  this.list[i].actions = this.actions;
-                  this.list[i].val = "";
+        if (response.hasOwnProperty("data")) {
+          this.columns = response.data.spec.data;
+          console.log(this.columns);
+          listAll({ kind: this.tabName }).then(response => {
+            if (this.validateRes(response) == 1) {
+              this.listTemp = response.data;
+              this.listLoading = false;
+              console.log(this.listTemp);
+              getObj({
+                kind: this.frontend_kind,
+                name: this.action_kind + "-" + this.tabName.toLowerCase()
+              }).then(response => {
+                if (this.validateRes(response) == 1) {
+                  if (response.hasOwnProperty("data")) {
+                    this.actions = response.data.spec.data;
+                  } else {
+                    this.actions = [];
+                  }
+                  for (var i = 0; i < this.listTemp.length; i++) {
+                    this.list.push({});
+                    this.list[i].json = this.listTemp[i];
+                    this.list[i].actions = this.actions;
+                    this.list[i].val = "";
+                  }
                 }
-              }
-            });
-          }
-        });
+              });
+            }
+          });
+        }
       }
     });
-
-    // getTemp({ viewer: this.viewer }).then(response => {
-    //   this.temp = response.data;
-    // });
-    // getLittleDataSource({ viewer: this.viewer }).then(response => {
-    //   this.littleDataSource = response.data;
-    // });
-    // getRules({ viewer: this.viewer }).then(response => {
-    //   this.rules = response.data;
-    // });
-    // getFilterForm({ viewer: this.viewer }).then(response => {
-    //   this.filterForm = response.data;
-    // });
   },
   watch: {
     successCreate(val) {
       if (this.successCreate == "success") {
         this.list = [];
-        getListAllData({ viewerName: this.tabName }).then(response3 => {
+        listAll({ kind: this.tabName }).then(response3 => {
           if (this.validateRes(response3) == 1) {
             this.listTemp = response3.data;
             this.listLoading = false;
-            console.log(this.listTemp);
-            getJsonData({
-              kind: this.action_kind,
-              operator: this.tabName
+
+            getObj({
+              kind: this.frontend_kind,
+              name: this.action_kind + "-" + this.tabName.toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
-                this.actions = response.data;
+                if (response.hasOwnProperty("data")) {
+                  this.actions = response.data.spec.data;
+                } else {
+                  this.actions = [];
+                }
+
                 for (var i = 0; i < this.listTemp.length; i++) {
                   this.list.push({});
                   this.list[i].json = this.listTemp[i];
@@ -291,21 +271,11 @@ export default {
     showDialog(row) {
       console.log(row);
     },
-    createJson() {
-      this.dialogTableVisible = true;
-      getJsonData({ kind: this.kind, operator: "create" }).then(response => {
-        if (this.validateRes(response) == 1) {
-        this.value = response.data;
-        this.createPodJson = response.data;
-        //this.containerVariables = this.value[i].createVariables
-        }
-      });
-    },
     create() {
       this.dialogTableVisible = false;
       var str = this.toRawJson(this.createPodJson);
-      createSthFromTemplate({ json: JSON.parse(str), kind: this.kind }).then(response => {
-        this.validateRes(response)
+      createObj({ json: JSON.parse(str), kind: this.kind }).then(response => {
+        this.validateRes(response);
       });
     },
     toRawJson(val) {
@@ -355,7 +325,7 @@ export default {
       this.operator = event;
       var name = row.metadata.name;
       if (event == "delete") {
-        deleteSthFromTemplate({
+        removeObj({
           json: row,
           kind: this.tabName
         }).then(response => {
@@ -365,22 +335,24 @@ export default {
         });
       } else {
         this.dialogTableVisible = true;
-        queryOperation({
-          name: name,
-          operator: event,
-          kind: this.tabName
+        getObj({
+          kind: this.catalog_operator + "Template",
+          name: this.catalog_operator.toLowerCase() + "-" + event.toLowerCase(),
+          currentName: name
         }).then(response => {
           console.log(response);
           this.Variables = [];
           if (response.hasOwnProperty("data")) {
-            if (response.data.spec.hasOwnProperty("lifecycle")) {
+            if (response.data.spec.data.hasOwnProperty("lifecycle")) {
               this.lifecycle = true;
               this.createJsonData = response.data;
+              console.log(this.createJsonData);
               let nameVariables = Object.keys(
-                response.data.spec.lifecycle[event]
+                response.data.spec.data.lifecycle[event]
               );
+              console.log(nameVariables);
               let values = this.getObjectValues(
-                response.data.spec.lifecycle[event]
+                response.data.spec.data.lifecycle[event]
               );
               for (var i = 0; i < nameVariables.length; i++) {
                 this.Variables.push({});
@@ -393,19 +365,19 @@ export default {
                   this.Variables[i].placeholder = values[i];
                 }
               }
-            }
-          } else {
-            this.lifecycle = false;
-            getListAllData({ viewerName: this.tabName }).then(response3 => {
-              var data = response3.data;
-              //this.total = response3.total
-              this.listLoading = false;
-              for (var i = 0; i < data.length; i++) {
-                if (data[i].metadata.name == name) {
-                  this.createJsonData = data[i];
+            } else {
+              this.lifecycle = false;
+              listAll({ kind: this.tabName }).then(response => {
+                var data = response.data;
+                //this.total = response3.total
+                this.listLoading = false;
+                for (var i = 0; i < data.length; i++) {
+                  if (data[i].metadata.name == name) {
+                    this.createJsonData = data[i];
+                  }
                 }
-              }
-            });
+              });
+            }
           }
         });
         for (var key in this.list) {
@@ -422,12 +394,12 @@ export default {
           temp[this.Variables[key].nameVariable] = this.Variables[key].value;
         }
         this.createJsonData = JSON.parse(this.createJsonData);
-        this.createJsonData.spec.lifecycle[this.operator] = temp;
+        this.createJsonData.spec.data.lifecycle[this.operator] = temp;
       } else {
         this.createJsonData = JSON.parse(this.createJsonData);
       }
 
-      updateSthFromTemplate({
+      createObj({
         json: this.createJsonData,
         kind: this.tabName
       }).then(response => {

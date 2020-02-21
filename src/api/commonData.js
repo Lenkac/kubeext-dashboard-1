@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 import {getScheduleURL,getGetSthURL,queryOperationURL, getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getUpdateSthURL,getDeleteSthURL} from '@/utils/url-setter'
-
 export function getListAllData(data) {
   return request({
     url: getListURL(),
@@ -164,6 +163,54 @@ export function getTemp(query) {
     url: '/list/getTemp',
     method: 'get',
     params: query
+  })
+  return res
+}
+
+// new version
+import {create, remove, update, list, get} from '@/utils/url-setter'
+
+export function createObj(data) {
+  var res = request({
+    url: create(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function updateObj(data) {
+  var res = request({
+    url: update(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function removeObj(data) {
+  var res = request({
+    url: remove(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
+export function listAll(data) {
+  var res = request({
+    url: list(),
+    method: 'get',
+    params: data
+  })
+  return res
+}
+
+export function getObj(data) {
+  var res = request({
+    url: get(),
+    method: 'get',
+    params: data
   })
   return res
 }

@@ -1,9 +1,11 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { getKV, setKV, removeKV } from '@/utils/auth'
 
 const state = {
   token: getToken(),
+  projectNum: getKV('projectNum'),
   name: '',
   avatar: '',
   introduction: '',
@@ -13,6 +15,9 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_PN: (state, projectNum) => {
+    state.projectNum = projectNum
   },
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
@@ -31,12 +36,15 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, projectNum } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
+        commit('SET_PN', projectNum)
+        setKV('projectNum', projectNum)
+        console.log(getKV('projectNum'))
         resolve()
       }).catch(error => {
         console.log(error)
@@ -79,7 +87,9 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
+        commit('SET_PN', '')
         removeToken()
+        removeKV('projectNum')
         //resetRouter()
         resolve()
       }).catch(error => {

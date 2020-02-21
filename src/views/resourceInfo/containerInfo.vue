@@ -3,6 +3,7 @@
     <el-row :gutter="20">
       <el-col :span="13" style="margin-bottom:32px;">
         <el-card>
+          <span style="display:inline-block; margin-bottom:10px; fontSize:16px; font-weight:bold">yaml配置</span>
           <div class="card-editor-container">
             <json-editor ref="jsonEditor" v-model="value" />
           </div>
@@ -10,6 +11,7 @@
       </el-col>
       <el-col :span="11" style="margin-bottom:32px;">
         <el-card>
+          <span style="display:inline-block; margin-bottom:10px; fontSize:16px; font-weight:bold">监控信息</span>
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="24">
               <iframe class="rate_iframe" :src="monitor_rs.cpu"></iframe>
@@ -40,7 +42,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-card>
+      <!-- <el-card>
         <div>
           <el-table
             :key="tableKey"
@@ -70,7 +72,7 @@
             </el-table-column>
           </el-table>
         </div>
-      </el-card>
+      </el-card> -->
     </el-row>
   </div>
 </template>
@@ -79,15 +81,7 @@
 import { mapGetters } from "vuex";
 import { getMonitorInfo } from "@/utils/getResource";
 import JsonEditor from "@/components/JsonEditor";
-import {
-  getListAllData,
-  getColumns,
-  getActions,
-  getFilterForm,
-  getLittleDataSource,
-  getRules,
-  getTemp
-} from "@/api/commonData";
+import { listAll, getObj } from "@/api/commonData";
 
 export default {
   name: "containerInfo",
@@ -108,35 +102,36 @@ export default {
       listLoading: "",
       columns: "",
       value: {},
-      tabName: ""
+      tabName: "",
+      table_kind: "table",
+      frontend_kind: "Frontend",
+      resourceName: "",
     };
   },
   computed: {
     ...mapGetters(["name", "avatar", "roles"])
   },
   created() {
-    this.key = this.$route.query.taskid;
-    this.podName = this.$route.query.pod;
+    this.resourceName = this.$route.query.name;
     this.nodeName = this.$route.query.node;
     this.tabName = this.$route.query.tabName;
 
-    this.monitor_rs = getMonitorInfo(this.viewerName, this.nodeName, this.podName);
+    this.monitor_rs = getMonitorInfo(
+      this.viewerName,
+      this.nodeName,
+      this.resourceName
+    );
 
-    getColumns(this.tabName).then(response => {
+    listAll({ kind: this.viewerName }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.columns = response.data;
-        getListAllData({ viewerName: this.tabName }).then(response3 => {
-          if (this.validateRes(response3) == 1) {
-            var data = response3.data;
-            //this.total = response3.total
-            this.listLoading = false;
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].metadata.name == this.podName) {
-                this.value = data[i];
-              }
-            }
+        var data = response.data;
+        //this.total = response3.total
+        this.listLoading = false;
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].metadata.name == this.resourceName) {
+            this.value = data[i];
           }
-        });
+        }
       }
     });
   },

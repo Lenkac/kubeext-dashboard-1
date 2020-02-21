@@ -5,6 +5,19 @@
       <div class="title-container">
         <!-- //面向飞腾的虚拟化架构与系统平台技术(2018YFB103602) -->
         <h3 class="title">{{ this.title }}</h3>
+        <el-select
+            v-model="loginForm.projectNum"
+            placeholder="请选择"
+            style="width:500px"
+            @change="(handleUpdate($event))"
+          >
+            <el-option
+              v-for="item in projects"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
       </div>
 
       <el-form-item prop="username">
@@ -77,6 +90,12 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
+import {
+  listAll,
+  getObj,
+  createObj,
+  removeObj
+} from "@/api/commonData";
 
 export default {
   name: 'Login',
@@ -99,7 +118,8 @@ export default {
     return {
       loginForm: {
         username: 'ladder',
-        password: '111111'
+        password: '111111',
+        projectNum: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -111,7 +131,9 @@ export default {
       showDialog: false,
       redirect: undefined,
       otherQuery: {},
-      title: process.env.VUE_APP_PROJECTTITLE
+      title: '',
+      projects: [],
+      frontend_kind: "Frontend"
     }
   },
   watch: {
@@ -127,7 +149,13 @@ export default {
     }
   },
   created() {
-    // window.addEventListener('storage', this.afterQRScan)
+    getObj({kind: this.frontend_kind , name: 'title-project'}).then(response => {
+      if (this.validateRes(response)) {
+        this.projects = response.data.spec.data
+        this.title = response.data.spec.data[0].label
+        this.loginForm.projectNum = response.data.spec.data[0].value
+      }
+    })
   },
   mounted() {
     if (this.loginForm.username === '') {
@@ -135,11 +163,35 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    validateRes(res) {
+      if (res.code == 20000) {
+        return 1;
+      } else {
+        this.$notify({
+          title: "error",
+          message: res.data,
+          type: "warning",
+          duration: 3000
+        });
+        return 0;
+      }
+    },
+    handleUpdate(event) {
+      console.log(event)
+      for (var i = 0; i < this.projects.length; i++){
+        console.log(this.projects)
+        if(event == this.projects[i].value) {
+          this.title = this.projects[i].label
+        }
+      }
+    },
+
     checkCapslock({ shiftKey, key } = {}) {
       if (key && key.length === 1) {
         if (shiftKey && (key >= 'a' && key <= 'z') || !shiftKey && (key >= 'A' && key <= 'Z')) {
@@ -190,24 +242,6 @@ export default {
         return acc
       }, {})
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>
@@ -333,4 +367,5 @@ $light_gray:#eee;
     }
   }
 }
+
 </style>

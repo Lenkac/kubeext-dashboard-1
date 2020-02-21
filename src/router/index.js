@@ -67,15 +67,15 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
-        name: 'dashboard',
-        meta: { title: '仪表盘', icon: 'dashboard', affix: true }
-      }
-    ]
+    redirect: '/charts/node-table',
+    // children: [
+    //   {
+    //     path: 'dashboard',
+    //     component: () => import('@/views/dashboard/index'),
+    //     name: 'dashboard',
+    //     meta: { title: '仪表盘', icon: 'dashboard', affix: true }
+    //   }
+    // ]
   },
   {
     path: '/resourceInfo',
