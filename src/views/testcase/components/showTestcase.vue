@@ -407,8 +407,8 @@ export default {
         name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
       }).then(response => {
         removeObj({
-          json: response.spec.data,
-          kind: this.kind
+          json: response.data.spec.data.spec.testcases[0].pods[0],
+          kind: "Pod"
         }).then(response => {
           this.fetchStatus();
         });
@@ -425,8 +425,8 @@ export default {
         name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
       }).then(response => {
         createObj({
-          json: response.spec.data,
-          kind: this.kind
+          json: response.data.spec.data.spec.testcases[0].pods[0],
+          kind: "Pod"
         }).then(response => {});
       });
     },

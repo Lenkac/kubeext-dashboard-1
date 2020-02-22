@@ -51,6 +51,7 @@
                         :successCreate="successCreate"
                         :resourceInfo="resourceInfo"
                         :catalog_operator="outActiveName"
+                        :outTabName="outActiveName"
                       />
                     </keep-alive>
                   </el-tab-pane>
@@ -233,7 +234,7 @@ export default {
       if (this.validateRes(response) == 1) {
         this.outTabMapOptions = response.data.spec.data.tabMapOptions;
         this.outActiveName = response.data.spec.data.activeName;
-        this.resourceInfo = this.$route.meta.resourceInfo[this.outActiveName];
+        this.resourceInfo = this.$route.meta.resourceInfo;
         getObj({
           kind: this.frontend_kind,
           name: this.catalog_kind + "-" + this.outActiveName.toLowerCase()
@@ -266,7 +267,7 @@ export default {
       this.kind = tab.name;
       console.log(this.kind);
       this.outActiveName = tab.name;
-      this.resourceInfo = this.$route.meta.resourceInfo[this.outActiveName];
+      this.resourceInfo = this.$route.meta.resourceInfo;
       getObj({
         kind: this.frontend_kind,
         name: this.catalog_kind + "-" + tab.name.toLowerCase()

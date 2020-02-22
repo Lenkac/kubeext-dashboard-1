@@ -82,9 +82,8 @@ export default {
     ])
   },
   created() {
-    this.key = this.$route.query.taskid
     this.vmName = this.$route.query.name
-    this.node = this.$route.query.nodeName.substring(3)
+    this.node = this.$route.query.nodeName
     this.kind = this.$route.query.tabName
 
     this.monitor_rs = getMonitorInfo(this.viewerName, this.vmName, null)

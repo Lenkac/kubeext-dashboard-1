@@ -12,7 +12,7 @@ export function getMonitorInfo(kind, nodeName, podName) {
           "fs": prefix + "73", 
           "network":prefix + "63",
         }
-    }else if(kind == "Pod") {
+    }else if(kind == "container") {
         prefix = pod_prefix
         var monitor_rs = {
           "cpu": prefix + "17",
@@ -20,7 +20,7 @@ export function getMonitorInfo(kind, nodeName, podName) {
           "fs": prefix + "78", 
           "network":prefix + "32",
         }
-    }else if(kind == "VirtualMachine") {
+    }else if(kind == "virtualmachine") {
         prefix = pod_prefix
         var monitor_rs = {
           "cpu": prefix + "47",

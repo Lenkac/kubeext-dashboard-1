@@ -1,31 +1,30 @@
 <template>
   <div class="app-container">
-    <div>
+    <div style="padding-left:200px;padding-right:200px;">
       <el-card class="box-card">
         <el-col :span="24" style="text-align:center">
-          <p style="display:inline;font-size:22px;">
+          <p style="display:inline;font-size:20px;">
             <strong>平台服务</strong>
           </p>
-          <el-col :span="24">
+          <el-col :span="24" >
             <el-card class="box-card" style="height:100px">
-              <el-col :span="8">
+              <el-col :span="24">
                 <el-button
                   type="warning"
-                  style="height:80px;width:1260px;float:left;font-size:20px;background:rgb(254,251,240)"
-                  @click.native="showDialog(index)"
+                  style="height:80px;width:100%;float:left;font-size:18px;background:rgb(254,251,240)"
                 >
                   <p style="color:black"><strong>Serverless平台（深度开发，生产和运维协同）</strong></p>
                 </el-button>
               </el-col>
             </el-card>
           </el-col>
-          <el-row :gutter="10">
+          <el-row :gutter="5" >
             <el-col
               :span="24"
               style="margin-bottom:10px"
             >
               <el-card class="box-card" style="height:100px;">
-                <el-row :gutter="55">
+                <el-row :gutter="20">
                   <el-col
                     :span="8"
                     v-for="sb in topConfig"
@@ -35,8 +34,7 @@
                     <el-button
                       type="warning"
                       :disabled="sb.state == false"
-                      style="height:80px;width:370px;float:left;font-size:20px;background:rgb(254,251,240);"
-                      @click.native="showDialog(index)"
+                      style="height:80px;width:100%;float:left;font-size:18px;background:rgb(254,251,240);"
                     >
                     <p style="color:black" v-if="sb.state == false">
                       <strong>{{ sb.name }}</strong>
@@ -53,21 +51,46 @@
         </el-col>
       </el-card>
     </div>
+    <div style="padding-left:200px;padding-right:200px;">
+      <el-row>
+      <el-col :span="8">
+            <svg-icon
+              icon-class="arrow-down"
+              class-name="card-panel-icon"
+              style="font-size:60px;margin-left:40px;width:240px"
+            />
+        </el-col>
+        <el-col :span="8">
+            <svg-icon
+              icon-class="arrow-down"
+              class-name="card-panel-icon"
+              style="font-size:60px;margin-left:40px;width:240px"
+            />
+        </el-col>
+        <el-col :span="8">
+            <svg-icon
+              icon-class="arrow-down"
+              class-name="card-panel-icon"
+              style="font-size:60px;margin-left:40px;width:240px"
+            />
+        </el-col>
+      </el-row>
+      
+    </div>
 
-    <div>
+    <div style="padding-left:200px;padding-right:200px;">
       <el-row :gutter="2" style="background:rgb(220,227,241)">
-        <el-col :span="18">
-          <el-row :gutter="10">
+        <el-col :span="18" >
+          <el-row :gutter="15">
             <el-col
               :span="24"
               v-for="item in middleConfig"
               :key="item.title"
-              style="margin-bottom:10px"
             >
-              <el-card class="box-card" style="height:110px;background:rgb(220,227,241)">
+              <el-card class="box-card" style="height:100px;background:rgb(220,227,241)">
                 <el-col :span="4" style="height: 80px;text-align:center;line-height:80px;">
                   <span style="vertical-align:middle">
-                    <p style="display:inline;font-size:20px;">
+                    <p style="display:inline;font-size:18px;">
                       <strong>{{ item.title }}</strong>
                     </p>
                   </span>
@@ -80,8 +103,7 @@
                   <el-button
                     type="primary"
                     :disabled="sb.state == false"
-                    style="height:80px;width:160px;float:left;font-size:20px;"
-                    @click.native="showDialog(index)"
+                    style="height:75px;width:100%;float:left;font-size:18px;"
                   >
                     <p v-if="sb.state == false">
                       <strong>{{ sb.name }}</strong>
@@ -96,39 +118,61 @@
           </el-row>
         </el-col>
         <el-col :span="6">
-          <el-card class="box-card" style="height:350px;background:rgb(220,227,241)">
+          <el-card class="box-card" style="height:300px;background:rgb(220,227,241)">
             <svg-icon
               icon-class="icon-tool_brief"
               class-name="card-panel-icon"
-              style="font-size:200px;margin-left:60px"
+              style="font-size:160px;margin-left:30px"
             />
             <svg-icon
               icon-class="icon-tool_brief"
               class-name="card-panel-icon"
-              style="font-size:100px;margin-left:40px"
+              style="font-size:60px;margin-left:10px"
             />
           </el-card>
         </el-col>
       </el-row>
     </div>
+    <div style="padding-left:200px;padding-right:200px;">
+      <el-row>
+      <el-col :span="8">
+            <svg-icon
+              icon-class="arrow-up"
+              class-name="card-panel-icon"
+              style="font-size:60px;margin-left:40px;width:240px"
+            />
+        </el-col>
+        <el-col :span="8">
+            <svg-icon
+              icon-class="arrow-up"
+              class-name="card-panel-icon"
+              style="font-size:60px;margin-left:40px;width:240px"
+            />
+        </el-col>
+        <el-col :span="8">
+            <svg-icon
+              icon-class="arrow-up"
+              class-name="card-panel-icon"
+              style="font-size:60px;margin-left:40px;width:240px"
+            />
+        </el-col>
+      </el-row>
+      
+    </div>
 
-    <div>
+    <div style="padding-left:200px;padding-right:200px;">
       <panel-group />
     </div>
   </div>
 </template>
 
 <script>
-import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
-import EditableJson from "@/components/EditableJson";
 import PanelGroup from "./components/PanelGroup";
 import { getObj, updateObj, createObj, listAll } from "@/api/commonData";
 
 export default {
   name: "Index",
-  directives: { elDragDialog },
   components: {
-    EditableJson,
     PanelGroup
   },
   props: {
@@ -139,7 +183,6 @@ export default {
   },
   data() {
     return {
-      dialogTableVisible: false,
       value: [],
       json: {},
       kind: "Container",
@@ -178,25 +221,6 @@ export default {
         });
         return 0;
       }
-    },
-
-    showDialog(index) {
-      this.dialogTableVisible = true;
-      this.json = this.styleConfig[index];
-      this.title = this.styleConfig[index].metadata.name;
-    },
-    updateTemplate() {
-      this.dialogTableVisible = false;
-      createObj({
-        json: JSON.parse(this.json),
-        kind: this.frontend_kind
-      }).then(response => {
-        console.log(response.code);
-      });
-    },
-    // v-el-drag-dialog onDrag callback function
-    handleDrag() {
-      this.$refs.select.blur();
     }
   }
 };

@@ -17,7 +17,7 @@
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         添加
       </el-button>
-    </div> -->
+    </div>-->
 
     <el-table
       :key="tableKey"
@@ -29,337 +29,491 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" :width="item.width" align="center">
-        <template  slot-scope="scope">
-          <router-link :to="{path:'/resourceInfo/nodeInfo',query:{kind: catalog_operator, name:getInputValue(scope.row,item.row)}}"  v-if="item.kind == 'a'" tag="a" class="link" @click="getData">
-            {{ getInputValue(scope.row,item.row) }}
-          </router-link>
-          <span v-if="item.kind == undefined">{{ getInputValue(scope.row,item.row) }}</span>
+      <el-table-column
+        v-for="item in columns"
+        :key="item.key"
+        :label="item.label"
+        :width="item.width"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <router-link
+            :to="{path:'/resourceInfo/nodeInfo',query:{kind: catalog_operator, name:getInputValue(scope.row.json,item.row)}}"
+            v-if="item.kind == 'a'"
+            tag="a"
+            class="link"
+            @click="getData"
+          >{{ getInputValue(scope.row.json,item.row) }}</router-link>
+          <span v-if="item.kind == undefined">{{ getInputValue(scope.row.json,item.row) }}</span>
+          <el-select
+            v-if="item.kind == 'action'"
+            v-model="scope.row.val"
+            @change="(handleUpdate($event, scope.row.json))"
+            placeholder="更多操作"
+          >
+            <el-option
+              v-for="item in actions"
+              :key="item.key"
+              :label="item.key"
+              :value="item.type"
+            />
+          </el-select>
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      v-el-drag-dialog
+      :visible.sync="dialogTableVisible"
+      :title="this.viewer"
+      @dragDialog="handleDrag"
+    >
+      <div class="card-editor-container">
+        <json-editor ref="jsonEditor" v-model="createJsonData" />
+      </div>
+      <div style="width:100%;height:50px;">
+        <el-button
+          type="primary"
+          style="float:right;margin-top:20px;height:40px;display:inline;"
+          @click.native="applyOperation"
+        >确认</el-button>
+      </div>
+    </el-dialog>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.pageNum" :limit.sync="listQuery.pageSize" @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.pageNum"
+      :limit.sync="listQuery.pageSize"
+      @pagination="getList"
+    />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item v-for="efi in columns" :key="efi.key" :label="efi.label" :prop="efi.row" :style='efi.itemStyle'>
-          <el-input v-if="efi.type == 'input'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
-          <el-select v-if="efi.type == 'select'" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style">
-            <el-option v-for="lds in littleDataSource[efi.dataSource]" :key="lds.key" :label="lds.label" :value="lds.value" />
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="left"
+        label-width="100px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item
+          v-for="efi in columns"
+          :key="efi.key"
+          :label="efi.label"
+          :prop="efi.row"
+          :style="efi.itemStyle"
+        >
+          <el-input
+            v-if="efi.type == 'input'"
+            v-model="temp[efi.row]"
+            :placeholder="efi.ph"
+            :style="efi.style"
+          />
+          <el-select
+            v-if="efi.type == 'select'"
+            v-model="temp[efi.row]"
+            :placeholder="efi.ph"
+            :style="efi.style"
+          >
+            <el-option
+              v-for="lds in littleDataSource[efi.dataSource]"
+              :key="lds.key"
+              :label="lds.label"
+              :value="lds.value"
+            />
           </el-select>
-          <el-input v-if="efi.type == undefined" v-model="temp[efi.row]" :placeholder="efi.ph" :style="efi.style" />
+          <el-input
+            v-if="efi.type == undefined"
+            v-model="temp[efi.row]"
+            :placeholder="efi.ph"
+            :style="efi.style"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          确认
-        </el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getListAllData, getColumns, getActions, getFilterForm, getLittleDataSource, getRules, getTemp } from '@/api/commonData'
-import { getObj, listAll } from "@/api/commonData";
-import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { mapGetters } from 'vuex'
-import Bus from '@/utils/Bus'
-
+import {
+  getListAllData,
+  getColumns,
+  getActions,
+  getFilterForm,
+  getLittleDataSource,
+  getRules,
+  getTemp
+} from "@/api/commonData";
+import { getObj, listAll,removeObj } from "@/api/commonData";
+import waves from "@/directive/waves"; // waves directive
+import { parseTime } from "@/utils";
+import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import { mapGetters } from "vuex";
+import Bus from "@/utils/Bus";
+import JsonEditor from "@/components/JsonEditor";
+import elDragDialog from "@/directive/el-drag-dialog";
 
 export default {
-  name: 'nodeTable',
-  components: { Pagination },
-  directives: { waves },
+  name: "nodeTable",
+  components: { Pagination, JsonEditor },
+  directives: { waves, elDragDialog },
   computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'roles'
-    ])
+    ...mapGetters(["name", "avatar", "roles"])
   },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
+        published: "success",
+        draft: "info",
+        deleted: "danger"
+      };
+      return statusMap[status];
     },
     typeFilter(type) {
-      return calendarTypeKeyValue[type]
+      return calendarTypeKeyValue[type];
     }
   },
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       listLoading: true,
-      importanceOptions: [1, 2, 3],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
       dialogFormVisible: false,
-      dialogStatus: '',
+      dialogStatus: "",
       downloadLoading: false,
       columns: [],
       littleDataSource: {},
       filterForm: [],
       listQuery: {},
       total: 0,
-      rules: {
-      },
-      temp: {
-      },
+      rules: {},
+      temp: {},
       textMap: {
-        update: '更新数据',
-        create: '创建新记录'
+        update: "更新数据",
+        create: "创建新记录"
       },
-      viewer: 'node',
+      viewer: "node",
       value: "",
       ip: "",
       frontend_kind: "Frontend",
       table_kind: "table",
-      catalog_operator: "Node"
-    }
+      catalog_operator: "Node",
+      actions: [],
+      action_kind: "action",
+      listTemp: "",
+      createJsonData: {},
+      dialogTableVisible: false
+    };
   },
   mounted() {
-   this.catalog_operator = this.$route.name
+    this.catalog_operator = this.$route.name;
   },
   created() {
-    
     getObj({
       kind: this.frontend_kind,
-      name: this.table_kind + '-' + this.viewer
+      name: this.table_kind + "-" + this.viewer
     }).then(response => {
       if (this.validateRes(response) == 1) {
-      this.columns = response.data.spec.data
-        listAll({kind: this.viewer}).then(response => {
+        this.columns = response.data.spec.data;
+        listAll({ kind: this.viewer }).then(response => {
           if (this.validateRes(response) == 1) {
-          this.list = response.data
-          //this.total = response3.total
-          this.listLoading = false
+            this.listTemp = response.data;
+            //this.total = response3.total
+            this.listLoading = false;
+            getObj({
+              kind: this.frontend_kind,
+              name: this.action_kind + "-" + this.viewer.toLowerCase()
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                if (response.hasOwnProperty("data")) {
+                  this.actions = response.data.spec.data;
+                } else {
+                  this.actions = [];
+                }
+                for (var i = 0; i < this.listTemp.length; i++) {
+                  this.list.push({});
+                  this.list[i].json = this.listTemp[i];
+                  this.list[i].actions = this.actions;
+                  this.list[i].val = "";
+                }
+                console.log(this.list);
+              }
+            });
           }
-        })
+        });
       }
-    })
+    });
 
-    getTemp({viewer: this.viewer}).then(response => {
-      this.temp = response.data
-    })
-    getLittleDataSource({viewer: this.viewer}).then(response => {
-      this.littleDataSource = response.data
-    })
-    getRules({viewer: this.viewer}).then(response => {
-      this.rules = response.data
-    })
-    getFilterForm({viewer: this.viewer}).then(response => {
-      this.filterForm = response.data
-    })
-
+    getTemp({ viewer: this.viewer }).then(response => {
+      this.temp = response.data;
+    });
+    getLittleDataSource({ viewer: this.viewer }).then(response => {
+      this.littleDataSource = response.data;
+    });
+    getRules({ viewer: this.viewer }).then(response => {
+      this.rules = response.data;
+    });
+    getFilterForm({ viewer: this.viewer }).then(response => {
+      this.filterForm = response.data;
+    });
   },
   methods: {
     validateRes(res) {
-      if(res.code == 20000) {
-        return 1
-      }else {
+      if (res.code == 20000) {
+        return 1;
+      } else {
         this.$notify({
           title: "error",
           message: res.data,
           type: "warning",
           duration: 3000
         });
-        return 0
+        return 0;
       }
     },
-    deleteMenu(){
+    deleteMenu() {
       // console.log(constantRoutes[9])
       // constantRoutes.splice(9,1)
-      Bus.$emit('deleteMenuTest')
+      Bus.$emit("deleteMenuTest");
     },
     getData() {
-        Bus.$emit('val', this.list)
-        console.log("hhhh"+this.list)
-      },
+      Bus.$emit("val", this.list);
+      console.log("hhhh" + this.list);
+    },
 
     getList() {
-      this.listLoading = true
+      this.listLoading = true;
     },
     handleFilter() {
-      this.listQuery.pageNum = 1
-      this.getList()
+      this.listQuery.pageNum = 1;
+      this.getList();
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
+        message: "操作成功",
+        type: "success"
+      });
+      row.status = status;
     },
     sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
+      const { prop, order } = data;
+      if (prop === "id") {
+        this.sortByID(order);
       }
     },
+    handleDrag() {
+      this.$refs.select.blur();
+    },
+
     sortByID(order) {
-      this.handleFilter()
+      this.handleFilter();
     },
     resetTemp() {
       this.temp = {
         id: undefined,
         importance: 1,
-        remark: '',
+        remark: "",
         timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
-      }
+        title: "",
+        status: "published",
+        type: ""
+      };
     },
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.resetTemp();
+      this.dialogStatus = "create";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          
         }
-      })
+      });
     },
-    handleUpdate(row, event) {
-      if (event === 'update') {
-        this.temp = Object.assign({}, row) // copy obj
-        //this.temp.timestamp = new Date(this.temp.timestamp)
-        this.dialogStatus = 'update'
-        this.dialogFormVisible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].clearValidate()
-        })
-      }
-      if (event === 'delete') {
-        this.handleDelete(row)
+    handleUpdate(event, row) {
+      console.log(event);
+      this.operator = event;
+      var name = row.metadata.name;
+      if (event == "delete") {
+        removeObj({
+          json: row,
+          kind: this.viewer
+        }).then(response => {
+          if (response.code == 20000) {
+            this.handleDelete(row);
+          }
+        });
+      } else {
+        this.dialogTableVisible = true;
+
+        listAll({ kind: this.viewer }).then(response => {
+          var data = response.data;
+          //this.total = response3.total
+          this.listLoading = false;
+          for (var i = 0; i < data.length; i++) {
+            if (data[i].metadata.name == name) {
+              this.createJsonData = data[i];
+            }
+          }
+        });
+        for (var key in this.list) {
+          this.list[key].val = "";
+        }
       }
     },
+
+    applyOperation() {
+      this.dialogTableVisible = false;
+
+      this.createJsonData = JSON.parse(this.createJsonData);
+
+      createObj({
+        json: this.createJsonData,
+        kind: this.viewer
+      }).then(response => {
+        if (response.code == 20000) {
+          for (var key in this.list) {
+            this.list[key].val = "";
+          }
+          this.handleSuccess();
+        }
+      });
+    },
+
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          const tempData = Object.assign({}, this.temp);
+          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateArticle(tempData).then(() => {
             for (const v of this.list) {
               if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
+                const index = this.list.indexOf(v);
+                this.list.splice(index, 1, this.temp);
+                break;
               }
             }
-            this.dialogFormVisible = false
+            this.dialogFormVisible = false;
             this.$notify({
-              title: 'Success',
-              message: '更新成功',
-              type: 'success',
+              title: "Success",
+              message: "更新成功",
+              type: "success",
               duration: 2000
-            })
-          })
+            });
+          });
         }
-      })
+      });
     },
     handleDelete(row) {
       this.$notify({
-        title: 'Success',
-        message: '删除成功',
-        type: 'success',
+        title: "Success",
+        message: "删除成功",
+        type: "success",
         duration: 2000
-      })
-      const index = this.list.indexOf(row)
-      this.list.splice(index, 1)
+      });
+      const index = this.list.indexOf(row);
+      this.list.splice(index, 1);
     },
-  
+
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+      return jsonData.map(v =>
+        filterVal.map(j => {
+          if (j === "timestamp") {
+            return parseTime(v[j]);
+          } else {
+            return v[j];
+          }
+        })
+      );
     },
-    getInputValue(scope,longKey){
-      if( JSON.stringify(scope)=='{}'){
-        return ''
+    getInputValue(scope, longKey) {
+      if (JSON.stringify(scope) == "{}") {
+        return "";
       }
-      if( longKey == "" || longKey == undefined || longKey == null || !longKey){
-        return ''
+      if (
+        longKey == "" ||
+        longKey == undefined ||
+        longKey == null ||
+        !longKey
+      ) {
+        return "";
       }
-      if( longKey.indexOf('\.') < 0 ){
-        return scope[longKey]
+      if (longKey.indexOf(".") < 0) {
+        return scope[longKey];
       }
-      var keys = longKey.split("\.")
-      var res =scope;
+      var keys = longKey.split(".");
+      var res = scope;
       keys.forEach(element => {
-        if(element.indexOf('\[') > 0){
-          console.log("shibushi")
-          res = res[element.substring(0,element.indexOf('\['))]
-          console.log(res)
-          if(res.length == 0) {
-              res = "unknown"
-            }else {
-              res = res[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
+        if (element.indexOf("[") > 0) {
+          res = res[element.substring(0, element.indexOf("["))];
+          //console.log(res)
+          if (res.length == 0) {
+            res = "unknown";
+          } else {
+            res =
+              res[
+                parseInt(
+                  element.substring(
+                    element.indexOf("[") + 1,
+                    element.indexOf("]")
+                  )
+                )
+              ];
+          }
+        } else {
+          if (res.hasOwnProperty(element)) {
+            res = res[element];
+            if (res == undefined) {
+              res = "unknown";
             }
-        }
-        else{
-         if(res.hasOwnProperty(element)){
-            res = res[element]
-            if(res == undefined) {
-              res = "unknown"
-            }
-          }else [
-            res = "unknown"
-          ]
+          } else [(res = "unknown")];
         }
       });
       //console.log(res)
-      return res
+      return res;
     },
-    updateInputValue(scope,longKey,event){
-      if( longKey.indexOf('\.') < 0 ){
-         scope[longKey] = event
-         return 
+    updateInputValue(scope, longKey, event) {
+      if (longKey.indexOf(".") < 0) {
+        scope[longKey] = event;
+        return;
       }
-      var keys = longKey.split("\.")
-      var obj = scope
-      for (var i=0 ;i < keys.length -1 ;i++){
-        var element = keys[i]
-        if(element.indexOf('\[') > 0){
-          obj = obj[element.substring(0,element.indexOf('\['))]
-          obj = obj[parseInt(element.substring(element.indexOf('\[')+1,element.indexOf('\]')))]
-        }
-        else{
-          obj = obj[element]
+      var keys = longKey.split(".");
+      var obj = scope;
+      for (var i = 0; i < keys.length - 1; i++) {
+        var element = keys[i];
+        if (element.indexOf("[") > 0) {
+          obj = obj[element.substring(0, element.indexOf("["))];
+          obj =
+            obj[
+              parseInt(
+                element.substring(
+                  element.indexOf("[") + 1,
+                  element.indexOf("]")
+                )
+              )
+            ];
+        } else {
+          obj = obj[element];
         }
       }
-      obj[keys[keys.length-1]] = event
+      obj[keys[keys.length - 1]] = event;
     }
-  },
-}
+  }
+};
 </script>
 
 <style scoped>
-.link{
+.link {
   color: red;
 }
-a:hover{
+a:hover {
   text-decoration: underline;
 }
 input {

@@ -72,7 +72,6 @@ export default {
 
 <style lang="scss" scoped>
 .panel-group {
-  margin-top: 18px;
   .card-panel-col {
     margin-bottom: 32px;
   }
@@ -114,15 +113,14 @@ export default {
       float: left;
       font-size: 48px;
     }
-    .card-panel-description {
-      float: right;
+    .card-panel-description {      
       font-weight: bold;
       margin: 26px;
       margin-left: 0px;
       .card-panel-text {
         line-height: 50px;
         color: black;
-        font-size: 20px;
+        font-size: 18px;
       }
       .card-panel-num {
         font-size: 20px;

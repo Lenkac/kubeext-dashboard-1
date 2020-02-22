@@ -67,7 +67,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/charts/node-table',
+    redirect: '/index/infrastructure',
     // children: [
     //   {
     //     path: 'dashboard',

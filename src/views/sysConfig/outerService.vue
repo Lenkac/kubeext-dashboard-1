@@ -4,12 +4,12 @@
     <p style="font-size:16px;"><strong>{{item.title}}</strong></p>
     <div class="chart-wrapper">
       <el-table :data="item.content" style="width: 80%;padding-top: 15px;">
-        <el-table-column label="服务名称" min-width="200">
+        <el-table-column label="名称" min-width="200">
           <template slot-scope="{row}">              
               {{ row.name }}
               </template>
         </el-table-column>
-        <el-table-column label="服务地址" width="800" align="left">
+        <el-table-column label="地址" width="800" align="left">
           <template slot-scope="{row}">
               <a :href="row.address" target="_blank">{{ row.address }}</a>
               </template>
@@ -21,7 +21,6 @@
 </template>
 
 <script>
-// import { transactionList } from '@/api/remote-search'
 import { getObj, updateObj, createObj } from "@/api/commonData";
 export default {
   data() {
@@ -32,6 +31,7 @@ export default {
     };
   },
   created() {
+    this.outerService = this.$route.name
     getObj({
       kind: this.frontend_kind,
       name: this.outerService

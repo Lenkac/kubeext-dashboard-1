@@ -19,7 +19,7 @@
       >
         <template slot-scope="scope">
           <router-link
-            :to="{path:resourceInfo,query:{tabName: tabName, name:getInputValue(scope.row.json,item.row),nodeName:scope.row.json.spec.nodeName}}"
+            :to="{path:resourceInfo,query:{outTabName: outTabName, tabName: tabName, name:getInputValue(scope.row.json,item.row),nodeName:scope.row.json.spec.nodeName}}"
             v-if="item.kind == 'a'"
             tag="a"
             class="link"
@@ -42,7 +42,6 @@
               :key="item.key"
               :label="item.key"
               :value="item.type"
-              @click="showDialog"
             />
           </el-select>
         </template>
@@ -128,6 +127,10 @@ export default {
     tabName: {
       type: String,
       default: "VirtualMachine"
+    },
+    outTabName: {
+      type: String,
+      default: "Container"
     },
     successCreate: {
       type: String,
@@ -268,9 +271,6 @@ export default {
         return 0;
       }
     },
-    showDialog(row) {
-      console.log(row);
-    },
     create() {
       this.dialogTableVisible = false;
       var str = this.toRawJson(this.createPodJson);
@@ -340,17 +340,17 @@ export default {
           name: this.catalog_operator.toLowerCase() + "-" + event.toLowerCase(),
           currentName: name
         }).then(response => {
-          console.log(response);
+          //console.log(response);
           this.Variables = [];
           if (response.hasOwnProperty("data")) {
             if (response.data.spec.data.hasOwnProperty("lifecycle")) {
               this.lifecycle = true;
               this.createJsonData = response.data;
-              console.log(this.createJsonData);
+              //console.log(this.createJsonData);
               let nameVariables = Object.keys(
                 response.data.spec.data.lifecycle[event]
               );
-              console.log(nameVariables);
+              //console.log(nameVariables);
               let values = this.getObjectValues(
                 response.data.spec.data.lifecycle[event]
               );

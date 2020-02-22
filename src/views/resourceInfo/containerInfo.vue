@@ -115,14 +115,17 @@ export default {
     this.resourceName = this.$route.query.name;
     this.nodeName = this.$route.query.node;
     this.tabName = this.$route.query.tabName;
+    this.outTabName = this.$route.query.outTabName;
+
+    console.log(this.tabName)
 
     this.monitor_rs = getMonitorInfo(
-      this.viewerName,
+      this.outTabName,
       this.nodeName,
       this.resourceName
     );
 
-    listAll({ kind: this.viewerName }).then(response => {
+    listAll({ kind: this.tabName }).then(response => {
       if (this.validateRes(response) == 1) {
         var data = response.data;
         //this.total = response3.total
