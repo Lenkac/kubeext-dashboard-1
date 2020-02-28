@@ -116,7 +116,6 @@ export default {
               "-" +
               this.list[obj].name
           }).then(response => {
-            console.log(obj);
             if (this.validateRes(response) == 1) {
               json.columns = response.data.spec.data;
               json.name = this.list[obj].name;
@@ -140,27 +139,30 @@ export default {
                       );
                     }
                   }
-                  this.listtemp.push(json);
-                  this.listtemp.sort(function(a, b) {
-                    if (a.index < b.index) {
-                      return -1;
-                    } else if (a.index == b.index) {
-                      return 0;
-                    } else {
-                      return 1;
-                  }
-        });
+                    var point =0
+                    for(var i = 0;i< this.listtemp.length;i++){
+                      if(this.listtemp[i].index < json.index){
+                        point = i+1;
+                        continue;
+                      }
+                      else{
+                        point = i;
+                        break;
+                      }
+                    }
+                    console.log(point)
+                    this.listtemp.splice(point,0,json);
                 }
               });
             }
           });
         }
-        
-        console.log(this.listtemp);
       }
     });
   },
-  mounted() {},
+  mounted() {
+    console.log(this.listtemp)
+  },
   methods: {
     validateRes(res) {
       if (res.code == 20000) {
@@ -183,7 +185,6 @@ export default {
     handleUpdate(event, row) {
       console.log(event);
       this.operator = event;
-      console.log(row);
       var name = row.metadata.name;
       if (event == "delete") {
         removeObj({
@@ -203,7 +204,6 @@ export default {
           kind: this.viewerName,
           name: name
         }).then(response => {
-          console.log(response);
           this.Variables = [];
           if (response.hasOwnProperty("data")) {
             if (response.data.spec.hasOwnProperty("lifecycle")) {
@@ -212,7 +212,6 @@ export default {
               let nameVariables = Object.keys(
                 response.data.spec.lifecycle[event]
               );
-              console.log(nameVariables);
               let values = this.getObjectValues(
                 response.data.spec.lifecycle[event]
               );
@@ -307,25 +306,10 @@ export default {
       var keys = longKey.split(".");
       var res = scope;
       keys.forEach(element => {
-        //console.log(element)
-        // if (element.indexOf("[") > 0) {
-        //   res = res[element.substring(0, element.indexOf("["))];
-        //   res =
-        //     res[
-        //       parseInt(
-        //         element.substring(
-        //           element.indexOf("[") + 1,
-        //           element.indexOf("]")
-        //         )
-        //       )
-        //     ];
-        // } else {
         if (res.hasOwnProperty(element)) {
           res = res[element];
         } else [(res = "unknown")];
-        //}
       });
-      //console.log(res)
       return res;
     },
     updateInputValue(scope, longKey, event) {
