@@ -118,17 +118,26 @@ export default {
           }).then(response => {
             console.log(obj);
             if (this.validateRes(response) == 1) {
+              let flag = 0
               json.columns = response.data.spec.data;
               json.name = this.list[obj].name;
               json.title = this.list[obj].title;
               json.index = this.list[obj].index;
+              if(response.data.spec.data.length == 0) {
+                flag = 1
+              }
               getObj({
                 kind: this.kind,
                 name: this.resourceName
               }).then(response => {
                 if (this.validateRes(response) == 1) {
                   if (!response.data.hasOwnProperty(this.list[obj].name)) {
-                    json[this.list[obj].name] = [];
+                    if(flag == 1) {
+                      json[this.list[obj].name] = []
+                    } else {
+                      json[this.list[obj].name] = response.data
+                    }
+                    
                   } else {
                     if (response.data[this.list[obj].name] instanceof Array) {
                       json[this.list[obj].name] =
