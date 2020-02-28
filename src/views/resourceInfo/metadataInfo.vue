@@ -150,20 +150,21 @@ export default {
                     }
                   }
                   this.listtemp.push(json);
+                  this.listtemp.sort(function(a, b) {
+                    if (a.index < b.index) {
+                      return -1;
+                    } else if (a.index == b.index) {
+                      return 0;
+                    } else {
+                      return 1;
+                  }
+        });
                 }
               });
             }
           });
         }
-        this.listtemp.sort(function(a, b) {
-          if (a.index < b.index) {
-            return -1;
-          } else if (a.index == b.index) {
-            return 0;
-          } else {
-            return 1;
-          }
-        });
+        
         console.log(this.listtemp);
       }
     });
