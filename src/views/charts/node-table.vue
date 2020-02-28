@@ -1,24 +1,19 @@
 <template>
   <div class="app-container">
-    <!-- <div class="filter-container">
-      <span v-for="ff in filterForm" :key="ff.key">
-        <input type="text" v-if="ff.type == 'input'" :value="getInputValue(listQuery,ff.prop) " 
-　　　　　　@input="updateInputValue(listQuery,ff.prop,$event.target.value)" :placeholder="ff.ph" :style="ff.style" class="filter-item" @keyup.enter.native="handleFilter"/>
-        <select v-if="ff.type == 'select'" :value="getInputValue(listQuery,ff.prop)"
-          @change="updateInputValue(listQuery,ff.prop,$event.target.value)"
-         :placeholder="ff.ph" :style="ff.style" class="filter-item">
-          <option v-for="item in littleDataSource[ff.dataSource]" 
-          :key="item.key" :label="item.label" :value="item.value" />
-        </select>
-      </span>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        查找
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        添加
-      </el-button>
-    </div>-->
-
+    <div class="filter-container" style="margin-bottom:50px">
+        <el-button
+          style="float:left"
+          type="primary"
+          class="filter-item"
+          @click.native="createJson"
+        >{{this.createResource}}</el-button>
+        <el-button
+          style="float:left;margin-right:20px"
+          type="primary"
+          class="filter-item"
+          @click.native="refresh"
+        >刷新</el-button>
+      </div>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -27,18 +22,19 @@
       fit
       highlight-current-row
       style="width: 100%;"
+      :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       @sort-change="sortChange"
     >
       <el-table-column
         v-for="item in columns"
         :key="item.key"
         :label="item.label"
-        :width="item.width"
-        align="center"
+        
+        align="left"
       >
         <template slot-scope="scope">
           <router-link
-            :to="{path:'/resourceInfo/nodeInfo',query:{kind: catalog_operator, name:getInputValue(scope.row.json,item.row)}}"
+            :to="{path:'/resourceInfo/metadataInfo',query:{kind: catalog_operator, name:getInputValue(scope.row.json,item.row)}}"
             v-if="item.kind == 'a'"
             tag="a"
             class="link"
@@ -63,8 +59,8 @@
     </el-table>
     <el-dialog
       v-el-drag-dialog
-      :visible.sync="dialogTableVisible"
-      :title="this.viewer"
+      :visible.sync="udialogTableVisible"
+      :title="this.catalog_operator"
       @dragDialog="handleDrag"
     >
       <div class="card-editor-container">
@@ -135,6 +131,24 @@
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+        v-el-drag-dialog
+        :visible.sync="dialogTableVisible"
+        :title="this.createResource"
+        @dragDialog="handleDrag"
+      >
+        <div class="card-editor-container">
+          <json-editor ref="jsonEditor" v-model="createRSJson" />
+          <div style="width:100%;height:50px;">
+            <el-button
+              type="primary"
+              style="float:right;margin-top:20px;height:40px;display:inline;"
+              @click.native="create"
+            >确认</el-button>
+            <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
+          </div>
+        </div>
+      </el-dialog>
   </div>
 </template>
 
@@ -148,7 +162,7 @@ import {
   getRules,
   getTemp
 } from "@/api/commonData";
-import { getObj, listAll,removeObj } from "@/api/commonData";
+import { getObj, listAll,removeObj,createObj } from "@/api/commonData";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -201,32 +215,36 @@ export default {
       ip: "",
       frontend_kind: "Frontend",
       table_kind: "table",
-      catalog_operator: "Node",
+      catalog_operator: "",
       actions: [],
       action_kind: "action",
       listTemp: "",
       createJsonData: {},
-      dialogTableVisible: false
+      dialogTableVisible: false,
+      createResource: "创建",
+      createRSJson: {},
+      udialogTableVisible: false
     };
   },
   mounted() {
     this.catalog_operator = this.$route.name;
   },
   created() {
+    this.catalog_operator = this.$route.name;
     getObj({
       kind: this.frontend_kind,
-      name: this.table_kind + "-" + this.viewer
+      name: this.table_kind + "-" + this.catalog_operator.toLowerCase()
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
-        listAll({ kind: this.viewer }).then(response => {
+        listAll({ kind: this.catalog_operator }).then(response => {
           if (this.validateRes(response) == 1) {
             this.listTemp = response.data;
             //this.total = response3.total
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.viewer.toLowerCase()
+              name: this.action_kind + "-" + this.catalog_operator.toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
@@ -341,19 +359,20 @@ export default {
       console.log(event);
       this.operator = event;
       var name = row.metadata.name;
+      console.log(name)
       if (event == "delete") {
         removeObj({
           json: row,
-          kind: this.viewer
+          kind: this.catalog_operator
         }).then(response => {
           if (response.code == 20000) {
             this.handleDelete(row);
           }
         });
       } else {
-        this.dialogTableVisible = true;
+        this.udialogTableVisible = true;
 
-        listAll({ kind: this.viewer }).then(response => {
+        listAll({ kind: this.catalog_operator }).then(response => {
           var data = response.data;
           //this.total = response3.total
           this.listLoading = false;
@@ -362,21 +381,80 @@ export default {
               this.createJsonData = data[i];
             }
           }
+          console.log(this.createJsonData)
         });
         for (var key in this.list) {
           this.list[key].val = "";
         }
       }
     },
-
-    applyOperation() {
+    create() {
       this.dialogTableVisible = false;
+      createObj({
+        json: JSON.parse(this.createRSJson),
+        kind: JSON.parse(this.createRSJson).kind
+      }).then(response => {
+        if (this.validateRes(response) == 1) {
+          if (response.code == 20000) {
+            this.handleSuccess();
+            this.successCreate = "success";
+            this.refresh();
+          }
+        }
+      });
+    },
+createJson() {
+      this.dialogTableVisible = true;
+      //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
+      //   this.value = response.data
+      //   this.createPodJson = response.data
+      //})
+    },
+    refresh() {
+      this.list = []
+      getObj({
+      kind: this.frontend_kind,
+      name: this.table_kind + "-" + this.catalog_operator.toLowerCase()
+    }).then(response => {
+      if (this.validateRes(response) == 1) {
+        this.columns = response.data.spec.data;
+        listAll({ kind: this.catalog_operator }).then(response => {
+          if (this.validateRes(response) == 1) {
+            this.listTemp = response.data;
+            //this.total = response3.total
+            this.listLoading = false;
+            getObj({
+              kind: this.frontend_kind,
+              name: this.action_kind + "-" + this.catalog_operator.toLowerCase()
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                if (response.hasOwnProperty("data")) {
+                  this.actions = response.data.spec.data;
+                } else {
+                  this.actions = [];
+                }
+                for (var i = 0; i < this.listTemp.length; i++) {
+                  this.list.push({});
+                  this.list[i].json = this.listTemp[i];
+                  this.list[i].actions = this.actions;
+                  this.list[i].val = "";
+                }
+                console.log(this.list);
+              }
+            });
+          }
+        });
+      }
+    });
+    },
+    applyOperation() {
+      this.udialogTableVisible = false;
 
       this.createJsonData = JSON.parse(this.createJsonData);
 
       createObj({
         json: this.createJsonData,
-        kind: this.viewer
+        kind: this.catalog_operator
       }).then(response => {
         if (response.code == 20000) {
           for (var key in this.list) {
@@ -384,6 +462,15 @@ export default {
           }
           this.handleSuccess();
         }
+      });
+    },
+
+     handleSuccess() {
+      this.$notify({
+        title: "Success",
+        message: "操作成功",
+        type: "success",
+        duration: 2000
       });
     },
 

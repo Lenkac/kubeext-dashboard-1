@@ -67,7 +67,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/index/infrastructure',
+    redirect: '/Cluster/node-table',
     // children: [
     //   {
     //     path: 'dashboard',
@@ -100,6 +100,12 @@ export const constantRoutes = [
         component: () => import('@/views/resourceInfo/vmInfo'),
         name: 'vmInfo',
         meta: { title: 'vm信息', icon: 'user', noCache: true }
+      },
+      {
+        path: 'metadataInfo',
+        component: () => import('@/views/resourceInfo/metadataInfo'),
+        name: 'metadataInfo',
+        meta: { title: 'metadataInfo', icon: 'user', noCache: true }
       }
     ]
   }

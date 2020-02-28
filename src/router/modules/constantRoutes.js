@@ -14,7 +14,7 @@ const constantRoutes = [
     },
     {
       path: '/login',
-      component: () => import('@/views/login/index'),
+      component: () => import('@/views/charts/node-table'),
       hidden: true
     },
     {

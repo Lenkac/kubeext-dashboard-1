@@ -463,6 +463,7 @@ export default {
       }
       obj[keys[keys.length - 1]] = event;
     },
+
     getInputValue(scope, longKey) {
       if (JSON.stringify(scope) == "{}") {
         return "";
@@ -480,25 +481,42 @@ export default {
       }
       var keys = longKey.split(".");
       var res = scope;
-      keys.forEach(element => {
-        if (element.indexOf("[") > 0) {
-          res = res[element.substring(0, element.indexOf("["))];
-          res =
-            res[
-              parseInt(
-                element.substring(
-                  element.indexOf("[") + 1,
-                  element.indexOf("]")
-                )
-              )
-            ];
-        } else {
-          if (res.hasOwnProperty(element)) {
-            res = res[element];
-          } else [(res = "unknown")];
-        }
-      });
-      //console.log(res)
+
+      try {
+        keys.forEach(element => {
+          if (element.indexOf("[") > 0) {
+            res = res[element.substring(0, element.indexOf("["))];
+            if (res.length == 0) {
+              res = "unknown";
+            } else {
+              res =
+                res[
+                  parseInt(
+                    element.substring(
+                      element.indexOf("[") + 1,
+                      element.indexOf("]")
+                    )
+                  )
+                ];
+            }
+          } else {
+            if (res.hasOwnProperty(element)) {
+              res = res[element];
+              return res
+              if (res == undefined) {
+                res = "unknown";
+              }
+            } else {
+              res = "unknown";
+              throw new Error("notExist");
+            }
+          }
+        });
+      } catch (e) {
+        if (e.message == "notExist"){}
+      } finally {
+        return res;
+      }
       return res;
     },
 

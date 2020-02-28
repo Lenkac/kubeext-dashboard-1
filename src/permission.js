@@ -88,7 +88,6 @@ router.beforeEach(async (to, from, next) => {
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
           const { data } = await getObj({"kind": "Frontend" , "name": 'viewroute-' + getKV('projectNum').toLowerCase()})
-         console.log(data.spec.data)
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data.spec.data)])
 
