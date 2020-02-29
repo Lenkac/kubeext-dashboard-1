@@ -245,7 +245,9 @@ export default {
       }
     });
   },
-  mounted() {},
+  mounted() {
+    console.log(this.listtemp)
+  },
   methods: {
     validateRes(res) {
       if (res.code == 20000) {
@@ -272,7 +274,6 @@ export default {
     handleUpdate(event, row) {
       console.log(event);
       this.operator = event;
-      console.log(row);
       var name = row.metadata.name;
       if (event == "delete") {
         removeObj({
@@ -292,7 +293,6 @@ export default {
           kind: this.viewerName,
           name: name
         }).then(response => {
-          console.log(response);
           this.Variables = [];
           if (response.hasOwnProperty("data")) {
             if (response.data.spec.hasOwnProperty("lifecycle")) {
@@ -301,7 +301,6 @@ export default {
               let nameVariables = Object.keys(
                 response.data.spec.lifecycle[event]
               );
-              console.log(nameVariables);
               let values = this.getObjectValues(
                 response.data.spec.lifecycle[event]
               );
@@ -430,7 +429,6 @@ export default {
           }
         }
       });
-      //console.log(res)
       return res;
     },
 
