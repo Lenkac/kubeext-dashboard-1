@@ -8,6 +8,7 @@
     >
       <p style="font-size:16px;">
         <strong>{{itemx.title}}</strong>
+        <a v-if="itemx.name=='metadata'" style="color:blue" @click="openDialog">[yaml]</a>
       </p>
       <div class="chart-wrapper">
         <el-table
@@ -39,6 +40,23 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-dialog
+          v-el-drag-dialog
+          :visible.sync="udialogTableVisible"
+          :title="resourceName"
+          @dragDialog="handleDrag"
+        >
+          <div class="card-editor-container">
+            <json-editor ref="jsonEditor" v-model="createJsonData" />
+          </div>
+          <div style="width:100%;height:50px;">
+            <el-button
+              type="primary"
+              style="float:right;margin-top:20px;height:40px;display:inline;"
+              @click.native="closeDialog"
+            >关闭</el-button>
+          </div>
+        </el-dialog>
       </div>
     </el-card>
   </div>
@@ -49,10 +67,12 @@ import { mapGetters } from "vuex";
 import { getMonitorInfo } from "@/utils/getResource";
 import JsonEditor from "@/components/JsonEditor";
 import { listAll, getObj, removeObj } from "@/api/commonData";
+import elDragDialog from "@/directive/el-drag-dialog";
 
 export default {
   name: "nodeInfo",
   components: { JsonEditor },
+  directives: { elDragDialog },
   data() {
     return {
       tableKey: 0,
@@ -76,7 +96,9 @@ export default {
       resourceInfo: "",
       tabName: "",
       json: {},
-      listtemp: []
+      listtemp: [],
+      createJsonData:{},
+      udialogTableVisible: false
     };
   },
   computed: {
@@ -107,65 +129,119 @@ export default {
 
         for (let obj in this.list) {
           let json = {};
-          getObj({
-            kind: this.frontend_kind,
-            name:
-              this.table_kind +
-              "-" +
-              this.kind.toLowerCase() +
-              "-" +
-              this.list[obj].name
-          }).then(response => {
-            console.log(obj);
-            if (this.validateRes(response) == 1) {
-              let flag = 0
-              json.columns = response.data.spec.data;
-              json.name = this.list[obj].name;
-              json.title = this.list[obj].title;
-              json.index = this.list[obj].index;
-              if(response.data.spec.data.length == 0) {
-                flag = 1
-              }
-              getObj({
-                kind: this.kind,
-                name: this.resourceName
-              }).then(response => {
-                if (this.validateRes(response) == 1) {
-                  if (!response.data.hasOwnProperty(this.list[obj].name)) {
-                    if(flag == 1) {
-                      json[this.list[obj].name] = []
-                    } else {
-                      json[this.list[obj].name] = response.data
-                    }
-                    
-                  } else {
-                    if (response.data[this.list[obj].name] instanceof Array) {
-                      json[this.list[obj].name] =
-                        response.data[this.list[obj].name];
-                    } else {
-                      json[this.list[obj].name] = [];
-                      json[this.list[obj].name].push(
-                        response.data[this.list[obj].name]
-                      );
-                    }
-                  }
+          if (this.list[obj].name == "pod") {
+            getObj({
+              kind: this.frontend_kind,
+              name: this.table_kind + "-" + this.list[obj].name
+            }).then(response => {
+              //console.log(obj);
+              if (this.validateRes(response) == 1) {
+                json.columns = response.data.spec.data;
+                json.name = this.list[obj].name;
+                json.title = this.list[obj].title;
+                json.index = this.list[obj].index;
+                listAll({ kind: "Pod" }).then(response => {
+                  //var data = response.data;
+                  //this.total = response3.total
+                  this.listLoading = false;
+                  json[this.list[obj].name] = response.data;
                   this.listtemp.push(json);
-                  this.listtemp.sort(function(a, b) {
-                    if (a.index < b.index) {
-                      return -1;
-                    } else if (a.index == b.index) {
-                      return 0;
-                    } else {
-                      return 1;
-                  }
-        });
+                });
+              }
+            });
+          } else {
+            //console.log("else");
+            getObj({
+              kind: this.frontend_kind,
+              name:
+                this.table_kind +
+                "-" +
+                this.kind.toLowerCase() +
+                "-" +
+                this.list[obj].name
+            }).then(response => {
+             // console.log(obj);
+              if (this.validateRes(response) == 1) {
+                let flag = 0;
+                json.columns = response.data.spec.data;
+                json.name = this.list[obj].name;
+                json.title = this.list[obj].title;
+                json.index = this.list[obj].index;
+                if (response.data.spec.data.length == 0) {
+                  flag = 1;
                 }
-              });
-            }
-          });
+                getObj({
+                  kind: this.kind,
+                  name: this.resourceName
+                }).then(response => {
+                  this.createJsonData = response.data
+                  if (this.validateRes(response) == 1) {
+                    if (
+                      this.getInputValue(response.data, this.list[obj].name) ==
+                      "unknown"
+                    ) {
+                      if (flag == 1) {
+                        json[this.list[obj].name] = [];
+                      } else {
+                        json[this.list[obj].name] = [];
+                        json[this.list[obj].name].push(response.data);
+                      }
+                    } else {
+                      if (
+                        this.getInputValue(
+                          response.data,
+                          this.list[obj].name
+                        ) instanceof Array
+                      ) {
+                        json[this.list[obj].name] = this.getInputValue(
+                          response.data,
+                          this.list[obj].name
+                        );
+                      } else {
+                        json[this.list[obj].name] = [];
+                        json[this.list[obj].name].push(
+                          this.getInputValue(response.data, this.list[obj].name)
+                        );
+                      }
+                      // json[this.list[obj].name] = getInputValue(response.data, this.list[obj].name)
+                    }
+
+                    // if (!response.data.hasOwnProperty(this.list[obj].name)) {
+                    //   if(flag == 1) {
+                    //     json[this.list[obj].name] = []
+                    //   } else {
+                    //     json[this.list[obj].name] = response.data
+                    //   }
+
+                    // } else {
+                    //   if (response.data[this.list[obj].name] instanceof Array) {
+                    //     json[this.list[obj].name] =
+                    //       response.data[this.list[obj].name];
+                    //   } else {
+                    //     json[this.list[obj].name] = [];
+                    //     json[this.list[obj].name].push(
+                    //       response.data[this.list[obj].name]
+                    //     );
+                    //   }
+                    // }
+                    this.listtemp.push(json);
+                    this.listtemp.sort(function(a, b) {
+                      if (a.index < b.index) {
+                        return -1;
+                      } else if (a.index == b.index) {
+                        return 0;
+                      } else {
+                        return 1;
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
         }
-        
-        console.log(this.listtemp);
+
+       // console.log(this.listtemp);
       }
     });
   },
@@ -187,6 +263,10 @@ export default {
 
     openTerminal(row) {
       connectTerminal(this.viewerName, row);
+    },
+
+     handleDrag() {
+      this.$refs.select.blur();
     },
 
     handleUpdate(event, row) {
@@ -268,6 +348,10 @@ export default {
       this.list.splice(index, 1);
     },
 
+    closeDialog() {
+      this.udialogTableVisible = false
+    },
+
     getList() {
       this.listLoading = true;
     },
@@ -316,27 +400,44 @@ export default {
       var keys = longKey.split(".");
       var res = scope;
       keys.forEach(element => {
-        //console.log(element)
-        // if (element.indexOf("[") > 0) {
-        //   res = res[element.substring(0, element.indexOf("["))];
-        //   res =
-        //     res[
-        //       parseInt(
-        //         element.substring(
-        //           element.indexOf("[") + 1,
-        //           element.indexOf("]")
-        //         )
-        //       )
-        //     ];
-        // } else {
-        if (res.hasOwnProperty(element)) {
-          res = res[element];
-        } else [(res = "unknown")];
-        //}
+        if (element.indexOf("[") > 0) {
+          res = res[element.substring(0, element.indexOf("["))];
+          //console.log(res)
+          if (res.length == 0) {
+            res = "unknown";
+          } else {
+            res =
+              res[
+                parseInt(
+                  element.substring(
+                    element.indexOf("[") + 1,
+                    element.indexOf("]")
+                  )
+                )
+              ];
+          }
+        } else {
+          console.log(res);
+          if (res.hasOwnProperty(element)) {
+            res = res[element];
+            return res;
+            if (res == undefined) {
+              res = "unknown";
+            }
+          } else {
+            res = "unknown";
+            throw new Error("notExist");
+          }
+        }
       });
       //console.log(res)
       return res;
     },
+
+    openDialog() {
+      this.udialogTableVisible = true
+    },
+
     updateInputValue(scope, longKey, event) {
       if (longKey.indexOf(".") < 0) {
         scope[longKey] = event;

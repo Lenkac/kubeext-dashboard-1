@@ -41,6 +41,12 @@
             @click="getData"
           >{{ getInputValue(scope.row.json,item.row) }}</router-link>
           <span v-if="item.kind == undefined">{{ getInputValue(scope.row.json,item.row) }}</span>
+          <svg-icon
+            v-if="item.kind == 'terminal'"
+            @click="openTerminal(scope.row)"
+            icon-class="pc"
+            class-name="custom-class"
+          />
           <el-select
             v-if="item.kind == 'action'"
             v-model="scope.row.val"
@@ -138,6 +144,7 @@
         @dragDialog="handleDrag"
       >
         <div class="card-editor-container">
+          <p>请填写JSON格式</p>
           <json-editor ref="jsonEditor" v-model="createRSJson" />
           <div style="width:100%;height:50px;">
             <el-button
@@ -170,6 +177,7 @@ import { mapGetters } from "vuex";
 import Bus from "@/utils/Bus";
 import JsonEditor from "@/components/JsonEditor";
 import elDragDialog from "@/directive/el-drag-dialog";
+import { connectTerminal } from "@/api/commonKindMethod";
 
 export default {
   name: "nodeTable",
@@ -258,7 +266,7 @@ export default {
                   this.list[i].actions = this.actions;
                   this.list[i].val = "";
                 }
-                console.log(this.list);
+                
               }
             });
           }
@@ -439,7 +447,7 @@ createJson() {
                   this.list[i].actions = this.actions;
                   this.list[i].val = "";
                 }
-                console.log(this.list);
+                //console.log(this.list);
               }
             });
           }
@@ -472,6 +480,10 @@ createJson() {
         type: "success",
         duration: 2000
       });
+    },
+
+    openTerminal(row) {
+      connectTerminal(this.tabName, row);
     },
 
     updateData() {
@@ -533,7 +545,11 @@ createJson() {
         return "";
       }
       if (longKey.indexOf(".") < 0) {
-        return scope[longKey];
+        if(longKey == "unknown") {
+          return '无'
+        }else {
+          return scope[longKey];
+        }   
       }
       var keys = longKey.split(".");
       var res = scope;
@@ -557,10 +573,15 @@ createJson() {
         } else {
           if (res.hasOwnProperty(element)) {
             res = res[element];
-            if (res == undefined) {
-              res = "unknown";
+              return res
+              if (res == undefined) {
+                res = "unknown";
+              }
+            } else {
+              res = "无";
+              return res
+              throw new Error("notExist");
             }
-          } else [(res = "unknown")];
         }
       });
       //console.log(res)
