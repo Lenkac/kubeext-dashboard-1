@@ -1,6 +1,6 @@
 <template>
   <div class="search">
-    <!-- <Card>
+    <Card>
       <Row class="operation">
         <Button @click="add" type="primary" icon="md-add">添加用户</Button>
         <Button @click="delAll" icon="md-trash">批量删除</Button>
@@ -17,9 +17,9 @@
           ref="table"
         ></Table>
       </Row>
-    </Card> -->
+    </Card>
 
-    <!-- <Modal
+    <Modal
       :title="modalTitle"
       v-model="userModalVisible"
       :mask-closable="false"
@@ -44,9 +44,6 @@
             <Radio v-for="(item, i) in dictSex" :key="i" :label="item.value">{{item.title}}</Radio>
           </RadioGroup>
         </FormItem>
-        <Form-item label="头像" prop="avatar">
-          <upload-pic-input v-model="form.avatar"></upload-pic-input>
-        </Form-item>
         <Form-item label="所属部门">
           <department-tree-choose @on-change="handleSelectDepTree" ref="depTree"></department-tree-choose>
         </Form-item>
@@ -69,25 +66,25 @@
         <Button type="text" @click="userModalVisible = false">取消</Button>
         <Button type="primary" :loading="submitLoading" @click="submitUser">提交</Button>
       </div>
-    </Modal> -->
+    </Modal>
   </div>
 </template>
 
 <script>
 import { listAll, getObj, removeObj } from "@/api/commonData";
 import { validateMobile, validatePassword } from "@/libs/validate";
-// import departmentChoose from "../components-demo/department-choose";
-// import departmentTreeChoose from "../components-demo/department-tree-choose";
+import departmentChoose from "../components-demo/department-choose";
+import departmentTreeChoose from "../components-demo/department-tree-choose";
 
 export default {
   name: "user-manage",
-//   components: {
-//     departmentChoose,
-//     departmentTreeChoose,
-//   },
+  components: {
+    departmentChoose,
+    departmentTreeChoose,
+  },
   data() {
     return {
-      loading: true,
+      loading: false,
       openSearch: true,
       openTip: true,
       operationLoading: false,
@@ -219,51 +216,6 @@ export default {
           }
         },
         {
-          title: "状态",
-          key: "status",
-          align: "center",
-          width: 110,
-          render: (h, params) => {
-            if (params.row.status == 0) {
-              return h("div", [
-                h("Badge", {
-                  props: {
-                    status: "success",
-                    text: "正常启用"
-                  }
-                })
-              ]);
-            } else if (params.row.status == -1) {
-              return h("div", [
-                h("Badge", {
-                  props: {
-                    status: "error",
-                    text: "禁用"
-                  }
-                })
-              ]);
-            }
-          },
-          filters: [
-            {
-              label: "正常启用",
-              value: 0
-            },
-            {
-              label: "禁用",
-              value: -1
-            }
-          ],
-          filterMultiple: false,
-          filterMethod(value, row) {
-            if (value == 0) {
-              return row.status == 0;
-            } else if (value == -1) {
-              return row.status == -1;
-            }
-          }
-        },
-        {
           title: "创建时间",
           key: "createTime",
           sortable: true,
@@ -277,45 +229,7 @@ export default {
           align: "center",
           fixed: "right",
           render: (h, params) => {
-            let enableOrDisable = "";
-            if (params.row.status == 0) {
-              enableOrDisable = h(
-                "Button",
-                {
-                  props: {
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      this.disable(params.row);
-                    }
-                  }
-                },
-                "禁用"
-              );
-            } else {
-              enableOrDisable = h(
-                "Button",
-                {
-                  props: {
-                    type: "success",
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      this.enable(params.row);
-                    }
-                  }
-                },
-                "启用"
-              );
-            }
+            
             return h("div", [
               h(
                 "Button",
@@ -335,7 +249,6 @@ export default {
                 },
                 "编辑"
               ),
-              enableOrDisable,
               h(
                 "Button",
                 {
@@ -356,18 +269,18 @@ export default {
         }
       ],
       data: [{
-        username: "",
-        mobile: "",
-        email: "",
+        username: "1",
+        mobile: "17801055040",
+        email: "1",
         sex: 1,
         type: 0,
-        avatar: "",
-        roles: [],
-        departmentId: "",
-        departmentTitle: ""
+        avatar: "https://i.loli.net/2019/04/28/5cc5a71a6e3b6.png",
+        roles: [1],
+        departmentId: "1",
+        departmentTitle: "1"
       }],
       total: 0,
-      dictSex: this.$store.state.dict.sex
+      dictSex: [{titile:"男",value:'0'},{titile:"女",value:'1'}]
     };
   },
   methods: {
@@ -412,6 +325,12 @@ export default {
           this.total = res.result.totalElements;
         }
       });
+    },
+
+    showSelect(e) {
+      this.exportData = e;
+      this.selectList = e;
+      this.selectCount = e.length;
     },
    
     handleReset() {

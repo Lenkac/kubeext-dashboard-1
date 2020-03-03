@@ -159,7 +159,7 @@ export default {
     }
   },
   created() {
-    this.initDepartmentData();
+    //this.initDepartmentData();
   }
 };
 </script>
