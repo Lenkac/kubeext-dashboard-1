@@ -117,6 +117,10 @@ export const constantRoutes = [
         path: 'role',
         component: () => import('@/views/rbac/userManage'),
         name: 'role',
+        params:{
+          frontend_kind: 'Frontend',
+          table_kind:'table'
+        },
         meta: { title: 'role', icon: 'user', noCache: true }
       }
     ]

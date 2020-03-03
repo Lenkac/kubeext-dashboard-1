@@ -1,5 +1,6 @@
 <template>
   <div class="search">
+    <p>aaaaaaaaa:</p>
     <Card>
       <Row class="operation">
         <Button @click="add" type="primary" icon="md-add">添加用户</Button>
@@ -549,7 +550,7 @@ export default {
     //console.log(this.dropDownContent)
   },
   created() {
-    console.log(this.dropDownContent)
+    console.log(this.$route)
   },
 };
 </script>
