@@ -106,6 +106,18 @@ export const constantRoutes = [
         component: () => import('@/views/resourceInfo/metadataInfo'),
         name: 'metadataInfo',
         meta: { title: 'metadataInfo', icon: 'user', noCache: true }
+      },
+      {
+        path: 'kanban',
+        component: () => import('@/views/task/kanban'),
+        name: 'kanban',
+        meta: { title: 'kanban', icon: 'user', noCache: true }
+      },
+      {
+        path: 'role',
+        component: () => import('@/views/rbac/userManage'),
+        name: 'kanban',
+        meta: { title: 'role', icon: 'user', noCache: true }
       }
     ]
   }

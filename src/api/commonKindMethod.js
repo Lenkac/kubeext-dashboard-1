@@ -1,6 +1,7 @@
 //connect vm&container's terminal
 export function connectTerminal(kind,row) {
     var name = row.json.metadata.name
+    console.log(kind)
     if (kind == "Pod") {
         var namespace = row.json.metadata.namespace
         window.open(

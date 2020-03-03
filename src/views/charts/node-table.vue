@@ -483,7 +483,7 @@ createJson() {
     },
 
     openTerminal(row) {
-      connectTerminal(this.tabName, row);
+      connectTerminal('Pod', row);
     },
 
     updateData() {

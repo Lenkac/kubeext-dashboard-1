@@ -46,17 +46,8 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/guide',
-    component: 'layout/Layout',
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        component: 'views/guide/index',
-        name: 'Guide',
-        meta: { title: 'Guide', icon: 'guide', noCache: true }
-      }
-    ]
+    path: '/task',
+    component: 'views/task/kanban'
   }
 ]
 

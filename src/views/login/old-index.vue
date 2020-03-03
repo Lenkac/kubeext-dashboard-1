@@ -3,11 +3,12 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h4 class="title">{{ this.title }}</h4>
+        <!-- //面向飞腾的虚拟化架构与系统平台技术(2018YFB103602) -->
+        <h3 class="title">{{ this.title }}</h3>
         <el-select
             v-model="loginForm.projectNum"
             placeholder="请选择"
-            style="width:100%;border:1px solid lightgray;margin-bottom:20px;border-radius: 5px;"
+            style="width:500px"
             @change="(handleUpdate($event))"
           >
             <el-option
@@ -230,7 +231,7 @@ export default {
 
 $bg:#283443;
 $light_gray:#fff;
-$cursor: black;
+$cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -242,17 +243,17 @@ $cursor: black;
 .login-container {
   .el-input {
     display: inline-block;
-    height: 40px;
-    width: 87%;
+    height: 47px;
+    width: 85%;
 
     input {
-      background: #fff;
+      background: transparent;
       border: 0px;
       -webkit-appearance: none;
       border-radius: 0px;
-      padding: 10px 5px 12px 15px;
-      color: gray;
-      height: 40px;
+      padding: 12px 5px 12px 15px;
+      color: $light_gray;
+      height: 47px;
       caret-color: $cursor;
 
       &:-webkit-autofill {
@@ -264,7 +265,7 @@ $cursor: black;
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: lightgray;
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
   }
@@ -279,23 +280,16 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  // background-color: $bg;
-  background: url(../../assets/login.jpg) no-repeat center;
+  background-color: $bg;
   overflow: hidden;
-  background-size: 100% 100%;
 
   .login-form {
-    position: absolute;
-    width: 330px;
-    height: 330px;
+    position: relative;
+    width: 520px;
     max-width: 100%;
-    padding: 20px 35px 0;
-    margin-right: 120px;
-    right:0;
+    padding: 160px 35px 0;
+    margin: 0 auto;
     overflow: hidden;
-    background: #fff;
-    border-radius:6px;
-    top: 25%
   }
 
   .tips {
@@ -311,10 +305,10 @@ $light_gray:#eee;
   }
 
   .svg-container {
-    padding: 1px 1px 1px 12px;
+    padding: 6px 5px 6px 15px;
     color: $dark_gray;
     vertical-align: middle;
-    width: 29px;
+    width: 30px;
     display: inline-block;
   }
 
@@ -322,9 +316,9 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 20px;
-      color: black;
-      margin: 0px auto 20px auto;
+      font-size: 26px;
+      color: $light_gray;
+      margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
     }
