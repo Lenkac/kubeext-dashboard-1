@@ -224,7 +224,6 @@ export default {
       table_kind: "table",
       catalog_operator: "",
       actions: [],
-      action_kind: "action",
       listTemp: "",
       createJsonData: {},
       dialogTableVisible: false,
@@ -235,8 +234,18 @@ export default {
   },
   mounted() {
     //kind=Frontend&name=table-node
-    //route name:
-    this.catalog_operator = this.$route.name;
+    //route name:frontend_kind-table_kind-catalog_operator
+    var str = this.$route.name.split('-')
+    if(str.length == 3){
+        this.frontend_kind = str[0]
+        this.table_kind= str[1]
+        this.catalog_operator = str[2]
+    }
+    else{
+        this.frontend_kind = "Frontend"
+        this.table_kind= "table"
+        this.catalog_operator = this.$route.name
+    }
   },
   created() {
     this.catalog_operator = this.$route.name;
@@ -253,7 +262,7 @@ export default {
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.catalog_operator.toLowerCase()
+              name: "action-" + this.catalog_operator.toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
@@ -421,7 +430,7 @@ createJson() {
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.catalog_operator.toLowerCase()
+              name: "action-" + this.catalog_operator.toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
