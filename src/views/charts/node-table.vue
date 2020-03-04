@@ -218,14 +218,12 @@ export default {
         update: "更新数据",
         create: "创建新记录"
       },
-      viewer: "node",
       value: "",
       ip: "",
       frontend_kind: "Frontend",
       table_kind: "table",
       catalog_operator: "",
       actions: [],
-      action_kind: "action",
       listTemp: "",
       createJsonData: {},
       dialogTableVisible: false,
@@ -235,7 +233,19 @@ export default {
     };
   },
   mounted() {
-    this.catalog_operator = this.$route.name;
+    //kind=Frontend&name=table-node
+    //route name:frontend_kind-table_kind-catalog_operator
+    var str = this.$route.name.split('-')
+    if(str.length == 3){
+        this.frontend_kind = str[0]
+        this.table_kind= str[1]
+        this.catalog_operator = str[2]
+    }
+    else{
+        this.frontend_kind = "Frontend"
+        this.table_kind= "table"
+        this.catalog_operator = this.$route.name
+    }
   },
   created() {
     this.catalog_operator = this.$route.name;
@@ -252,7 +262,7 @@ export default {
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.catalog_operator.toLowerCase()
+              name: "action-" + this.catalog_operator.toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
@@ -272,19 +282,6 @@ export default {
           }
         });
       }
-    });
-
-    getTemp({ viewer: this.viewer }).then(response => {
-      this.temp = response.data;
-    });
-    getLittleDataSource({ viewer: this.viewer }).then(response => {
-      this.littleDataSource = response.data;
-    });
-    getRules({ viewer: this.viewer }).then(response => {
-      this.rules = response.data;
-    });
-    getFilterForm({ viewer: this.viewer }).then(response => {
-      this.filterForm = response.data;
     });
   },
   methods: {
@@ -433,7 +430,7 @@ createJson() {
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.catalog_operator.toLowerCase()
+              name: "action-" + this.catalog_operator.toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {

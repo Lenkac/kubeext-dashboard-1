@@ -1,5 +1,6 @@
 <template>
   <div class="search">
+    <p>aaaaaaaaa:</p>
     <Card>
       <Row class="operation">
         <Button @click="add" type="primary" icon="md-add">添加用户</Button>
@@ -39,9 +40,9 @@
         <FormItem label="手机号" prop="mobile">
           <Input v-model="form.mobile" />
         </FormItem>
-        <FormItem label="性别" prop="sex">
-          <RadioGroup v-model="form.sex">
-            <Radio v-for="(item, i) in dictSex" :key="i" :label="item.value">{{item.title}}</Radio>
+        <FormItem label="性别" prop="gender">
+          <RadioGroup v-model="form.gender">
+            <Radio v-for="(item, i) in dictgender" :key="i" :label="item.value">{{item.title}}</Radio>
           </RadioGroup>
         </FormItem>
         <Form-item label="所属部门">
@@ -102,7 +103,7 @@ export default {
         departmentId: "",
         mobile: "",
         email: "",
-        sex: "",
+        gender: "",
         type: "",
         status: "",
         pageNumber: 1,
@@ -120,7 +121,7 @@ export default {
         username: "",
         mobile: "",
         email: "",
-        sex: 1,
+        gender: 1,
         type: 0,
         avatar: "",
         roles: [],
@@ -196,9 +197,13 @@ export default {
         },
         {
           title: "性别",
-          key: "sex",
+          key: "gender",
           width: 70,
-          align: "center"
+          align: "center",
+          render: (h, params) => {
+            console.log(params)
+            return h("div", this.dictgender[params.row.gender].title);
+          }
         },
         {
           title: "用户类型",
@@ -272,7 +277,7 @@ export default {
         username: "1",
         mobile: "17801055040",
         email: "1",
-        sex: 1,
+        gender: 1,
         type: 0,
         avatar: "https://i.loli.net/2019/04/28/5cc5a71a6e3b6.png",
         roles: [1],
@@ -280,7 +285,7 @@ export default {
         departmentTitle: "1"
       }],
       total: 0,
-      dictSex: [{titile:"男",value:'0'},{titile:"女",value:'1'}]
+      dictgender: [{title:"男",value:'0'},{title:"女",value:'1'}]
     };
   },
   methods: {
@@ -545,7 +550,7 @@ export default {
     //console.log(this.dropDownContent)
   },
   created() {
-    console.log(this.dropDownContent)
+    console.log(this.$route)
   },
 };
 </script>
