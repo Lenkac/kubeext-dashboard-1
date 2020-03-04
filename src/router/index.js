@@ -116,7 +116,7 @@ export const constantRoutes = [
       {
         path: 'role',
         component: () => import('@/views/rbac/userManage'),
-        name: 'kanban',
+        name: 'role',
         meta: { title: 'role', icon: 'user', noCache: true }
       }
     ]
