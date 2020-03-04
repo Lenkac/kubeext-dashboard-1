@@ -287,7 +287,7 @@ $light_gray:#eee;
   .login-form {
     position: absolute;
     width: 30%;
-    height: 40%;
+    height: 60%;
     max-width: 100%;
     padding: 20px 35px 0;
     margin-right: 120px;

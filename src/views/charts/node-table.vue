@@ -218,7 +218,6 @@ export default {
         update: "更新数据",
         create: "创建新记录"
       },
-      viewer: "node",
       value: "",
       ip: "",
       frontend_kind: "Frontend",
@@ -235,6 +234,8 @@ export default {
     };
   },
   mounted() {
+    //kind=Frontend&name=table-node
+    //route name:
     this.catalog_operator = this.$route.name;
   },
   created() {
@@ -272,19 +273,6 @@ export default {
           }
         });
       }
-    });
-
-    getTemp({ viewer: this.viewer }).then(response => {
-      this.temp = response.data;
-    });
-    getLittleDataSource({ viewer: this.viewer }).then(response => {
-      this.littleDataSource = response.data;
-    });
-    getRules({ viewer: this.viewer }).then(response => {
-      this.rules = response.data;
-    });
-    getFilterForm({ viewer: this.viewer }).then(response => {
-      this.filterForm = response.data;
     });
   },
   methods: {
