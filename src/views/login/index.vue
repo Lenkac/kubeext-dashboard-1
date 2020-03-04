@@ -256,7 +256,7 @@ $cursor: black;
 
 /* reset element-ui css */
 .login-container {
-  
+
   .el-select {
   .el-input {
     width: 100%;
@@ -316,13 +316,8 @@ $light_gray: #eee;
 
   .login-form {
     position: absolute;
-<<<<<<< HEAD
     width: 330px;
     height: 300px;
-=======
-    width: 30%;
-    height: 60%;
->>>>>>> 7c20ec697fa0adfabbf2ab5563af83c1f0c7e806
     max-width: 100%;
     padding: 20px 35px 0;
     margin-right: 120px;

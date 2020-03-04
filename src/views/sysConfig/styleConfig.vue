@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20" style="margin:5px;">
-      <el-col :span="6" v-for="(item,index) in styleConfig" :key="item.metadata.name" style="margin-bottom:30px">
+      <el-col
+        :span="6"
+        v-for="(item,index) in styleConfig"
+        :key="item.metadata.name"
+        style="margin-bottom:30px"
+      >
         <el-card class="box-card" :style="height">
           <div slot="header" class="clearfix">
             <span>
@@ -45,7 +50,7 @@
 <script>
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 import EditableJson from "@/components/EditableJson";
-import { getObj, updateObj, createObj, listAll } from "@/api/commonData"
+import { getObj, updateObj, createObj, listAll } from "@/api/commonData";
 import editorImage from "./components/EditorImage";
 
 export default {
@@ -81,7 +86,7 @@ export default {
       kind: this.frontend_kind
     }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.styleConfig = response.data
+        this.styleConfig = response.data;
       }
     });
   },
@@ -100,7 +105,7 @@ export default {
         return 0;
       }
     },
-    
+
     showDialog(index) {
       this.dialogTableVisible = true;
       this.json = this.styleConfig[index];
@@ -112,15 +117,33 @@ export default {
         json: JSON.parse(this.json),
         kind: this.frontend_kind
       }).then(response => {
-        console.log(response.code);
+        if (response.code == 20000) {
+          this.handleSuccess();
+          listAll({
+            kind: this.frontend_kind
+          }).then(response => {
+            if (this.validateRes(response) == 1) {
+              this.styleConfig = response.data;
+            }
+          });
+          //location.reload()
+        }
       });
     },
     // v-el-drag-dialog onDrag callback function
     handleDrag() {
       this.$refs.select.blur();
+    },
+
+    handleSuccess() {
+      this.$notify({
+        title: "Success",
+        message: "操作成功",
+        type: "success",
+        duration: 2000
+      });
     }
   }
-  
 };
 </script>
 
