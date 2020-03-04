@@ -244,7 +244,7 @@ $cursor: #fff;
   .el-input {
     display: inline-block;
     height: 47px;
-    width: 85%;
+    width: 87%;
 
     input {
       background: transparent;
