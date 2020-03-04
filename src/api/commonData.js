@@ -214,3 +214,26 @@ export function getObj(data) {
   })
   return res
 }
+
+export function getMockObj(data) {
+  var res = request({
+    url: "/mock/kubernetes/get",
+    method: 'get',
+    params: data
+  })
+  return res
+}
+
+export function validateRes(res) {
+  if (res.code == 20000) {
+    return 1;
+  } else {
+    this.$notify({
+      title: "error",
+      message: res.data,
+      type: "warning",
+      duration: 3000
+    });
+    return 0;
+  }
+}
