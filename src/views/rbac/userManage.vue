@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { listAll, getObj, removeObj } from "@/api/commonData";
+import { getObj, removeObj } from "@/api/commonData";
 import { validateMobile, validatePassword } from "@/libs/validate";
 import departmentChoose from "../components-demo/department-choose";
 import departmentTreeChoose from "../components-demo/department-tree-choose";

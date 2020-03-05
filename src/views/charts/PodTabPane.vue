@@ -47,6 +47,7 @@
         </template>
       </el-table-column>
     </el-table>
+     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
 
     <el-dialog
       v-el-drag-dialog
@@ -197,7 +198,7 @@ export default {
           console.log(this.columns);
           listAll({ kind: this.tabName }).then(response => {
             if (this.validateRes(response) == 1) {
-              this.listTemp = response.data;
+              this.listTemp = response.data.items;
               this.listLoading = false;
               console.log(this.listTemp);
               getObj({
@@ -230,7 +231,7 @@ export default {
         this.list = [];
         listAll({ kind: this.tabName }).then(response3 => {
           if (this.validateRes(response3) == 1) {
-            this.listTemp = response3.data;
+            this.listTemp = response3.data.items;
             this.listLoading = false;
 
             getObj({
@@ -368,7 +369,7 @@ export default {
             } else {
               this.lifecycle = false;
               listAll({ kind: this.tabName }).then(response => {
-                var data = response.data;
+                var data = response.data.items;
                 //this.total = response3.total
                 this.listLoading = false;
                 for (var i = 0; i < data.length; i++) {

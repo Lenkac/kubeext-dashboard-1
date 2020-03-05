@@ -63,6 +63,15 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
+
     <el-dialog
       v-el-drag-dialog
       :visible.sync="udialogTableVisible"
@@ -80,14 +89,6 @@
         >确认</el-button>
       </div>
     </el-dialog>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="listQuery.pageNum"
-      :limit.sync="listQuery.pageSize"
-      @pagination="getList"
-    />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
@@ -211,7 +212,11 @@ export default {
       columns: [],
       littleDataSource: {},
       filterForm: [],
-      listQuery: {},
+      listQuery: {
+        page: 1,
+        limit: 10,
+        continue: null
+        },
       total: 0,
       rules: {},
       temp: {},
@@ -256,10 +261,11 @@ export default {
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
-        listAll({ kind: this.catalog_operator }).then(response => {
+        listAll({ kind: this.catalog_operator, limit: this.listQuery.limit, nextId: this.listQuery.continue}).then(response => {
           if (this.validateRes(response) == 1) {
-            this.listTemp = response.data;
-            //this.total = response3.total
+            this.listTemp = response.data.items;
+            this.total = response.data.metadata.remainingItemCount + 10
+            this.listQuery.continue = response.data.metadata.continue
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
@@ -311,6 +317,35 @@ export default {
 
     getList() {
       this.listLoading = true;
+      this.list = []
+      listAll({ kind: this.catalog_operator, limit: this.listQuery.limit, nextId: this.listQuery.continue}).then(response => {
+          if (this.validateRes(response) == 1) {
+            this.listTemp = response.data.items;
+            //this.total = response.data.metadata.remainingItemCount + 10
+            //this.listQuery.page = this.listQuery.page + 1
+            this.listQuery.continue = response.data.metadata.continue
+            this.listLoading = false;
+            getObj({
+              kind: this.frontend_kind,
+              name: "action-" + this.catalog_operator.toLowerCase()
+            }).then(response => {
+              if (this.validateRes(response) == 1) {
+                if (response.hasOwnProperty("data")) {
+                  this.actions = response.data.spec.data;
+                } else {
+                  this.actions = [];
+                }
+                for (var i = 0; i < this.listTemp.length; i++) {
+                  this.list.push({});
+                  this.list[i].json = this.listTemp[i];
+                  this.list[i].actions = this.actions;
+                  this.list[i].val = "";
+                }
+                
+              }
+            });
+          }
+        });
     },
     handleFilter() {
       this.listQuery.pageNum = 1;
@@ -379,7 +414,7 @@ export default {
         this.udialogTableVisible = true;
 
         listAll({ kind: this.catalog_operator }).then(response => {
-          var data = response.data;
+          var data = response.data.items;
           //this.total = response3.total
           this.listLoading = false;
           for (var i = 0; i < data.length; i++) {
@@ -424,9 +459,9 @@ createJson() {
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
-        listAll({ kind: this.catalog_operator }).then(response => {
+        listAll({ kind: this.catalog_operator, limit: this.listQuery.limit, nextId: null}).then(response => {
           if (this.validateRes(response) == 1) {
-            this.listTemp = response.data;
+            this.listTemp = response.data.items;
             //this.total = response3.total
             this.listLoading = false;
             getObj({

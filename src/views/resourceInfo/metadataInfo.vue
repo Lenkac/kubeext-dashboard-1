@@ -144,7 +144,7 @@ export default {
                   //var data = response.data;
                   //this.total = response3.total
                   this.listLoading = false;
-                  json[this.list[obj].name] = response.data;
+                  json[this.list[obj].name] = response.data.items;
                   this.listtemp.push(json);
                 });
               }
@@ -318,7 +318,7 @@ export default {
             } else {
               this.lifecycle = false;
               listAll({ kind: this.tabName }).then(response => {
-                var data = response.data;
+                var data = response.data.items;
                 //this.total = response3.total
                 this.listLoading = false;
                 for (var i = 0; i < data.length; i++) {

@@ -161,7 +161,7 @@ export default {
               kind: this.activeName + this.lifecycle_kind,
             }).then(response => {
               if (this.validateRes(response) == 1) {
-                this.value = response.data;
+                this.value = response.data.items;
                 console.log(this.value);
               }
             });
@@ -200,7 +200,7 @@ export default {
       listAll({
         kind: this.activeName + this.lifecycle_kind,
       }).then(response => {
-        this.value = response.data;
+        this.value = response.data.items;
         console.log(this.value);
       });
       this.parentMessage = "bbb";
@@ -217,7 +217,7 @@ export default {
         listAll({
           kind: this.activeName + this.lifecycle_kind,
         }).then(response => {
-          this.value = response.data;
+          this.value = response.data.items;
           if (this.activeName == "virtualmachine") {
             this.height = "height: 240px";
           } else if (this.activeName == "container") {

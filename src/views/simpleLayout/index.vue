@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import {getObj, getMockObj, listAll, removeObj, createObj, validateRes} from "@/api/commonData";
+import {getObj, getMockObj, removeObj, createObj, validateRes} from "@/api/commonData";
 import DynamicForm from "@/components/DynamicForm";
 export default {
   name: 'SimpleLayout',
