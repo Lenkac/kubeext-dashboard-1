@@ -130,7 +130,6 @@ import {
   updateJsonData,
   deletSthFromTemplate,
   getSthFromTemplate,
-  listAll,
   getObj,
   createObj,
   removeObj

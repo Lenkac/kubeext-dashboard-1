@@ -24,7 +24,7 @@ export default {
   },
   created() {
     listAll({ kind: this.kind }).then(response => {
-      this.events = response.data.reverse()
+      this.events = response.data.items.reverse()
     });
   },
 

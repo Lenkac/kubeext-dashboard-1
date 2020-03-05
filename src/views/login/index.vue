@@ -77,7 +77,7 @@
 <script>
 import { validUsername } from "@/utils/validate";
 import SocialSign from "./components/SocialSignin";
-import { listAll, getObj, createObj, removeObj } from "@/api/commonData";
+import {getObj, createObj, removeObj } from "@/api/commonData";
 
 export default {
   name: "Login",

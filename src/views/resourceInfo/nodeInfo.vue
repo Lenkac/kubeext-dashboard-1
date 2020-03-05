@@ -170,7 +170,7 @@ export default {
 
     listAll({ kind: this.kind }).then(response => {
       if (this.validateRes(response) == 1) {
-        var data = response.data;
+        var data = response.data.items;
         this.listLoading = false;
         for (var i = 0; i < data.length; i++) {
           if (data[i].metadata.name == this.resourceName) {
@@ -188,7 +188,7 @@ export default {
         this.columns = response.data.spec.data;
         listAll({ kind: this.viewerName }).then(response => {
           if (this.validateRes(response) == 1) {
-            var data = response.data;
+            var data = response.data.items;
             var listtemp = [];
             this.listLoading = false;
             getObj({
@@ -281,7 +281,7 @@ export default {
             } else {
               this.lifecycle = false;
               listAll({ kind: this.tabName }).then(response => {
-                var data = response.data;
+                var data = response.data.items;
                 //this.total = response3.total
                 this.listLoading = false;
                 for (var i = 0; i < data.length; i++) {

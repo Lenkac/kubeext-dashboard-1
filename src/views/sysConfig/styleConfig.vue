@@ -86,7 +86,7 @@ export default {
       kind: this.frontend_kind
     }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.styleConfig = response.data;
+        this.styleConfig = response.data.items;
       }
     });
   },
@@ -123,7 +123,7 @@ export default {
             kind: this.frontend_kind
           }).then(response => {
             if (this.validateRes(response) == 1) {
-              this.styleConfig = response.data;
+              this.styleConfig = response.data.items;
             }
           });
           //location.reload()

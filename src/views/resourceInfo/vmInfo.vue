@@ -91,9 +91,9 @@ export default {
     getObj({kind: this.frontend_kind , name: this.table_kind + '-' +this.kind.toLowerCase()}).then(response => {
       if (this.validateRes(response) == 1) {
       this.columns = response.data
-        listAll({kind: this.kind}).then(response3 => {
-          if (this.validateRes(response3) == 1) {
-          var data = response3.data
+        listAll({kind: this.kind}).then(response => {
+          if (this.validateRes(response) == 1) {
+          var data = response3.data.items
           //this.total = response3.total
           this.listLoading = false
         console.log(data)
