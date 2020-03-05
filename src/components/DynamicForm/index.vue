@@ -6,8 +6,8 @@
           class="formStyle"
           :rules="initParams.rules"
           :model="initParams.model"
-          label-position="left"
-          label-width="150px"
+          label-position="right"
+          label-width="80px"
           :style="initParams.formStyle"
         >
           <el-form-item
@@ -15,7 +15,7 @@
             :key="efi.key"
             :label="efi.label"
             :prop="efi.prop"
-            :style="efi.itemStyle"
+            style="with:100px;"
           >
             <el-input
               v-if="efi.type == 'input'"
@@ -105,7 +105,7 @@ export default {
     submitForm() {
         this.$refs[this.initParams.formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            console.log(this.initParams.model)
           } else {
             console.log('error submit!!');
             return false;
