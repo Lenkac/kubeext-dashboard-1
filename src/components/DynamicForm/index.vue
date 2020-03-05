@@ -5,7 +5,7 @@
           :ref="initParams.formName"
           class="formStyle"
           :rules="initParams.rules"
-          :model="initParams.formMetaData"
+          :model="initParams.model"
           label-position="left"
           label-width="150px"
           :style="initParams.formStyle"
@@ -27,7 +27,7 @@
               v-if="efi.type == 'select'"
               v-model="initParams.model[efi.prop]"
               :placeholder="efi.ph"
-              :style="efi.style"
+              :style="efi.selfStyle"
             >
               <el-option
                 v-for="lds in initParams.dataSources[efi.prop]"
@@ -58,6 +58,7 @@
       <el-form-item>
         <el-button type="primary" @click="submitForm()">{{initParams.submitButton}}</el-button>
         <el-button @click="resetForm()">{{initParams.resetButton}}</el-button>
+        <span>{{loading}}</span>
       </el-form-item>
     </el-form>
   </div>
@@ -67,34 +68,42 @@
 import {getObj, getMockObj, listAll, removeObj, createObj, validateRes} from "@/api/commonData";
 export default {
   name: 'DynamicForm',
+  props: {
+      formData: Object
+  },
   data() {
     return {
-      initParams:{}
+      initParams:{},
+      loading:''
     }
   },
-  mounted() {
-    if(!initParams.title || initParams.title ==''){
-      initParams.title = '标签'
+  created() {
+    this.initParams = this.formData
+    console.log(this.initParams)
+    if(!this.initParams.title || this.initParams.title ==''){
+      this.initParams.title = '标签'
     }
-    if(!initParams.submitButton || initParams.submitButton ==''){
-      initParams.submitButton = '提交'
+    if(!this.initParams.submitButton || this.initParams.submitButton ==''){
+      this.initParams.submitButton = '提交'
     }
-    if(!initParams.resetButton || initParams.resetButton ==''){
-      initParams.resetButton = '重置'
+    if(!this.initParams.resetButton || this.initParams.resetButton ==''){
+      this.initParams.resetButton = '重置'
     }
-    let promiseList = []
-    for(var i =0;i<initParams.items.length;i++){
-      if(initParams.items[i].type == 'select' || initParams.items[i].type == 'radio' || initParams.items[i].type == 'checkbox'){
-        promiseList.push(this.promiseDataSource(initParams.items[i].prop))
+    for(var i =0;i<this.initParams.items.length;i++){
+      if(this.initParams.items[i].type == 'select' || this.initParams.items[i].type == 'radio' || this.initParams.items[i].type == 'checkbox'){
+        this.promiseDataSource(this.initParams.items[i].prop)
       }
     }
-    Promise.all(promiseList).then((res) => {
-      console.log(res, 'promise all datasources.')
-    })
+  },
+  watch: {
+      formData(newVal){
+      this.initParams = newVal;
+    }
+
   },
   methods: {
     submitForm() {
-        this.$refs[initParams.formName].validate((valid) => {
+        this.$refs[this.initParams.formName].validate((valid) => {
           if (valid) {
             alert('submit!');
           } else {
@@ -104,25 +113,23 @@ export default {
         });
     },
     resetForm() {
-      this.$refs[initParams.formName].resetFields();
+      this.$refs[this.initParams.formName].resetFields();
     },
     promiseDataSource(itemName) {
-      return new Promise((resolve, reject) => {
+      this.loading = "start"+itemName
       getMockObj({
         kind: "Frontend",
-        name:  this.name + "-" + initParams.formName + "-" + itemName
-      }).then( 
-          response => {
+        name:  this.name + "-" + this.initParams.formName + "-" + itemName
+      },"/ds/"+itemName).then( response => {
             if(validateRes(response)){
-              initParams.dataSources[itemName] = response.data.spec.data
-              resolve(response.data.spec.data.json())
+              this.initParams.dataSources[itemName] = response.data.spec.data
+              console.log("change loading")
+              this.loading = itemName
             }
             else{
-              reject(response.data.json())
             }
           }
         )
-      })
     }
   }
 }

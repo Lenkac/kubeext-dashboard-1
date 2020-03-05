@@ -7,7 +7,7 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 //import {setAsyncRoutes,getAsyncRoutes} from '@/router/modules/asyncRoutes'
 import Layout from '@/layout'
-import { getObj } from '@/api/commonData'
+import { getObj,getMockObj } from '@/api/commonData'
 import { getKV } from '@/utils/auth'
 
 const _import = require('@/router/_import_development')
@@ -81,6 +81,15 @@ router.beforeEach(async (to, from, next) => {
       // determine whether the user has obtained his permission roles through getInfo
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
+        if(to.path.indexOf("/simpleLayout") !=-1){
+          let str = to.name.split('-')
+          const { data } = await getMockObj({
+            kind: str[0],
+            name: str[1] + "-" + str[2].toLowerCase()
+          },'/SimpleLayout/user')
+          to.meta.data = data.spec
+          console.log(to)
+        }
         next()
       } else {
         try {

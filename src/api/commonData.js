@@ -215,9 +215,9 @@ export function getObj(data) {
   return res
 }
 
-export function getMockObj(data) {
+export function getMockObj(data,url) {
   var res = request({
-    url: "/mock/kubernetes/get",
+    url: url,
     method: 'get',
     params: data
   })

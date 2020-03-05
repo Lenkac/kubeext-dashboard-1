@@ -117,12 +117,14 @@ export const constantRoutes = [
         path: 'role',
         component: () => import('@/views/rbac/userManage'),
         name: 'role',
-        params:{
-          frontend_kind: 'Frontend',
-          table_kind:'table'
-        },
         meta: { title: 'role', icon: 'user', noCache: true }
-      }
+      },
+      {
+        path: 'simpleLayout',
+        component: () => import('@/views/simpleLayout/index'),
+        name: 'Frontend-leftRightLayout-user',
+        meta: { title: '自定义布局', icon: 'user', noCache: true,data:{}}
+      },
     ]
   }
 ]

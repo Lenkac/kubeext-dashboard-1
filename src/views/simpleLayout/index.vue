@@ -4,7 +4,7 @@
   <div class="full-layout">
     <div class="full-layout" v-if="rNamePrefix == 'leftRightLayout'">
         <div style="width:50%;height:100%;float:left">
-            <DynamicForm :initParams="responseJson.left"></DynamicForm>
+            <dynamic-form :formData="responseJson.left"></dynamic-form>
         </div>
         <div style="width:50%;height:100%;float:left">
 
@@ -24,24 +24,21 @@ export default {
       rKind: '',
       rNamePrefix:'',
       rNameSuffix:'',
-      responseJson: {}
+      responseJson: {},
+      dataLoading: true
     }
   },
-  mounted() {
+  created: function() {
     let str = this.$route.name.split('-')
     if(str.length == 3){
         this.rKind = str[0]
         this.rNamePrefix= str[1]
         this.rNameSuffix = str[2]
     }
-    getMockObj({
-      kind: this.rKind,
-      name: this.rNamePrefix + "-" + this.rNameSuffix.toLowerCase()
-    }).then(response => {
-        if(validateRes(response)){
-            this.responseJson = response.data.spec.data
-        }
-    })
+    this.responseJson = this.$route.meta.data
+  },
+  mounted: function() {
+    
   },
   methods: {
     
