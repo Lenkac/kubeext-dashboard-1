@@ -190,31 +190,28 @@ export default {
   border-radius: 3px;
 }
 
-/* .el-form-item--medium .el-form-item__content {
-  line-height: 32px;
-}
 
-.el-form-item__label {
+.full-form .el-form-item__label {
     font-weight: 400;
 }
 
-.el-form-item--medium .el-form-item__label {
+.full-form .el-form-item--medium .el-form-item__label {
     line-height: 32px;
 }
 
-.el-input--medium .el-input__inner {
+.full-form .el-input--medium .el-input__inner {
     height: 32px;
     line-height: 32px;
 }
-.el-form-item__content {
+.full-form .el-form-item__content {
   margin-left: 10px;
 }
 
-.el-button--medium {
+.full-form .el-button--medium {
     padding: 1px 15px;
     font-size: 14px;
     border-radius: 4px;
     height: 32px;
-} */
+}
 
 </style>
