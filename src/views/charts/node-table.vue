@@ -12,17 +12,15 @@
         icon="el-icon-plus"
         style="float:left"
         type="primary"
-        size="small"
         class="filter-item"
         @click.native="createJson"
       >{{this.createResource}}</el-button>
       <el-button
         icon="el-icon-refresh"
         style="float:left;margin-right:20px"
-        size="small"
         class="filter-item"
         @click.native="refresh"
-      >刷新</el-button>
+      >刷新页面</el-button>
     </div>
     <el-table
       :key="tableKey"
@@ -237,7 +235,7 @@ export default {
       listTemp: "",
       createJsonData: {},
       dialogTableVisible: false,
-      createResource: "创建",
+      createResource: "创建对象",
       createRSJson: {},
       udialogTableVisible: false,
       responseJson: {},

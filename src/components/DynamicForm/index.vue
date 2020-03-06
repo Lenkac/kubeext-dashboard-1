@@ -6,7 +6,7 @@
       class="formStyle"
       :rules="initParams.rules"
       :model="initParams.model"
-      label-position="left"
+      label-position="right"
       label-width="80px"
       :style="initParams.formStyle"
     >
@@ -19,6 +19,7 @@
       >
         <el-input
           v-if="efi.type == 'input'"
+          size="medium"
           v-model="initParams.model[efi.prop]"
           :placeholder="efi.ph"
           :style="efi.selfStyle"
@@ -49,15 +50,13 @@
           :style="efi.style"
         />
       </el-form-item>
-      <el-form-item style="display:inline-block;margin-right:10px">
-        <el-button size="small" icon="el-icon-search" type="primary" @click="submitForm()">{{initParams.submitButton}}</el-button>
-        <el-button size="small" @click="resetForm()">{{initParams.resetButton}}</el-button>
-        <a class="drop-down" @click="dropDown" style="font-size:12px">
+        <el-button style="margin-left:33px;" icon="el-icon-search" type="primary" @click="submitForm()">{{initParams.submitButton}}</el-button>
+        <el-button  @click="resetForm()">{{initParams.resetButton}}</el-button>
+        <a v-if="initParams.items.length>initParams.expand" class="drop-down" @click="dropDown">
           {{dropDownContent}}
           <Icon :type="dropDownIcon"></Icon>
         </a>
         <span>{{loading}}</span>
-      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -181,7 +180,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .full-form {
   min-width: 100%;
   min-height: 100%;
@@ -189,6 +188,33 @@ export default {
   overflow: hidden;
   background: white;
   border-radius: 3px;
+}
+
+.el-form-item--medium .el-form-item__content {
+  line-height: 32px;
+}
+
+.el-form-item__label {
+    font-weight: 400;
+}
+
+.el-form-item--medium .el-form-item__label {
+    line-height: 32px;
+}
+
+.el-input--medium .el-input__inner {
+    height: 32px;
+    line-height: 32px;
+}
+.el-form-item__content {
+  margin-left: 10px;
+}
+
+.el-button--medium {
+    padding: 1px 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    height: 32px;
 }
 
 </style>
