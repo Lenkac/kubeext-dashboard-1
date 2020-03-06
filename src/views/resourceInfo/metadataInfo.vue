@@ -97,8 +97,9 @@ export default {
       tabName: "",
       json: {},
       listtemp: [],
-      createJsonData:{},
-      udialogTableVisible: false
+      createJsonData: {},
+      udialogTableVisible: false,
+      namespace: "default"
     };
   },
   computed: {
@@ -114,139 +115,157 @@ export default {
       this.nodeName = this.$route.query.nodeName;
       this.innerName = this.resourceName;
     }
+
     if (this.$route.query.kind) {
       this.kind = this.$route.query.kind;
     } else {
       this.kind = this.tabName;
     }
 
-    getObj({
-      kind: this.frontend_kind,
-      name: this.title_kind + "-" + this.kind.toLowerCase()
-    }).then(response => {
+    this.namespace = this.$route.query.namespace;
+    listAll({ kind: this.kind }).then(response => {
       if (this.validateRes(response) == 1) {
-        this.list = response.data.spec.data;
-
-        for (let obj in this.list) {
-          let json = {};
-          if (this.list[obj].name == "pod") {
+        for (var i = 0; i < response.data.items.length; i++) {
+          if (response.data.items[i].metadata.name == this.resourceName) {
+            if (response.data.items[i].metadata.hasOwnProperty("namespace")) {
+              this.namespace = response.data.items[i].metadata.namespace;
+            }
             getObj({
               kind: this.frontend_kind,
-              name: this.table_kind + "-" + this.list[obj].name
+              name: this.title_kind + "-" + this.kind.toLowerCase()
             }).then(response => {
-              //console.log(obj);
               if (this.validateRes(response) == 1) {
-                json.columns = response.data.spec.data;
-                json.name = this.list[obj].name;
-                json.title = this.list[obj].title;
-                json.index = this.list[obj].index;
-                listAll({ kind: "Pod" }).then(response => {
-                  //var data = response.data;
-                  //this.total = response3.total
-                  this.listLoading = false;
-                  json[this.list[obj].name] = response.data.items;
-                  this.listtemp.push(json);
-                });
-              }
-            });
-          } else {
-            //console.log("else");
-            getObj({
-              kind: this.frontend_kind,
-              name:
-                this.table_kind +
-                "-" +
-                this.kind.toLowerCase() +
-                "-" +
-                this.list[obj].name
-            }).then(response => {
-             // console.log(obj);
-              if (this.validateRes(response) == 1) {
-                let flag = 0;
-                json.columns = response.data.spec.data;
-                json.name = this.list[obj].name;
-                json.title = this.list[obj].title;
-                json.index = this.list[obj].index;
-                if (response.data.spec.data.length == 0) {
-                  flag = 1;
-                }
-                getObj({
-                  kind: this.kind,
-                  name: this.resourceName
-                }).then(response => {
-                  this.createJsonData = response.data
-                  if (this.validateRes(response) == 1) {
-                    if (
-                      this.getInputValue(response.data, this.list[obj].name) ==
-                      "unknown"
-                    ) {
-                      if (flag == 1) {
-                        json[this.list[obj].name] = [];
-                      } else {
-                        json[this.list[obj].name] = [];
-                        json[this.list[obj].name].push(response.data);
-                      }
-                    } else {
-                      if (
-                        this.getInputValue(
-                          response.data,
-                          this.list[obj].name
-                        ) instanceof Array
-                      ) {
-                        json[this.list[obj].name] = this.getInputValue(
-                          response.data,
-                          this.list[obj].name
-                        );
-                      } else {
-                        json[this.list[obj].name] = [];
-                        json[this.list[obj].name].push(
-                          this.getInputValue(response.data, this.list[obj].name)
-                        );
-                      }
-                      // json[this.list[obj].name] = getInputValue(response.data, this.list[obj].name)
-                    }
+                this.list = response.data.spec.data;
 
-                    // if (!response.data.hasOwnProperty(this.list[obj].name)) {
-                    //   if(flag == 1) {
-                    //     json[this.list[obj].name] = []
-                    //   } else {
-                    //     json[this.list[obj].name] = response.data
-                    //   }
+                for (let obj in this.list) {
+                  let json = {};
+                  if (this.list[obj].name == "pod") {
+                    getObj({
+                      kind: this.frontend_kind,
+                      name: this.table_kind + "-" + this.list[obj].name
+                    }).then(response => {
+                      //console.log(obj);
+                      if (this.validateRes(response) == 1) {
+                        json.columns = response.data.spec.data;
+                        json.name = this.list[obj].name;
+                        json.title = this.list[obj].title;
+                        json.index = this.list[obj].index;
+                        listAll({ kind: "Pod" }).then(response => {
+                          //var data = response.data;
+                          //this.total = response3.total
+                          this.listLoading = false;
+                          json[this.list[obj].name] = response.data.items;
+                          this.listtemp.push(json);
+                        });
+                      }
+                    });
+                  } else {
+                    getObj({
+                      kind: this.frontend_kind,
+                      name:
+                        this.table_kind +
+                        "-" +
+                        this.kind.toLowerCase() +
+                        "-" +
+                        this.list[obj].name
+                    }).then(response => {
+                      // console.log(obj);
+                      if (this.validateRes(response) == 1) {
+                        let flag = 0;
+                        json.columns = response.data.spec.data;
+                        json.name = this.list[obj].name;
+                        json.title = this.list[obj].title;
+                        json.index = this.list[obj].index;
+                        if (response.data.spec.data.length == 0) {
+                          flag = 1;
+                        }
+                        getObj({
+                          kind: this.kind,
+                          name: this.resourceName,
+                          namespace: this.namespace
+                        }).then(response => {
+                          this.createJsonData = response.data;
+                          if (this.validateRes(response) == 1) {
+                            if (
+                              this.getInputValue(
+                                response.data,
+                                this.list[obj].name
+                              ) == "unknown"
+                            ) {
+                              if (flag == 1) {
+                                json[this.list[obj].name] = [];
+                              } else {
+                                json[this.list[obj].name] = [];
+                                json[this.list[obj].name].push(response.data);
+                              }
+                            } else {
+                              if (
+                                this.getInputValue(
+                                  response.data,
+                                  this.list[obj].name
+                                ) instanceof Array
+                              ) {
+                                json[this.list[obj].name] = this.getInputValue(
+                                  response.data,
+                                  this.list[obj].name
+                                );
+                              } else {
+                                json[this.list[obj].name] = [];
+                                json[this.list[obj].name].push(
+                                  this.getInputValue(
+                                    response.data,
+                                    this.list[obj].name
+                                  )
+                                );
+                              }
+                              // json[this.list[obj].name] = getInputValue(response.data, this.list[obj].name)
+                            }
 
-                    // } else {
-                    //   if (response.data[this.list[obj].name] instanceof Array) {
-                    //     json[this.list[obj].name] =
-                    //       response.data[this.list[obj].name];
-                    //   } else {
-                    //     json[this.list[obj].name] = [];
-                    //     json[this.list[obj].name].push(
-                    //       response.data[this.list[obj].name]
-                    //     );
-                    //   }
-                    // }
-                    this.listtemp.push(json);
-                    this.listtemp.sort(function(a, b) {
-                      if (a.index < b.index) {
-                        return -1;
-                      } else if (a.index == b.index) {
-                        return 0;
-                      } else {
-                        return 1;
+                            // if (!response.data.hasOwnProperty(this.list[obj].name)) {
+                            //   if(flag == 1) {
+                            //     json[this.list[obj].name] = []
+                            //   } else {
+                            //     json[this.list[obj].name] = response.data
+                            //   }
+
+                            // } else {
+                            //   if (response.data[this.list[obj].name] instanceof Array) {
+                            //     json[this.list[obj].name] =
+                            //       response.data[this.list[obj].name];
+                            //   } else {
+                            //     json[this.list[obj].name] = [];
+                            //     json[this.list[obj].name].push(
+                            //       response.data[this.list[obj].name]
+                            //     );
+                            //   }
+                            // }
+                            this.listtemp.push(json);
+                            this.listtemp.sort(function(a, b) {
+                              if (a.index < b.index) {
+                                return -1;
+                              } else if (a.index == b.index) {
+                                return 0;
+                              } else {
+                                return 1;
+                              }
+                            });
+                          }
+                        });
                       }
                     });
                   }
-                });
+                }
+
+                // console.log(this.listtemp);
               }
             });
           }
         }
-
-       // console.log(this.listtemp);
       }
     });
   },
   mounted() {
-    console.log(this.listtemp)
+    console.log(this.listtemp);
   },
   methods: {
     validateRes(res) {
@@ -267,7 +286,7 @@ export default {
       connectTerminal(this.viewerName, row);
     },
 
-     handleDrag() {
+    handleDrag() {
       this.$refs.select.blur();
     },
 
@@ -348,7 +367,7 @@ export default {
     },
 
     closeDialog() {
-      this.udialogTableVisible = false
+      this.udialogTableVisible = false;
     },
 
     getList() {
@@ -433,7 +452,7 @@ export default {
     },
 
     openDialog() {
-      this.udialogTableVisible = true
+      this.udialogTableVisible = true;
     },
 
     updateInputValue(scope, longKey, event) {

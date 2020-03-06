@@ -90,6 +90,16 @@ router.beforeEach(async (to, from, next) => {
           to.meta.data = data.spec
           console.log(to)
         }
+
+        if(to.path.indexOf("/Workloads") !=-1 ||to.path.indexOf("/Cluster") !=-1 || to.path.indexOf("/Discovery and Load Balancing key") !=-1 || to.path.indexOf("/ Config and Storage") !=-1 || to.path.indexOf("/Custom Resource Definitions") !=-1){
+          const { data } = await getObj({
+            kind: "Frontend",
+            name: "formsearch" + "-" + to.name.toLowerCase()
+            })
+          console.log(data)
+          to.meta.data = data.spec.data
+          console.log(to)
+        }
         next()
       } else {
         try {

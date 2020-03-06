@@ -206,6 +206,15 @@ export function listAll(data) {
   return res
 }
 
+export function search(data) {
+  var res = request({
+    url: list(),
+    method: 'post',
+    data
+  })
+  return res
+}
+
 export function getObj(data) {
   var res = request({
     url: get(),
