@@ -6,7 +6,7 @@
       class="formStyle"
       :rules="initParams.rules"
       :model="initParams.model"
-      label-position="right"
+      label-position="left"
       label-width="80px"
       :style="initParams.formStyle"
     >
@@ -52,7 +52,7 @@
       </el-form-item>
         <el-button style="margin-left:33px;" icon="el-icon-search" type="primary" @click="submitForm()">{{initParams.submitButton}}</el-button>
         <el-button  @click="resetForm()">{{initParams.resetButton}}</el-button>
-        <a v-if="initParams.items.length>initParams.expand" class="drop-down" @click="dropDown">
+        <a v-if="items.length>initParams.expand" class="drop-down" @click="dropDown">
           {{dropDownContent}}
           <Icon :type="dropDownIcon"></Icon>
         </a>
