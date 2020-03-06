@@ -26,24 +26,26 @@ export default [
                         formName: 'registerformID',
                         title: '编辑用户',
                         rules: {
-                            userName:[{ required: true, message: '必须要填写用户名', trigger: 'change' }, { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }],
+                            "user*Name":[{ required: true, message: '必须要填写用户名', trigger: 'change' }, { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }],
                             userEmail:[{ type: 'email', required: true, message: '必须是合法邮箱地址', trigger: 'change' }],
-                            userPhone:[{required: true, type: 'number', message: '请输入11位有效手机号号码', min: 11, max: 11, trigger: ['blur', 'change']}],
+                            userPhone:[],
                             gender:[],
-                            type:[{ required: true, message: '必须要选择用户类型', trigger: 'change' }],
+                            type:[{ message: '必须要选择用户类型', trigger: 'change' }],
                             roles:[{ required: true, message: '必须要选择用户角色', trigger: 'change' }]
                         },
                         model:{
-                            userName:'',
+                            "user*Name":'tttt',
                             userEmail:'',
                             userPhone:'',
                             gender:'',
                             type:'',
-                            roles:''
+                            roles:'',
+                            roles:'',
+
                         },
                         formStyle: '',
                         items:[
-                            { type: 'input', key: 100, label: '用户名', ph: '请输入...', prop: 'userName'},
+                            { type: 'input', key: 100, label: '用户名', ph: '请输入...', prop: "user*Name"},
                             { type: 'input', key: 99, label: '邮箱', ph: '...@...', prop: 'userEmail'},
                             { type: 'input', key: 98, label: '手机号', ph: '请输入...', prop: 'userPhone'},
                             { type: 'radio', key: 97, label: '性别', prop: 'gender'},
