@@ -270,7 +270,7 @@ $cursor: black;
   .el-input {
     display: inline-block;
     height: 47px;
-    width: 85%;
+    width: 84%;
     margin-right:0px;
 
     .el-input__inner {

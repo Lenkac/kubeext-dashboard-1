@@ -190,7 +190,7 @@ export default {
   border-radius: 3px;
 }
 
-.el-form-item--medium .el-form-item__content {
+/* .el-form-item--medium .el-form-item__content {
   line-height: 32px;
 }
 
@@ -215,6 +215,6 @@ export default {
     font-size: 14px;
     border-radius: 4px;
     height: 32px;
-}
+} */
 
 </style>
