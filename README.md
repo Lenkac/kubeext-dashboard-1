@@ -47,6 +47,19 @@ vi /etc/kubernetes/manifests/kube-apiserver.yaml
     - --insecure-bind-address=0.0.0.0
 ```
 
+## Architecture
+
+We call it ARE-MVC. It is configuration based, analytically driven and Kubernetes oriented system.
+We hope it can support various scenario, such as DevOps, Edge and PaaS
+
+![avatar](https://github.com/kubesys/kubeOS/blob/master/imgs/arch.png)
+
+It includes three projects:
+
+- [kubeOS](https://github.com/kubesys/kubeOS): scripts
+- [kubeext-system](https://github.com/kubesys/kubeext-system): customized Kubernetes resources
+- [kubeext-dashboard](https://github.com/kubesys/kubeext-dashboard): Web UI
+
 ## Online Demo
 
 [Preview](https://panjiachen.github.io/vue-element-admin)
