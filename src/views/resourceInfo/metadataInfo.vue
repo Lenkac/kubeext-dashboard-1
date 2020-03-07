@@ -44,6 +44,7 @@
           v-el-drag-dialog
           :visible.sync="udialogTableVisible"
           :title="resourceName"
+          @dragDialog="handleDrag"
         >
           <div class="card-editor-container">
             <json-editor ref="jsonEditor" v-model="createJsonData" />
