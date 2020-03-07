@@ -72,8 +72,8 @@ cd /home/iscas/VM-terminal/websockify
 
 - [Kubernetes UI](https://github.com/kubernetes/dashboard)
 - [DevOps]()
-- [PaaS]()
-- [CMP]()
+- [PaaS](https://demo.kubesphere.io): demo1/Demo123
+- [CMP](https://app.hpcdlab.com)
 
 ## License
 
