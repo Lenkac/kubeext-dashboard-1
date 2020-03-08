@@ -84,8 +84,8 @@ cd /home/iscas/VM-terminal/websockify
 ## 支持界面
 
 - [Kubernetes UI](https://github.com/kubernetes/dashboard)
-- [DevOps]()
-- [PaaS](https://demo.kubesphere.io): demo1/Demo123
+- DevOps: [team ](https://beta.vilson.xyz/)+ [CI/CD](https://jenkins.io/zh/)
+- PaaS: [Basic](https://demo.kubesphere.io) + [mircoservice](https://github.com/istio/istio) + [bigdata](https://gitee.com/WeBank/Linkis)
 - [CMP](https://app.hpcdlab.com)
 
 ## License
