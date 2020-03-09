@@ -77,7 +77,7 @@
 <script>
 import { validUsername } from "@/utils/validate";
 import SocialSign from "./components/SocialSignin";
-import {getObj, createObj, removeObj } from "@/api/commonData";
+import { getObj, createObj, removeObj } from "@/api/commonData";
 
 export default {
   name: "Login",
@@ -119,7 +119,8 @@ export default {
       otherQuery: {},
       title: "",
       projects: [],
-      frontend_kind: "Frontend"
+      frontend_kind: "Frontend",
+      namespace: "default"
     };
   },
   watch: {
@@ -135,7 +136,7 @@ export default {
     }
   },
   created() {
-    getObj({ kind: this.frontend_kind, name: "title-project" }).then(
+    getObj({ kind: this.frontend_kind, name: "title-project", namespace: this.namespace }).then(
       response => {
         if (this.validateRes(response)) {
           this.projects = response.data.spec.data;
@@ -256,22 +257,21 @@ $cursor: black;
 
 /* reset element-ui css */
 .login-container {
-
   .el-select {
-  .el-input {
-    width: 100%;
-    .el-input__inner {
-      font-size: 20px;
+    .el-input {
       width: 100%;
+      .el-input__inner {
+        font-size: 20px;
+        width: 100%;
+      }
     }
   }
-}
 
   .el-input {
     display: inline-block;
     height: 47px;
     width: 84%;
-    margin-right:0px;
+    margin-right: 0px;
 
     .el-input__inner {
       background: #fff;
@@ -297,8 +297,6 @@ $cursor: black;
     color: #454545;
   }
 }
-
-
 </style>
 
 <style lang="scss" scoped>

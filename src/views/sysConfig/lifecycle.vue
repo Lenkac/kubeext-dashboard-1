@@ -133,7 +133,8 @@ export default {
       SDK: "",
       version: "",
       sdkJson: {},
-      catalogJson: {}
+      catalogJson: {},
+      namespace: "default"
     };
   },
 
@@ -141,7 +142,8 @@ export default {
   created() {
     getObj({
       kind: this.frontend_kind,
-      name: this.catalog_kind + "-" + this.catalog_operator
+      name: this.catalog_kind + "-" + this.catalog_operator,
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.catalogJson = response.data
@@ -150,7 +152,8 @@ export default {
 
         getObj({
           kind: this.frontend_kind,
-          name: this.api_kind + "-" + this.activeName
+          name: this.api_kind + "-" + this.activeName,
+          namespace: this.namespace
         }).then(response => {
           if (this.validateRes(response) == 1) {
             this.sdkJson = response.data
@@ -210,7 +213,8 @@ export default {
       console.log(tab.name, event);
       getObj({
         kind: this.frontend_kind,
-        name: this.api_kind + "-" + this.activeName
+        name: this.api_kind + "-" + this.activeName,
+        namespace: this.namespace
       }).then(response => {
         this.SDK = response.data.spec.data.git;
         this.version = response.data.spec.data.version;

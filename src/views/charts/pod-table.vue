@@ -213,7 +213,8 @@ export default {
       kind: "",
       createdTimes: 0,
       successCreate: "",
-      resourceInfo: ""
+      resourceInfo: "",
+      namespace: "default"
     };
   },
   mounted() {},
@@ -229,7 +230,8 @@ export default {
 
     getObj({
       kind: this.frontend_kind,
-      name: this.catalog_kind + "-" + this.outcatalog_operator.toLowerCase()
+      name: this.catalog_kind + "-" + this.outcatalog_operator.toLowerCase(),
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.outTabMapOptions = response.data.spec.data.tabMapOptions;
@@ -237,7 +239,8 @@ export default {
         this.resourceInfo = this.$route.meta.resourceInfo;
         getObj({
           kind: this.frontend_kind,
-          name: this.catalog_kind + "-" + this.outActiveName.toLowerCase()
+          name: this.catalog_kind + "-" + this.outActiveName.toLowerCase(),
+          namespace: this.namespace
         }).then(response => {
           if (this.validateRes(response) == 1) {
             this.tabMapOptions = response.data.spec.data.tabMapOptions;
@@ -270,7 +273,8 @@ export default {
       this.resourceInfo = this.$route.meta.resourceInfo;
       getObj({
         kind: this.frontend_kind,
-        name: this.catalog_kind + "-" + tab.name.toLowerCase()
+        name: this.catalog_kind + "-" + tab.name.toLowerCase(),
+        namespace: this.namespace
       }).then(response => {
         if (this.validateRes(response) == 1) {
           if (!response.hasOwnProperty("data")) {

@@ -80,6 +80,14 @@ export function list() {
   return urlPrefix + 'kubernetes/query'
 }
 
+export function metaURL() {
+  return urlPrefix + 'kubernetes/getMeta'
+}
+
+export function sysInfoURL() {
+  return urlPrefix + 'kubernetes/getSysInfo'
+}
+
 
 
 

@@ -132,7 +132,8 @@ export default {
             }
             getObj({
               kind: this.frontend_kind,
-              name: this.title_kind + "-" + this.kind.toLowerCase()
+              name: this.title_kind + "-" + this.kind.toLowerCase(),
+              namespace: this.namespace
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 this.list = response.data.spec.data;
@@ -142,7 +143,8 @@ export default {
                   if (this.list[obj].name == "pod") {
                     getObj({
                       kind: this.frontend_kind,
-                      name: this.table_kind + "-" + this.list[obj].name
+                      name: this.table_kind + "-" + this.list[obj].name,
+                      namespace: this.namespace
                     }).then(response => {
                       //console.log(obj);
                       if (this.validateRes(response) == 1) {
@@ -167,7 +169,8 @@ export default {
                         "-" +
                         this.kind.toLowerCase() +
                         "-" +
-                        this.list[obj].name
+                        this.list[obj].name,
+                      namespace: this.namespace
                     }).then(response => {
                       // console.log(obj);
                       if (this.validateRes(response) == 1) {
@@ -310,7 +313,8 @@ export default {
           lifecycle:
             this.catalog_operator.toLowerCase() + "-" + event.toLowerCase(),
           kind: this.viewerName,
-          name: name
+          name: name,
+          namespace: this.namespace
         }).then(response => {
           this.Variables = [];
           if (response.hasOwnProperty("data")) {

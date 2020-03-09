@@ -117,7 +117,8 @@ export default {
       activeName: "",
       tabMapOptions: [],
       dataTemp: {},
-      combineJson: {}
+      combineJson: {},
+      namespace: "default"
     };
   },
 
@@ -125,7 +126,8 @@ export default {
   created() {
     getObj({
       kind: this.frontend_kind,
-      name: this.catalog_kind + "-" + this.catalog_operator
+      name: this.catalog_kind + "-" + this.catalog_operator,
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.tabMapOptions = response.data.spec.data.tabMapOptions;
@@ -133,7 +135,8 @@ export default {
 
         getObj({
           kind: "ConfigMap",
-          name: "kubeext-" + this.activeName
+          name: "kubeext-" + this.activeName,
+          namespace: this.namespace
         }).then(response => {
           if (this.validateRes(response) == 1) {
                 this.value = Object.keys(response.data.data);
@@ -166,7 +169,8 @@ export default {
         this.activeName = tab.name
         getObj({
           kind: "ConfigMap",
-          name: "kubeext-" + this.activeName
+          name: "kubeext-" + this.activeName,
+          namespace: this.namespace
         }).then(response => {
           if (this.validateRes(response) == 1) {
                 this.value = Object.keys(response.data.data);

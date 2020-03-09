@@ -27,14 +27,16 @@ export default {
     return {
       list: [],
       frontend_kind: "Frontend",
-      outerService: "outer-service"
+      outerService: "outer-service",
+      namespace: "default"
     };
   },
   created() {
     this.outerService = this.$route.name
     getObj({
       kind: this.frontend_kind,
-      name: this.outerService
+      name: this.outerService,
+      nnamespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.list = response.data.spec.data

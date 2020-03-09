@@ -130,7 +130,8 @@ export default {
       table_kind: "table",
       action_kind: "action",
       resourceInfo: "",
-      tabName: ""
+      tabName: "",
+      namespace: "default"
     };
   },
   computed: {
@@ -182,7 +183,8 @@ export default {
 
     getObj({
       kind: this.frontend_kind,
-      name: this.table_kind + "-" + this.viewerName
+      name: this.table_kind + "-" + this.viewerName,
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
@@ -193,7 +195,8 @@ export default {
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.viewerName.toLowerCase()
+              name: this.action_kind + "-" + this.viewerName.toLowerCase(),
+              namespace: this.namespace
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 this.actions = response.data.spec.data;
@@ -252,7 +255,8 @@ export default {
           lifecycle:
             this.catalog_operator.toLowerCase() + "-" + event.toLowerCase(),
           kind: this.viewerName,
-          name: name
+          name: name,
+          namespace: this.namespace
         }).then(response => {
           console.log(response);
           this.Variables = [];

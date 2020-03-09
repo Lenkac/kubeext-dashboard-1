@@ -183,14 +183,16 @@ export default {
       Variables: [],
       operator: "",
       readOnly: true,
-      lifecycle: true
+      lifecycle: true,
+      namespace: "default"
     };
   },
   mounted() {},
   created() {
     getObj({
       kind: this.frontend_kind,
-      name: this.table_kind + "-" + this.tabName.toLowerCase()
+      name: this.table_kind + "-" + this.tabName.toLowerCase(),
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         if (response.hasOwnProperty("data")) {
@@ -203,7 +205,8 @@ export default {
               console.log(this.listTemp);
               getObj({
                 kind: this.frontend_kind,
-                name: this.action_kind + "-" + this.tabName.toLowerCase()
+                name: this.action_kind + "-" + this.tabName.toLowerCase(),
+                namespace: this.namespace
               }).then(response => {
                 if (this.validateRes(response) == 1) {
                   if (response.hasOwnProperty("data")) {
@@ -236,7 +239,8 @@ export default {
 
             getObj({
               kind: this.frontend_kind,
-              name: this.action_kind + "-" + this.tabName.toLowerCase()
+              name: this.action_kind + "-" + this.tabName.toLowerCase(),
+              namespace: this.namespace
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
@@ -339,7 +343,8 @@ export default {
         getObj({
           kind: this.catalog_operator + "Template",
           name: this.catalog_operator.toLowerCase() + "-" + event.toLowerCase(),
-          currentName: name
+          currentName: name,
+          namespace: this.namespace
         }).then(response => {
           //console.log(response);
           this.Variables = [];

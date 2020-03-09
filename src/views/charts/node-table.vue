@@ -147,7 +147,7 @@
       @dragDialog="handleDrag"
     >
       <div class="card-editor-container">
-        <p>请填写JSON格式</p>
+        <p>请填写JSON格式（因版本兼容性约束，请使用以下的group和version信息创建资源）</p>
         <json-editor ref="jsonEditor" v-model="createRSJson" />
         <div style="width:100%;height:50px;">
           <el-button
@@ -172,7 +172,7 @@ import {
   getRules,
   getTemp
 } from "@/api/commonData";
-import { getObj, listAll, removeObj, createObj } from "@/api/commonData";
+import { getObj, listAll, removeObj, createObj, getMeta } from "@/api/commonData";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -239,7 +239,8 @@ export default {
       createRSJson: {},
       udialogTableVisible: false,
       responseJson: {},
-      formsearch_kind: "formsearch"
+      formsearch_kind: "formsearch",
+      namespace: "default"
     };
   },
   mounted() {
@@ -260,16 +261,24 @@ export default {
     this.catalog_operator = this.$route.name;
     this.responseJson = this.$route.meta.data;
 
+    getMeta({
+      kind: this.catalog_operator,
+    }).then(response => {
+      this.createRSJson = response.data
+    });
+
     getObj({
       kind: this.frontend_kind,
-      name: this.formsearch_kind + "-" + this.catalog_operator.toLowerCase()
+      name: this.formsearch_kind + "-" + this.catalog_operator.toLowerCase(),
+      namespace: this.namespace
     }).then(response => {
       this.responseJson = response.data.spec.data;
     });
 
     getObj({
       kind: this.frontend_kind,
-      name: this.table_kind + "-" + this.catalog_operator.toLowerCase()
+      name: this.table_kind + "-" + this.catalog_operator.toLowerCase(),
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
@@ -285,7 +294,8 @@ export default {
             this.listLoading = false;
             getObj({
               kind: this.frontend_kind,
-              name: "action-" + this.catalog_operator.toLowerCase()
+              name: "action-" + this.catalog_operator.toLowerCase(),
+              namespace: this.namespace
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
@@ -330,11 +340,6 @@ export default {
       console.log("hhhh" + this.list);
     },
 
-    getData() {
-      Bus.$emit("val", this.list);
-      console.log("hhhh" + this.list);
-    },
-
     searchList(message) {
       this.list = [];
       this.listTemp = "";
@@ -343,7 +348,8 @@ export default {
       this.listLoading = false;
       getObj({
         kind: this.frontend_kind,
-        name: "action-" + this.catalog_operator.toLowerCase()
+        name: "action-" + this.catalog_operator.toLowerCase(),
+        namespace: this.namespace
       }).then(response => {
         if (this.validateRes(response) == 1) {
           if (response.hasOwnProperty("data")) {
@@ -377,7 +383,8 @@ export default {
           this.listLoading = false;
           getObj({
             kind: this.frontend_kind,
-            name: "action-" + this.catalog_operator.toLowerCase()
+            name: "action-" + this.catalog_operator.toLowerCase(),
+            namespace: this.namespace
           }).then(response => {
             if (this.validateRes(response) == 1) {
               if (response.hasOwnProperty("data")) {
@@ -445,17 +452,20 @@ export default {
         }
       });
     },
-    handleUpdate(event, row) {
-      console.log(event);
+    handleUpdate(event, row) {   
       this.operator = event;
       var name = row.metadata.name;
-      console.log(name);
+      if(row.metadata.namespace != undefined) {
+        this.namespace = row.metadata.namespace
+      }
+      
       if (event == "delete") {
         removeObj({
           json: row,
-          kind: this.catalog_operator
+          kind: this.catalog_operator,
+          namespace: this.namespace
         }).then(response => {
-          if (response.code == 20000) {
+          if (this.validateRes(response) == 1) {
             this.handleDelete(row);
           }
         });
@@ -489,6 +499,8 @@ export default {
             this.handleSuccess();
             this.successCreate = "success";
             this.refresh();
+          } else {
+            
           }
         }
       });
@@ -504,7 +516,8 @@ export default {
       this.list = [];
       getObj({
         kind: this.frontend_kind,
-        name: this.table_kind + "-" + this.catalog_operator.toLowerCase()
+        name: this.table_kind + "-" + this.catalog_operator.toLowerCase(),
+        namespace: this.namespace
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.columns = response.data.spec.data;
@@ -519,7 +532,8 @@ export default {
               this.listLoading = false;
               getObj({
                 kind: this.frontend_kind,
-                name: "action-" + this.catalog_operator.toLowerCase()
+                name: "action-" + this.catalog_operator.toLowerCase(),
+                namespace: this.namespace
               }).then(response => {
                 if (this.validateRes(response) == 1) {
                   if (response.hasOwnProperty("data")) {
@@ -642,8 +656,9 @@ export default {
       keys.forEach(element => {
         if (element.indexOf("[") > 0) {
           res = res[element.substring(0, element.indexOf("["))];
-          //console.log(res)
-          if (res.length == 0) {
+          if(res == undefined) {
+            res = "unknown";
+          }else if (res.length == 0) {
             res = "unknown";
           } else {
             res =

@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {getScheduleURL,getGetSthURL,queryOperationURL, getListURL, getMetaDataURL,getParameterURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getUpdateSthURL,getDeleteSthURL} from '@/utils/url-setter'
+import {getScheduleURL,getGetSthURL,queryOperationURL, getListURL, getMetaDataURL,getJsonDataURL,updateJsonDataURL,getCreateSthURL,getUpdateSthURL,getDeleteSthURL} from '@/utils/url-setter'
 export function getListAllData(data) {
   return request({
     url: getListURL(),
@@ -168,7 +168,7 @@ export function getTemp(query) {
 }
 
 // new version
-import {create, remove, update, list, get} from '@/utils/url-setter'
+import {create, remove, update, list, get, metaURL, sysInfoURL} from '@/utils/url-setter'
 
 export function createObj(data) {
   var res = request({
@@ -218,6 +218,24 @@ export function search(data) {
 export function getObj(data) {
   var res = request({
     url: get(),
+    method: 'get',
+    params: data
+  })
+  return res
+}
+
+export function getMeta(data) {
+  var res = request({
+    url: metaURL(),
+    method: 'get',
+    params: data
+  })
+  return res
+}
+
+export function getsysInfo(data) {
+  var res = request({
+    url: sysInfoURL(),
     method: 'get',
     params: data
   })
