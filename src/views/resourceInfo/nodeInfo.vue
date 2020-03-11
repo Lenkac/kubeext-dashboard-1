@@ -169,7 +169,7 @@ export default {
       this.innerName
     );
 
-    listAll({ kind: this.kind }).then(response => {
+    listAll({ kind: this.kind, namespace: this.namespace }).then(response => {
       if (this.validateRes(response) == 1) {
         var data = response.data.items;
         this.listLoading = false;
@@ -188,7 +188,7 @@ export default {
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
-        listAll({ kind: this.viewerName }).then(response => {
+        listAll({ kind: this.viewerName, namespace: this.namespace }).then(response => {
           if (this.validateRes(response) == 1) {
             var data = response.data.items;
             var listtemp = [];
@@ -242,7 +242,8 @@ export default {
       if (event == "delete") {
         removeObj({
           json: row,
-          kind: this.viewerName
+          kind: this.viewerName,
+          namespace:this.namespace
         }).then(response => {
           if (response.code == 20000) {
             this.handleDelete(row);
@@ -284,15 +285,9 @@ export default {
               }
             } else {
               this.lifecycle = false;
-              listAll({ kind: this.tabName }).then(response => {
-                var data = response.data.items;
-                //this.total = response3.total
-                this.listLoading = false;
-                for (var i = 0; i < data.length; i++) {
-                  if (data[i].metadata.name == name) {
-                    this.createJsonData = data[i];
-                  }
-                }
+              getObj({ name:name, kind: this.tabName, namespace: this.namespace }).then(response => {
+                this.listLoading = false;               
+                this.createJsonData = response.data;
               });
             }
           }

@@ -412,28 +412,7 @@ export default {
       }
     },
     updateData() {
-      this.$refs["dataForm"].validate(valid => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp);
-          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v);
-                this.list.splice(index, 1, this.temp);
-                break;
-              }
-            }
-            this.dialogFormVisible = false;
-            this.$notify({
-              title: "Success",
-              message: "更新成功",
-              type: "success",
-              duration: 2000
-            });
-          });
-        }
-      });
+      
     },
     handleDelete(row) {
       this.$notify({

@@ -191,7 +191,8 @@ export default {
       this.combineJson.data[this.title] = this.json.slice(1, -1)
       updateObj({
         json: this.combineJson,
-        kind: "ConfigMap"
+        kind: "ConfigMap",
+        namespace: this.namespace
       }).then(response => {
         console.log(response.code);
       });

@@ -198,7 +198,7 @@ export default {
         if (response.hasOwnProperty("data")) {
           this.columns = response.data.spec.data;
           console.log(this.columns);
-          listAll({ kind: this.tabName }).then(response => {
+          listAll({ kind: this.tabName, namespace:this.namespace }).then(response => {
             if (this.validateRes(response) == 1) {
               this.listTemp = response.data.items;
               this.listLoading = false;
@@ -232,7 +232,7 @@ export default {
     successCreate(val) {
       if (this.successCreate == "success") {
         this.list = [];
-        listAll({ kind: this.tabName }).then(response3 => {
+        listAll({ kind: this.tabName, namespace:this.namespace }).then(response3 => {
           if (this.validateRes(response3) == 1) {
             this.listTemp = response3.data.items;
             this.listLoading = false;
@@ -329,10 +329,14 @@ export default {
       console.log(event);
       this.operator = event;
       var name = row.metadata.name;
+      if(row.metadata.namespace != undefined) {
+        this.namespace = row.metadata.namespace
+      }
       if (event == "delete") {
         removeObj({
           json: row,
-          kind: this.tabName
+          kind: this.tabName,
+          namespace:this.namespace
         }).then(response => {
           if (response.code == 20000) {
             this.handleDelete(row);
@@ -373,7 +377,7 @@ export default {
               }
             } else {
               this.lifecycle = false;
-              listAll({ kind: this.tabName }).then(response => {
+              listAll({ kind: this.tabName, namespace:this.namespace }).then(response => {
                 var data = response.data.items;
                 //this.total = response3.total
                 this.listLoading = false;

@@ -1,11 +1,7 @@
 <template>
   <div class="app-container">
     <div>
-      <dynamic-form
-        :formData="responseJson"
-        :search_kind="catalog_operator"
-        @watchSearch="searchList"
-      ></dynamic-form>
+      <dynamic-form :formData="responseJson" :kind="catalog_operator" @watchSearch="searchList"></dynamic-form>
     </div>
     <div class="filter-container" style="margin-bottom:50px">
       <el-button
@@ -172,7 +168,15 @@ import {
   getRules,
   getTemp
 } from "@/api/commonData";
-import { getObj, listAll, removeObj, createObj, getMeta } from "@/api/commonData";
+import {
+  getObj,
+  listAll,
+  removeObj,
+  createObj,
+  getMeta,
+  search,
+  updateObj
+} from "@/api/commonData";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -262,9 +266,9 @@ export default {
     this.responseJson = this.$route.meta.data;
 
     getMeta({
-      kind: this.catalog_operator,
+      kind: this.catalog_operator
     }).then(response => {
-      this.createRSJson = response.data
+      this.createRSJson = response.data;
     });
 
     getObj({
@@ -337,33 +341,37 @@ export default {
     },
     getData() {
       Bus.$emit("val", this.list);
-      console.log("hhhh" + this.list);
     },
 
     searchList(message) {
       this.list = [];
       this.listTemp = "";
-      this.listTemp = message;
       //this.total = response3.total
       this.listLoading = false;
-      getObj({
-        kind: this.frontend_kind,
-        name: "action-" + this.catalog_operator.toLowerCase(),
-        namespace: this.namespace
+      search({
+        kind: this.catalog_operator,
+        fieldSelector: message
       }).then(response => {
-        if (this.validateRes(response) == 1) {
-          if (response.hasOwnProperty("data")) {
-            this.actions = response.data.spec.data;
-          } else {
-            this.actions = [];
+        this.listTemp = response.data.items;
+        getObj({
+          kind: this.frontend_kind,
+          name: "action-" + this.catalog_operator.toLowerCase(),
+          namespace: this.namespace
+        }).then(response => {
+          if (this.validateRes(response) == 1) {
+            if (response.hasOwnProperty("data")) {
+              this.actions = response.data.spec.data;
+            } else {
+              this.actions = [];
+            }
+            for (var i = 0; i < this.listTemp.length; i++) {
+              this.list.push({});
+              this.list[i].json = this.listTemp[i];
+              this.list[i].actions = this.actions;
+              this.list[i].val = "";
+            }
           }
-          for (var i = 0; i < this.listTemp.length; i++) {
-            this.list.push({});
-            this.list[i].json = this.listTemp[i];
-            this.list[i].actions = this.actions;
-            this.list[i].val = "";
-          }
-        }
+        });
       });
     },
 
@@ -452,13 +460,13 @@ export default {
         }
       });
     },
-    handleUpdate(event, row) {   
+    handleUpdate(event, row) {
       this.operator = event;
       var name = row.metadata.name;
-      if(row.metadata.namespace != undefined) {
-        this.namespace = row.metadata.namespace
+      if (row.metadata.namespace != undefined) {
+        this.namespace = row.metadata.namespace;
       }
-      
+
       if (event == "delete") {
         removeObj({
           json: row,
@@ -472,15 +480,9 @@ export default {
       } else {
         this.udialogTableVisible = true;
 
-        listAll({ kind: this.catalog_operator }).then(response => {
-          var data = response.data.items;
-          //this.total = response3.total
-          this.listLoading = false;
-          for (var i = 0; i < data.length; i++) {
-            if (data[i].metadata.name == name) {
-              this.createJsonData = data[i];
-            }
-          }
+        getObj({ name:name, kind: this.catalog_operator,namespace: this.namespace}).then(response => {
+          this.listLoading = false;         
+          this.createJsonData = response.data;
           console.log(this.createJsonData);
         });
         for (var key in this.list) {
@@ -500,7 +502,6 @@ export default {
             this.successCreate = "success";
             this.refresh();
           } else {
-            
           }
         }
       });
@@ -524,7 +525,8 @@ export default {
           listAll({
             kind: this.catalog_operator,
             limit: this.listQuery.limit,
-            nextId: null
+            nextId: null,
+            namespace: this.namespace
           }).then(response => {
             if (this.validateRes(response) == 1) {
               this.listTemp = response.data.items;
@@ -560,9 +562,10 @@ export default {
 
       this.createJsonData = JSON.parse(this.createJsonData);
 
-      createObj({
+      updateObj({
         json: this.createJsonData,
-        kind: this.catalog_operator
+        kind: this.catalog_operator,
+        namespace: this.namespace
       }).then(response => {
         if (response.code == 20000) {
           for (var key in this.list) {
@@ -587,28 +590,7 @@ export default {
     },
 
     updateData() {
-      this.$refs["dataForm"].validate(valid => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp);
-          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v);
-                this.list.splice(index, 1, this.temp);
-                break;
-              }
-            }
-            this.dialogFormVisible = false;
-            this.$notify({
-              title: "Success",
-              message: "更新成功",
-              type: "success",
-              duration: 2000
-            });
-          });
-        }
-      });
+      
     },
     handleDelete(row) {
       this.$notify({
@@ -656,9 +638,9 @@ export default {
       keys.forEach(element => {
         if (element.indexOf("[") > 0) {
           res = res[element.substring(0, element.indexOf("["))];
-          if(res == undefined) {
+          if (res == undefined) {
             res = "unknown";
-          }else if (res.length == 0) {
+          } else if (res.length == 0) {
             res = "unknown";
           } else {
             res =

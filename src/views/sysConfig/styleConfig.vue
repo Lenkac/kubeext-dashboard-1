@@ -76,14 +76,16 @@ export default {
       frontend_kind: "Frontend",
       height: "height: 200px",
       title: "",
-      styleConfig: ""
+      styleConfig: "",
+      namespace: "default"
     };
   },
 
   mounted() {},
   created() {
     listAll({
-      kind: this.frontend_kind
+      kind: this.frontend_kind,
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.styleConfig = response.data.items;
@@ -120,7 +122,8 @@ export default {
         if (response.code == 20000) {
           this.handleSuccess();
           listAll({
-            kind: this.frontend_kind
+            kind: this.frontend_kind,
+            namespace: this.namespace
           }).then(response => {
             if (this.validateRes(response) == 1) {
               this.styleConfig = response.data.items;

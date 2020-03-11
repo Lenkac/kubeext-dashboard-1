@@ -162,6 +162,7 @@ export default {
 
             listAll({
               kind: this.activeName + this.lifecycle_kind,
+              namespace: this.namespace
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 this.value = response.data.items;
@@ -202,6 +203,7 @@ export default {
     analyzeTemplete() {
       listAll({
         kind: this.activeName + this.lifecycle_kind,
+        namespace: this.namespace
       }).then(response => {
         this.value = response.data.items;
         console.log(this.value);
@@ -220,6 +222,7 @@ export default {
         this.version = response.data.spec.data.version;
         listAll({
           kind: this.activeName + this.lifecycle_kind,
+          namespace: this.namespace
         }).then(response => {
           this.value = response.data.items;
           if (this.activeName == "virtualmachine") {
@@ -240,7 +243,8 @@ export default {
       this.dialogTableVisible = false;
       updateObj({
         json: this.json,
-        kind: this.kind
+        kind: this.kind,
+        namespace: this.namespace
       }).then(response => {
         console.log(response.code);
       });
@@ -263,7 +267,8 @@ export default {
       this.catalogJson.spec.data.tabMapOptions.push({"label": data.name, "key": data.name})
       updateObj({
         json: this.catalogJson,
-        kind: this.frontend_kind
+        kind: this.frontend_kind,
+        namespace: this.namespace
       }).then(response => {
         
       });

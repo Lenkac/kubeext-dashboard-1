@@ -106,6 +106,7 @@ export default {
       table_kind: "table",
       frontend_kind: "Frontend",
       resourceName: "",
+      namespace: "default"
     };
   },
   computed: {
@@ -125,16 +126,10 @@ export default {
       this.resourceName
     );
 
-    listAll({ kind: this.tabName }).then(response => {
+    getObj({name: this.resourceName, kind: this.tabName, namespace: this.namespace }).then(response => {
       if (this.validateRes(response) == 1) {
-        var data = response.data.items;
-        //this.total = response3.total
         this.listLoading = false;
-        for (var i = 0; i < data.length; i++) {
-          if (data[i].metadata.name == this.resourceName) {
-            this.value = data[i];
-          }
-        }
+        this.value = response.data      
       }
     });
   },

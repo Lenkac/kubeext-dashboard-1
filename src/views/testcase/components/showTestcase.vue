@@ -183,14 +183,16 @@ export default {
       index: 0,
       monitor_rs: "",
       nodeName: "",
-      vmMigrate: "vmmigration"
+      vmMigrate: "vmmigration",
+      namespace: "default"
     };
   },
   mounted() {},
   created() {
     getObj({
       kind: this.kind,
-      name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
+      name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase(),
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.value = response.data.spec.data.spec.testcases;
@@ -257,7 +259,8 @@ export default {
         this.monitor_rs = getMonitorInfo(this.kind, this.nodeName);
         getObj({
           kind: this.kind,
-          name: this.tabName.toLowerCase()
+          name: this.tabName.toLowerCase(),
+          namespace: this.namespace
         }).then(response => {
           if (!response.hasOwnProperty("data")) {
             this.list = [];
@@ -287,7 +290,8 @@ export default {
       ) {
         getObj({
           kind: this.kind,
-          name: this.tabName.toLowerCase()
+          name: this.tabName.toLowerCase(),
+          namespace: this.namespace
         }).then(response => {
           if (!response.hasOwnProperty("data")) {
             this.list = [];
@@ -326,7 +330,8 @@ export default {
       } else {
         getObj({
           kind: this.kind,
-          name: this.tabName.toLowerCase()
+          name: this.tabName.toLowerCase(),
+          namespace: this.namespace
         }).then(response => {
           if (response.data.spec.hasOwnProperty("results")) {
             var listtemp = [];
@@ -403,11 +408,13 @@ export default {
     deleteTestcase() {
       getObj({
         kind: this.kind,
-        name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
+        name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase(),
+        namespace: this.namespace
       }).then(response => {
         removeObj({
           json: response.data.spec.data.spec.testcases[0].pods[0],
-          kind: "Pod"
+          kind: "Pod",
+          namespace: this.namespace
         }).then(response => {
           this.fetchStatus();
         });
@@ -421,7 +428,8 @@ export default {
       });
       getObj({
         kind: this.kind,
-        name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase()
+        name: this.kind.toLowerCase() + '-' + this.tabName.toLowerCase(),
+        namespace: this.namespace
       }).then(response => {
         createObj({
           json: response.data.spec.data.spec.testcases[0].pods[0],

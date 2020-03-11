@@ -191,7 +191,8 @@ export default {
       height: "height: 200px",
       title: "",
       topConfig: "",
-      middleConfig: ""
+      middleConfig: "",
+      namespace: "default"
     };
   },
 
@@ -199,7 +200,8 @@ export default {
   created() {
     getObj({
       kind: this.frontend_kind,
-      name: "dashboard"
+      name: "dashboard",
+      namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.topConfig = response.data.spec.data.topConfig

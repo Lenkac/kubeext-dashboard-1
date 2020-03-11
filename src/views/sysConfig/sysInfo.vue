@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { getsysInfo, updateObj, createObj } from "@/api/commonData";
+import { getsysInfo } from "@/api/commonData";
 export default {
   data() {
     return {

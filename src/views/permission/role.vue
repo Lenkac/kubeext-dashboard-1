@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <el-button type="primary" @click="handleAddRole">New Role</el-button>
-
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
       <el-table-column align="center" label="Role Key" width="220">
         <template slot-scope="scope">
@@ -88,6 +87,7 @@ export default {
   },
   computed: {
     routesData() {
+      console.log(this.routes)
       return this.routes
     }
   },
@@ -160,9 +160,11 @@ export default {
       this.dialogType = 'edit'
       this.dialogVisible = true
       this.checkStrictly = true
+      console.log(scope.row)
       this.role = deepClone(scope.row)
       this.$nextTick(() => {
         const routes = this.generateRoutes(this.role.routes)
+        console.log(this.$refs.tree)
         this.$refs.tree.setCheckedNodes(this.generateArr(routes))
         // set checked state of a node not affects its father and child nodes
         this.checkStrictly = false

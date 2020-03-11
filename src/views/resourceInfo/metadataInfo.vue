@@ -123,7 +123,7 @@ export default {
     }
 
     this.namespace = this.$route.query.namespace;
-    listAll({ kind: this.kind }).then(response => {
+    listAll({ kind: this.kind, namespace: this.namespace }).then(response => {
       if (this.validateRes(response) == 1) {
         for (var i = 0; i < response.data.items.length; i++) {
           if (response.data.items[i].metadata.name == this.resourceName) {
@@ -152,7 +152,7 @@ export default {
                         json.name = this.list[obj].name;
                         json.title = this.list[obj].title;
                         json.index = this.list[obj].index;
-                        listAll({ kind: "Pod" }).then(response => {
+                        listAll({ kind: "Pod",namespace: this.namespace }).then(response => {
                           //var data = response.data;
                           //this.total = response3.total
                           this.listLoading = false;
@@ -340,15 +340,9 @@ export default {
               }
             } else {
               this.lifecycle = false;
-              listAll({ kind: this.tabName }).then(response => {
-                var data = response.data.items;
-                //this.total = response3.total
-                this.listLoading = false;
-                for (var i = 0; i < data.length; i++) {
-                  if (data[i].metadata.name == name) {
-                    this.createJsonData = data[i];
-                  }
-                }
+              getObj({name:name, kind: this.tabName, namespace: this.namespace }).then(response => {
+                this.listLoading = false;               
+                this.createJsonData = response.data;
               });
             }
           }

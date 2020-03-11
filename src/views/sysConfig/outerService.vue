@@ -27,15 +27,16 @@ export default {
     return {
       list: [],
       frontend_kind: "Frontend",
-      outerService: "outer-service",
-      namespace: "default"
+      service_kind: "service",
+      namespace: "default",
+      name: ""
     };
   },
   created() {
-    this.outerService = this.$route.name
+    this.name = this.$route.name
     getObj({
       kind: this.frontend_kind,
-      name: this.outerService,
+      name: service_kind + "-" +this.name,
       nnamespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {
