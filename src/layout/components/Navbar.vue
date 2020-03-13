@@ -73,7 +73,7 @@ export default {
     async logout() {
       console.log('Going to logout:', this.$store.getters.roles)
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/login`)
     }
   }
 }
