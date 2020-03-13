@@ -73,13 +73,15 @@ router.beforeEach(async (to, from, next) => {
   const hasToken = getToken()
 
   if (hasToken) {
+    console.log(hasToken)
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      const hasRoles = store.getters.roles
+      console.log(hasRoles)
       if (hasRoles) {
         if(to.path.indexOf("/simpleLayout") !=-1){
           let str = to.name.split('-')
@@ -88,7 +90,6 @@ router.beforeEach(async (to, from, next) => {
             name: str[1] + "-" + str[2].toLowerCase()
           },'/SimpleLayout/user')
           to.meta.data = data.spec
-          console.log(to)
         }
 
         if(to.path.indexOf("/Workloads") !=-1 ||to.path.indexOf("/Cluster") !=-1 || to.path.indexOf("/Discovery and Load Balancing key") !=-1 || to.path.indexOf("/ Config and Storage") !=-1 || to.path.indexOf("/Custom Resource Definitions") !=-1){
@@ -96,21 +97,23 @@ router.beforeEach(async (to, from, next) => {
             kind: "Frontend",
             name: "formsearch" + "-" + to.name.toLowerCase()
             })
-          console.log(data)
           to.meta.data = data.spec.data
-          console.log(to)
         }
         next()
       } else {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { roles } = await store.dispatch('user/getInfo')
-          const { data } = await getObj({"kind": "Frontend" , "name": 'viewroute-' + getKV('projectNum').toLowerCase()})
+          const { role } = await store.dispatch('user/getInfo')
+          console.log(role)
+          var roles = []
+          roles.push(role)
+          const { data } = await getObj({"kind": "RBACRole" , "name": role, namespce:"default"})
           // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data.spec.data)])
+          const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data.spec.routes)])
 
           // dynamically add accessible routes
+          console.log(accessRoutes)
           router.addRoutes(accessRoutes)
 
           // hack method to ensure that addRoutes is complete
@@ -158,6 +161,7 @@ function filterAsyncRouter(ar) {
     }
     return true
   })
+  //console.log(accessedRouters)
   return accessedRouters
 }
 

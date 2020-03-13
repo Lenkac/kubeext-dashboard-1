@@ -2,7 +2,7 @@
 
 <template>
   <div class="full-layout">
-    <div class="full-layout" v-if="rNamePrefix == 'leftRightLayout'">
+    <div class="full-layout">
         <div style="width:50%;height:100%;float:left">
             <dynamic-form :formData="responseJson.left"></dynamic-form>
         </div>
@@ -36,6 +36,8 @@ export default {
         this.rNameSuffix = str[2]
     }
     this.responseJson = this.$route.meta.data
+    console.log(this.responseJson)
+
   },
   mounted: function() {
     

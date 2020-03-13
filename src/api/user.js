@@ -2,9 +2,10 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/user/login',
-    method: 'post',
-    data
+    url: 'http://39.106.124.113:32000/kubesys/v1/rbac/login',
+    //url: '/user/login',
+    method: 'get',
+    params: data
   })
 }
 

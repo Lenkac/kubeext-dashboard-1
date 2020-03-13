@@ -67,7 +67,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/Cluster/node-table',
+    redirect: '/index/general',
     // children: [
     //   {
     //     path: 'dashboard',
@@ -113,12 +113,6 @@ export const constantRoutes = [
       //   name: 'kanban',
       //   meta: { title: 'kanban', icon: 'user', noCache: true }
       // },
-      {
-        path: 'role',
-        component: () => import('@/views/rbac/userManage'),
-        name: 'role',
-        meta: { title: 'role', icon: 'user', noCache: true }
-      },
       {
         path: 'simpleLayout',
         component: () => import('@/views/simpleLayout/index'),

@@ -37,6 +37,16 @@
             :value="lds.value"
           />
         </el-select>
+        <el-tree
+            v-if="efi.type == 'tree'"
+            ref="tree"
+            :check-strictly="checkStrictly"
+            :data="initParams.model[efi.prop]"
+            :props="defaultProps"
+            show-checkbox
+            node-key="path"
+            class="permission-tree"
+          />
         <el-checkbox-group v-if="efi.type == 'checkbox'" v-model="initParams.model[efi.prop]">
           <el-checkbox v-for="r in initParams.dataSources[efi.prop]" :key="r.key" :label="r.label"></el-checkbox>
         </el-checkbox-group>
@@ -50,7 +60,7 @@
           :style="efi.style"
         />
       </el-form-item>
-        <el-button style="margin-left:33px;" icon="el-icon-search" type="primary" @click="submitForm()">{{initParams.submitButton}}</el-button>
+        <el-button style="margin-left:33px;" :icon="initParams.icon" type="primary" @click="submitForm()">{{initParams.submitButton}}</el-button>
         <el-button  @click="resetForm()">{{initParams.resetButton}}</el-button>
         <a v-if="items.length>initParams.expand" class="drop-down" @click="dropDown">
           {{dropDownContent}}
@@ -63,7 +73,6 @@
 
 <script>
 import {
-  search,
   getObj,
   getMockObj,
   listAll,
@@ -75,7 +84,7 @@ export default {
   name: "DynamicForm",
   props: {
     formData: Object,
-    search_kind: "",
+    kind: "",
     onOK: Function
   },
   computed: {
@@ -92,7 +101,11 @@ export default {
       loading: "",
       dropDownContent: "展开",
       dropDownIcon: "ios-arrow-down",
-      drop: false
+      drop: false,
+      defaultProps: {
+        children: "children",
+        label: "title"
+      }
     };
   },
   created() {
@@ -126,15 +139,7 @@ export default {
     submitForm() {
       this.$refs[this.initParams.formName].validate(valid => {
         if (valid) {
-          //let map=new Map(Object.entries(arr));
-          search({
-            kind: this.search_kind,
-            fieldSelector: this.formData.model
-          }).then(response => {
-            //console.log(response.data.items);
-            this.$emit("watchSearch", response.data.items);
-            //this.onOk(response.data.items);
-          });
+          this.$emit("watchSearch", this.formData.model)
         } else {
           console.log("error submit!!");
           return false;
@@ -190,6 +195,9 @@ export default {
   border-radius: 3px;
 }
 
+.permission-tree {
+    margin-bottom: 30px;
+  }
 
 .full-form .el-form-item__label {
     font-weight: 400;

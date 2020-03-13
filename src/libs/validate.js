@@ -5,8 +5,8 @@
  * @param callback 回调函数
  */
 export const validatePassword = (rule, value, callback) => {
-  if (value.length < 6) {
-    callback(new Error('密码长度不得小于6位'));
+  if (value.length < 4) {
+    callback(new Error('密码长度不得小于4位'));
   } else {
     callback();
   }

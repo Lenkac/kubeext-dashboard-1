@@ -65,7 +65,7 @@ const actions = {
       if (json[0].includes('admin')) {
         accessedRoutes = json[1] || []
       } else {
-        accessedRoutes = filterAsyncRoutes(json[1], json[0])
+        accessedRoutes = json[1]
       }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)

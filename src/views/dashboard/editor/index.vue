@@ -52,7 +52,7 @@ export default {
 }
 .bar{
     width: 100%;
-    background-color:rgb(25, 25, 26);
+    background-color: white;
     height: 20px;
 }
 .iframe{
