@@ -19,6 +19,8 @@ npm install
 npm run dev
 ```
 
+https://g6.antv.vision/zh
+
 This will automatically open http://localhost:9527
 
 ## 镜像运行
@@ -33,6 +35,8 @@ vi /etc/hosts
 [host ip] vm-console.cloudplus.io
 [host ip] container-console.cloudplus.io
 ```
+
+
 
 ## docker-terminal    
 ### 镜像运行
