@@ -19,6 +19,8 @@ npm install
 npm run dev
 ```
 
+https://g6.antv.vision/zh
+
 This will automatically open http://localhost:9527
 
 ## 镜像运行
@@ -33,6 +35,8 @@ vi /etc/hosts
 [host ip] vm-console.cloudplus.io
 [host ip] container-console.cloudplus.io
 ```
+
+
 
 ## docker-terminal    
 ### 镜像运行
@@ -84,7 +88,7 @@ cd /home/iscas/VM-terminal/websockify
 ## 支持界面
 
 - [Kubernetes UI](https://github.com/kubernetes/dashboard)
-- DevOps: [team ](https://beta.vilson.xyz/)+ [CI/CD](https://jenkins.io/zh/)
+- DevOps: [team ](https://beta.vilson.xyz/)+ [CI/CD](https://github.com/argoproj/argo-cd)
 - PaaS: [Basic](https://demo.kubesphere.io) + [mircoservice](https://github.com/istio/istio) + [bigdata](https://gitee.com/WeBank/Linkis)
 - [CMP](https://app.hpcdlab.com)
 
