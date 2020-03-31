@@ -115,9 +115,10 @@ export default {
     },
     updateTemplate() {
       this.dialogTableVisible = false;
-      createObj({
+      updateObj({
         json: JSON.parse(this.json),
-        kind: this.frontend_kind
+        kind: this.frontend_kind,
+        namespace: this.namespace
       }).then(response => {
         if (response.code == 20000) {
           this.handleSuccess();

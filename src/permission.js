@@ -99,6 +99,14 @@ router.beforeEach(async (to, from, next) => {
             })
           to.meta.data = data.spec.data
         }
+
+        if(to.path.indexOf("/cloudplatform") !=-1){
+          const { data } = await getObj({
+            kind: "Frontend",
+            name: "form" + "-" + to.meta.name.toLowerCase()
+            })
+          to.meta.data = data.spec.data
+        }
         next()
       } else {
         try {
@@ -108,7 +116,7 @@ router.beforeEach(async (to, from, next) => {
           console.log(role)
           var roles = []
           roles.push(role)
-          const { data } = await getObj({"kind": "RBACRole" , "name": role, namespce:"default"})
+          const { data } = await getObj({"kind": "RBACRole" , "name": role, namespace:getKV('projectNum')})
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/setRoutes', [roles, filterAsyncRouter(data.spec.routes)])
 

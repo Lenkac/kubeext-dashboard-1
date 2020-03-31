@@ -49,7 +49,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, namespace, projectNum } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: projectNum+"-"+username.trim(), password: password ,namespace: namespace}).then(response => {
+      login({ username: projectNum+"-"+username.trim(), password: password ,namespace: projectNum}).then(response => {
         const { data } = response
         if(response.code == 50000){
           console.log("hhhhh")
@@ -76,7 +76,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getObj({name: getKV('projectNum')+"-"+getKV('username').trim(), namespace: state.namespace, kind:"RBACUser" }).then(response => {
+      getObj({name: getKV('projectNum')+"-"+getKV('username').trim(), namespace: getKV('projectNum'), kind:"RBACUser" }).then(response => {
         
         if (!response.data) {
           reject('Verification failed, please Login again.')

@@ -64,10 +64,10 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/index/general',
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/cloudplatform/account',
     // children: [
     //   {
     //     path: 'dashboard',
@@ -76,7 +76,7 @@ export const constantRoutes = [
     //     meta: { title: '仪表盘', icon: 'dashboard', affix: true }
     //   }
     // ]
-  },
+  //},
   {
     path: '/resourceInfo',
     component: Layout,
@@ -106,6 +106,18 @@ export const constantRoutes = [
         component: () => import('@/views/resourceInfo/metadataInfo'),
         name: 'metadataInfo',
         meta: { title: 'metadataInfo', icon: 'user', noCache: true }
+      },
+      {
+        path: 'instance',
+        component: () => import('@/views/cloudPlatform/index'),
+        name: 'instance',
+        meta: { title: '实例', icon: 'user', noCache: true }
+      },
+      {
+        path: 'monitor',
+        component: () => import('@/views/cloudPlatform/monitor'),
+        name: 'monitor',
+        meta: { title: '监控', icon: 'user', noCache: true }
       },
       // {
       //   path: 'kanban',

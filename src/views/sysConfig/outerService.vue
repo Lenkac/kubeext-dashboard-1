@@ -36,7 +36,7 @@ export default {
     this.name = this.$route.name
     getObj({
       kind: this.frontend_kind,
-      name: service_kind + "-" +this.name,
+      name: this.service_kind + "-" +this.name,
       nnamespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {

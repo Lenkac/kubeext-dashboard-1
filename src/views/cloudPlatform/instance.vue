@@ -1,8 +1,5 @@
 <template>
   <div class="app-container">
-    <div>
-      <dynamic-form :formData="responseJson" :kind="catalog_operator" @watchSearch="searchList"></dynamic-form>
-    </div>
     <div class="filter-container" style="margin-bottom:50px">
       <el-button
         icon="el-icon-plus"
@@ -32,7 +29,7 @@
       <el-table-column v-for="item in columns" :key="item.key" :label="item.label" align="left">
         <template slot-scope="scope">
           <router-link
-            :to="{path:'/resourceInfo/metadataInfo',query:{kind: catalog_operator, name:getInputValue(scope.row.json,item.row)}}"
+            :to="{path:'/resourceInfo/monitor',query:{current: 'instance', account:styleConfig[catalog_operator],name:scope.row.json.metadata.name}}"
             v-if="item.kind == 'a'"
             tag="a"
             class="link"
@@ -188,7 +185,7 @@ import { connectTerminal } from "@/api/commonKindMethod";
 import DynamicForm from "@/components/DynamicForm";
 
 export default {
-  name: "nodeTable",
+  name: "instance",
   components: { Pagination, JsonEditor, DynamicForm },
   directives: { waves, elDragDialog },
   computed: {
@@ -244,7 +241,8 @@ export default {
       udialogTableVisible: false,
       responseJson: {},
       formsearch_kind: "formsearch",
-      namespace: "default"
+      namespace: "default",
+      styleConfig: {}
     };
   },
   mounted() {
@@ -262,6 +260,48 @@ export default {
     }
   },
   created() {
+      this.styleConfig = {
+        AliyunVM: {
+          logo: "aliyun.jpg",
+          kindDes: "Alibaba Cloud",
+          name: "Upsilon",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "AliyunVM"
+        },
+        TencentVM: {
+          logo: "tencent.jpg",
+          kindDes: "Tencent Cloud",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "TencentVM"
+        },
+        AmazonVM: {
+          logo: "amazon.jpg",
+          kindDes: "Amazon Web Services",
+          name: "Upsilon",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "AmazonVM"
+        },
+        BaiduVM: {
+          logo: "baidu.png",
+          kindDes: "Baidu Cloud",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "BaiduVM"
+        },
+        JDCloudVM: {
+          logo: "jd.png",
+          kindDes: "JD Cloud",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "JDCloudVM"
+        }
+      };
     this.catalog_operator = this.$route.name;
     this.responseJson = this.$route.meta.data;
 
@@ -269,14 +309,6 @@ export default {
       kind: this.catalog_operator
     }).then(response => {
       this.createRSJson = response.data;
-    });
-
-    getObj({
-      kind: this.frontend_kind,
-      name: this.formsearch_kind + "-" + this.catalog_operator.toLowerCase(),
-      namespace: this.namespace
-    }).then(response => {
-      this.responseJson = response.data.spec.data;
     });
 
     getObj({

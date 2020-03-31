@@ -140,7 +140,8 @@ export default {
         if (this.role.items[i].type == "select") {
           console.log(this.role.items[i].getdata);
           listAll({
-            kind: this.role.items[i].getdata
+            kind: this.role.items[i].getdata,
+            namespace: getKV("projectNum").toLowerCase()
           }).then(response => {
             console.log(response);
             if (this.validateRes(response) == 1) {
@@ -172,7 +173,8 @@ export default {
       }
 
       listAll({
-        kind: this.catalog_operator
+        kind: this.catalog_operator,
+        namespace: getKV("projectNum").toLowerCase()
       }).then(response => {
         if (this.validateRes(response) == 1) {
           for (let i = 0; i < response.data.items.length; i++) {
@@ -286,7 +288,8 @@ export default {
           if (this.role.items[i].type == "select") {
             console.log(this.role.items[i].getdata);
             listAll({
-              kind: this.role.items[i].getdata
+              kind: this.role.items[i].getdata,
+              namespace: getKV("projectNum").toLowerCase()
             }).then(response => {
               console.log(response);
               if (this.validateRes(response) == 1) {
@@ -354,7 +357,8 @@ export default {
             this.rolesList = []
             this.handleSuccess();
             listAll({
-              kind: this.catalog_operator
+              kind: this.catalog_operator,
+              namespace: getKV("projectNum").toLowerCase()
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 for (let i = 0; i < response.data.items.length; i++) {
@@ -447,7 +451,8 @@ export default {
           }).then(response => {
             if (this.validateRes(response) == 1) {
               listAll({
-                kind: this.catalog_operator
+                kind: this.catalog_operator,
+                namespace: getKV("projectNum").toLowerCase()
               }).then(response => {
                 if (this.validateRes(response) == 1) {
                   this.rolesList = []
@@ -503,7 +508,8 @@ export default {
             if (this.validateRes(response) == 1) {
               this.rolesList = []
               listAll({
-                kind: this.catalog_operator
+                kind: this.catalog_operator,
+                namespace: getKV("projectNum").toLowerCase()
               }).then(response => {
                 if (this.validateRes(response) == 1) {
                   for (let i = 0; i < response.data.items.length; i++) {
