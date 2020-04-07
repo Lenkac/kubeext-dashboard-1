@@ -23,6 +23,7 @@ https://g6.antv.vision/zh
 
 This will automatically open http://localhost:9527
 
+
 ## 镜像运行
 
 ```bash
@@ -36,20 +37,27 @@ vi /etc/hosts
 [host ip] container-console.cloudplus.io
 ```
 
+## 插件运行
 
+### 开放端口
 
-## docker-terminal    
-### 镜像运行
 
 ```bash
-# 运行
-docker run -d -e "HOST_URL=[host ip]" --net=host registry.cn-hangzhou.aliyuncs.com/cloudplus-lab/docker-terminal:v1.5.0-arm8 
-
 # 开放非安全端口
 vi /etc/kubernetes/manifests/kube-apiserver.yaml
     - --insecure-port=8888
     - --insecure-bind-address=0.0.0.0
 ```
+
+### 镜像运行
+
+- 镜像插件
+  - [镜像存储仓库]: docker run -d --restart=always -p 5000:5000 -v /var/lib/registry:/var/lib/registry registry.cn-beijing.aliyuncs.com/cloudplus-mirror/distribution:v2.7.1-arm64
+  - [镜像仓库管理]: docker run -d --restart=always -p 5001:8000 -v config.yml:/opt/config.yml:ro registry.cn-beijing.aliyuncs.com/cloudplus-mirror/docker-registry-ui:v0.9.1-arm64[修改本目录下config.yml]
+  - [镜像冗余分析]：docker run -d --restart=always -v /var/run/docker.sock:/var/run/docker.sock -p 5002:7001 registry.cn-beijing.aliyuncs.com/cloudplus-mirror/dive:v0.9.2-arm64
+- Web控制台
+  - [物理机web访问]：docker run -d --restart=always -p 7001:2222 registry.cn-beijing.aliyuncs.com/cloudplus-mirror/webssh2:v0.3.1-arm64
+  - [容器Web访问]: docker run -d --restart=always -e  "HOST_URL=0.0.0.0" -e "HOST_PORT=7002" --net=host registry.cn-beijing.aliyuncs.com/cloudplus-mirror/docker-terminal:v1.0.0-arm64
 
 ## Architecture
 
