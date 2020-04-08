@@ -334,9 +334,11 @@ export default {
           this.$nextTick(() => {
             //console.log(this.rolesList[index]);
             const routes = this.generateRoutes(scope.spec.routes);
+            console.log(scope.spec.routes)
 
             setTimeout(() => {
               this.$refs.tree[0].setCheckedNodes(this.generateArr(routes));
+              console.log(this.generateArr(routes))
             }, 200);
 
             this.checkStrictly = false;
@@ -352,7 +354,7 @@ export default {
             await removeObj({
               json: scope,
               kind: this.catalog_operator,
-              namespace: this.namespace
+              namespace: getKV("projectNum").toLowerCase()
             });
             this.rolesList = []
             this.handleSuccess();
@@ -424,7 +426,7 @@ export default {
         getObj({
           kind: this.catalog_operator,
           name: this.formdata.metadata.name,
-          namespace: this.namespace
+          namespace: getKV("projectNum").toLowerCase()
         }).then(response => {
           var updateJson = response.data;
           console.log(updateJson);
@@ -447,7 +449,7 @@ export default {
           updateObj({
             json: updateJson,
             kind: this.catalog_operator,
-            namespace: this.namespace
+            namespace: getKV("projectNum").toLowerCase()
           }).then(response => {
             if (this.validateRes(response) == 1) {
               listAll({
@@ -498,9 +500,11 @@ export default {
             getKV("projectNum").toLowerCase() +
             "-" +
             this.role.model["spec#name"];
+            createJson.metadata.namespace = getKV("projectNum").toLowerCase()
           if (this.catalog_operator == "RBACRole") {
             createJson.spec["routes"] = newroutes;
           }
+          console.log(createJson)
           createObj({
             json: createJson,
             kind: this.catalog_operator

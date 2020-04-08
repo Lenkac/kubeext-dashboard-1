@@ -59,6 +59,32 @@
         </el-dialog>
       </div>
     </el-card>
+    <div v-if="kind=='Pod'" class="tab-container">
+      <el-tabs
+        v-model="activeName"
+        style="margin-top:15px;margin-left:16px"
+        type="border-card"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-for="item in tabMapOptions"
+          :key="item.key"
+          :label="item.label"
+          :name="item.key"
+        >
+          <keep-alive>
+            <div
+              class="components-container"
+              v-if="activeName==item.key"
+              :type="item.key"
+              :tabName="item.key"
+            >
+              <iframe class="iframe" :src="link"></iframe>
+            </div>
+          </keep-alive>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 
@@ -68,6 +94,8 @@ import { getMonitorInfo } from "@/utils/getResource";
 import JsonEditor from "@/components/JsonEditor";
 import { listAll, getObj, removeObj } from "@/api/commonData";
 import elDragDialog from "@/directive/el-drag-dialog";
+import { getPodGrafanaLink } from "@/utils/getResource";
+import { getKV } from "@/utils/auth";
 
 export default {
   name: "nodeInfo",
@@ -99,14 +127,24 @@ export default {
       listtemp: [],
       createJsonData: {},
       udialogTableVisible: false,
-      namespace: "default"
+      namespace: "default",
+      catalog_kind: "catalog",
+      tabMapOptions: [],
+      activeName: "",
+      containers: [],
+      containerClos: [],
+      link: "",
+      imageLink: ""
     };
   },
   computed: {
     ...mapGetters(["name", "avatar", "roles"])
   },
   created() {
-    this.resourceName = this.$route.query.name;
+    console.log(this.$route.query.name);
+    this.resourceName = this.$route.query.name.metadata.name;
+    this.namespace = this.$route.query.name.metadata.namespace;
+    
     if (this.$route.query.tabName) {
       this.tabName = this.$route.query.tabName;
     }
@@ -121,151 +159,184 @@ export default {
     } else {
       this.kind = this.tabName;
     }
+    if (this.kind == "Pod") {
+      getObj({
+        kind: this.frontend_kind,
+        name: this.catalog_kind + "-" + this.kind.toLowerCase(),
+        namespace: "default"
+      }).then(response => {
+        if (this.validateRes(response) == 1) {
+          this.tabMapOptions = response.data.spec.data.tabMapOptions;
+          this.activeName = response.data.spec.data.activeName;
+        }
+
+        getObj({
+      kind: this.kind,
+      name: this.resourceName,
+      namespace: this.$route.query.name.metadata.namespace
+    }).then(response => {
+      this.createJsonData = response.data;
+      
+        console.log(response.data)
+        this.imageLink = response.data.spec.containers[0].image;
+      
+    });
+      });
+    }
 
     this.namespace = this.$route.query.namespace;
-    listAll({ kind: this.kind, namespace: this.namespace }).then(response => {
+    // listAll({ kind: this.kind, namespace: getKV('projectNum') }).then(response => {
+    //   if (this.validateRes(response) == 1) {
+    //     for (var i = 0; i < response.data.items.length; i++) {
+    //       if (response.data.items[i].metadata.name == this.resourceName) {
+    //         if (response.data.items[i].metadata.hasOwnProperty("namespace")) {
+    //           this.namespace = response.data.items[i].metadata.namespace;
+    //         }
+    
+    getObj({
+      kind: this.frontend_kind,
+      name: this.title_kind + "-" + this.kind.toLowerCase(),
+      namespace: "default"
+    }).then(response => {
       if (this.validateRes(response) == 1) {
-        for (var i = 0; i < response.data.items.length; i++) {
-          if (response.data.items[i].metadata.name == this.resourceName) {
-            if (response.data.items[i].metadata.hasOwnProperty("namespace")) {
-              this.namespace = response.data.items[i].metadata.namespace;
-            }
+        this.list = response.data.spec.data;
+
+        for (let obj in this.list) {
+          let json = {};
+          if (this.list[obj].name == "pod") {
             getObj({
               kind: this.frontend_kind,
-              name: this.title_kind + "-" + this.kind.toLowerCase(),
-              namespace: this.namespace
+              name: this.table_kind + "-" + this.list[obj].name,
+              namespace: "default"
             }).then(response => {
+              //console.log(obj);
               if (this.validateRes(response) == 1) {
-                this.list = response.data.spec.data;
+                json.columns = response.data.spec.data;
+                json.name = this.list[obj].name;
+                json.title = this.list[obj].title;
+                json.index = this.list[obj].index;
+                listAll({
+                  kind: "Pod",
+                  namespace: this.namespace
+                }).then(response => {
+                  //var data = response.data;
+                  //this.total = response3.total
+                  this.listLoading = false;
+                  json[this.list[obj].name] = response.data.items;
+                  this.listtemp.push(json);
+                });
+              }
+            });
+          } else {
+            if(this.list[obj].name == "metadata"){
+              
+            
+            getObj({
+              kind: this.frontend_kind,
+              name:
+                this.table_kind +
+                "-" +
+                this.kind.toLowerCase() +
+                "-" +
+                this.list[obj].name,
+              namespace: "default"
+            }).then(response => {
+              // console.log(obj);
+              if (this.validateRes(response) == 1) {
+                let flag = 0;
+                json.columns = response.data.spec.data;
+                json.name = this.list[obj].name;
+                json.title = this.list[obj].title;
+                json.index = this.list[obj].index;
+                if (response.data.spec.data.length == 0) {
+                  flag = 1;
+                }
+                getObj({
+                  kind: this.kind,
+                  name: this.resourceName,
+                  namespace: this.$route.query.name.metadata.namespace
+                }).then(response => {
+                  this.createJsonData = response.data;
+                  if (this.catalog_operator == "Pod") {
+                    this.imageLink = response.data.spec.containers[0].image;
+                  }
 
-                for (let obj in this.list) {
-                  let json = {};
-                  if (this.list[obj].name == "pod") {
-                    getObj({
-                      kind: this.frontend_kind,
-                      name: this.table_kind + "-" + this.list[obj].name,
-                      namespace: this.namespace
-                    }).then(response => {
-                      //console.log(obj);
-                      if (this.validateRes(response) == 1) {
-                        json.columns = response.data.spec.data;
-                        json.name = this.list[obj].name;
-                        json.title = this.list[obj].title;
-                        json.index = this.list[obj].index;
-                        listAll({ kind: "Pod",namespace: this.namespace }).then(response => {
-                          //var data = response.data;
-                          //this.total = response3.total
-                          this.listLoading = false;
-                          json[this.list[obj].name] = response.data.items;
-                          this.listtemp.push(json);
-                        });
+                  this.link = getPodGrafanaLink(this.resourceName);
+
+                  if (this.validateRes(response) == 1) {
+                    if (
+                      this.getInputValue(response.data, this.list[obj].name) ==
+                      "unknown"
+                    ) {
+                      if (flag == 1) {
+                        json[this.list[obj].name] = [];
+                      } else {
+                        json[this.list[obj].name] = [];
+                        json[this.list[obj].name].push(response.data);
                       }
-                    });
-                  } else {
-                    getObj({
-                      kind: this.frontend_kind,
-                      name:
-                        this.table_kind +
-                        "-" +
-                        this.kind.toLowerCase() +
-                        "-" +
-                        this.list[obj].name,
-                      namespace: this.namespace
-                    }).then(response => {
-                      // console.log(obj);
-                      if (this.validateRes(response) == 1) {
-                        let flag = 0;
-                        json.columns = response.data.spec.data;
-                        json.name = this.list[obj].name;
-                        json.title = this.list[obj].title;
-                        json.index = this.list[obj].index;
-                        if (response.data.spec.data.length == 0) {
-                          flag = 1;
-                        }
-                        getObj({
-                          kind: this.kind,
-                          name: this.resourceName,
-                          namespace: this.namespace
-                        }).then(response => {
-                          this.createJsonData = response.data;
-                          if (this.validateRes(response) == 1) {
-                            if (
-                              this.getInputValue(
-                                response.data,
-                                this.list[obj].name
-                              ) == "unknown"
-                            ) {
-                              if (flag == 1) {
-                                json[this.list[obj].name] = [];
-                              } else {
-                                json[this.list[obj].name] = [];
-                                json[this.list[obj].name].push(response.data);
-                              }
-                            } else {
-                              if (
-                                this.getInputValue(
-                                  response.data,
-                                  this.list[obj].name
-                                ) instanceof Array
-                              ) {
-                                json[this.list[obj].name] = this.getInputValue(
-                                  response.data,
-                                  this.list[obj].name
-                                );
-                              } else {
-                                json[this.list[obj].name] = [];
-                                json[this.list[obj].name].push(
-                                  this.getInputValue(
-                                    response.data,
-                                    this.list[obj].name
-                                  )
-                                );
-                              }
-                              // json[this.list[obj].name] = getInputValue(response.data, this.list[obj].name)
-                            }
+                    } else {
+                      if (
+                        this.getInputValue(
+                          response.data,
+                          this.list[obj].name
+                        ) instanceof Array
+                      ) {
+                        json[this.list[obj].name] = this.getInputValue(
+                          response.data,
+                          this.list[obj].name
+                        );
+                      } else {
+                        json[this.list[obj].name] = [];
+                        json[this.list[obj].name].push(
+                          this.getInputValue(response.data, this.list[obj].name)
+                        );
+                      }
+                      // json[this.list[obj].name] = getInputValue(response.data, this.list[obj].name)
+                    }
 
-                            // if (!response.data.hasOwnProperty(this.list[obj].name)) {
-                            //   if(flag == 1) {
-                            //     json[this.list[obj].name] = []
-                            //   } else {
-                            //     json[this.list[obj].name] = response.data
-                            //   }
+                    // if (!response.data.hasOwnProperty(this.list[obj].name)) {
+                    //   if(flag == 1) {
+                    //     json[this.list[obj].name] = []
+                    //   } else {
+                    //     json[this.list[obj].name] = response.data
+                    //   }
 
-                            // } else {
-                            //   if (response.data[this.list[obj].name] instanceof Array) {
-                            //     json[this.list[obj].name] =
-                            //       response.data[this.list[obj].name];
-                            //   } else {
-                            //     json[this.list[obj].name] = [];
-                            //     json[this.list[obj].name].push(
-                            //       response.data[this.list[obj].name]
-                            //     );
-                            //   }
-                            // }
-                            this.listtemp.push(json);
-                            this.listtemp.sort(function(a, b) {
-                              if (a.index < b.index) {
-                                return -1;
-                              } else if (a.index == b.index) {
-                                return 0;
-                              } else {
-                                return 1;
-                              }
-                            });
-                          }
-                        });
+                    // } else {
+                    //   if (response.data[this.list[obj].name] instanceof Array) {
+                    //     json[this.list[obj].name] =
+                    //       response.data[this.list[obj].name];
+                    //   } else {
+                    //     json[this.list[obj].name] = [];
+                    //     json[this.list[obj].name].push(
+                    //       response.data[this.list[obj].name]
+                    //     );
+                    //   }
+                    // }
+                    this.listtemp.push(json);
+                    this.listtemp.sort(function(a, b) {
+                      if (a.index < b.index) {
+                        return -1;
+                      } else if (a.index == b.index) {
+                        return 0;
+                      } else {
+                        return 1;
                       }
                     });
                   }
-                }
-
-                // console.log(this.listtemp);
+                });
               }
             });
+            }
           }
         }
+
+        // console.log(this.listtemp);
       }
     });
+    //       }
+    //     }
+    //   }
+    // });
   },
   mounted() {
     console.log(this.listtemp);
@@ -340,8 +411,12 @@ export default {
               }
             } else {
               this.lifecycle = false;
-              getObj({name:name, kind: this.tabName, namespace: this.namespace }).then(response => {
-                this.listLoading = false;               
+              getObj({
+                name: name,
+                kind: this.tabName,
+                namespace: this.namespace
+              }).then(response => {
+                this.listLoading = false;
                 this.createJsonData = response.data;
               });
             }
@@ -453,6 +528,15 @@ export default {
       this.udialogTableVisible = true;
     },
 
+    handleClick() {
+      if (this.activeName == "monitor") {
+        this.link = getPodGrafanaLink(this.resourceName);
+      } else {
+        this.link = 'http://'+window.g.VUE_APP_CONTAINER_HOST+':5002/?image=' + this.imageLink;
+        console.log(this.link);
+      }
+    },
+
     updateInputValue(scope, longKey, event) {
       if (longKey.indexOf(".") < 0) {
         scope[longKey] = event;
@@ -484,8 +568,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .iframe {
-  width: 280px;
-  height: 135px;
+  width: 100%;
+  height: 500px;
   border: 0ch;
 }
 .rate_iframe {
@@ -510,5 +594,9 @@ export default {
   position: relative;
   width: 100%;
   height: 70%;
+}
+
+.link {
+  cursor: pointer;
 }
 </style>

@@ -52,10 +52,7 @@
               </span>
             </div>
             <p style="font-size:14px;">{{item.name}}</p>
-            <el-button
-              type="primary"
-              style="float:right;margin:15px;"
-            >
+            <el-button type="primary" style="float:right;margin:15px;">
               <router-link
                 :to="{path:item.router,query:{current: current, account:cloudConfig[index],name:cloudConfig[index].name}}"
                 tag="a"
@@ -191,70 +188,64 @@ export default {
         }
       };
       listAll({
-      kind: this.cloudController_kind,
-      namespace: this.namespace
-    }).then(response => {
-      if (this.validateRes(response) == 1) {
-        var itemtemp = response.data.items;
-        for (let i = 0; i < itemtemp.length; i++) {
-          var singleCloud = {};
-          singleCloud.logo = this.styleConfig[itemtemp[i].spec.data.kind].logo;
-          singleCloud.router = this.styleConfig[
-            itemtemp[i].spec.data.kind
-          ].router;
-          singleCloud.kindDes = this.styleConfig[
-            itemtemp[i].spec.data.kind
-          ].kindDes;
-          singleCloud.button = this.styleConfig[
-            itemtemp[i].spec.data.kind
-          ].button;
-          singleCloud.kind = this.styleConfig[
-            itemtemp[i].spec.data.kind
-          ].kind;
-          singleCloud.name = itemtemp[i].metadata.name;
-          this.cloudConfig.push(singleCloud);
+        kind: this.cloudController_kind,
+        namespace: this.namespace
+      }).then(response => {
+        if (this.validateRes(response) == 1) {
+          var itemtemp = response.data.items;
+          for (let i = 0; i < itemtemp.length; i++) {
+            var singleCloud = {};
+            singleCloud.logo = this.styleConfig[
+              itemtemp[i].spec.data.kind
+            ].logo;
+            singleCloud.router = this.styleConfig[
+              itemtemp[i].spec.data.kind
+            ].router;
+            singleCloud.kindDes = this.styleConfig[
+              itemtemp[i].spec.data.kind
+            ].kindDes;
+            singleCloud.button = this.styleConfig[
+              itemtemp[i].spec.data.kind
+            ].button;
+            singleCloud.kind = this.styleConfig[
+              itemtemp[i].spec.data.kind
+            ].kind;
+            singleCloud.name = itemtemp[i].metadata.name;
+            this.cloudConfig.push(singleCloud);
+          }
+          //console.log(this.cloudConfig)
         }
-        //console.log(this.cloudConfig)
-      }
-    });
+      });
     }
-
-    
 
     if (this.$route.meta.data) {
       this.cloud = this.$route.meta.data;
     }
     if (this.$route.query.current) {
       if (this.current == "account") {
-        console.log(this.$route.query.account)
+        console.log(this.$route.query.account);
         this.current = "instance";
       }
-  this.cloudConfig = []
+      this.cloudConfig = [];
       listAll({
-      kind: this.$route.query.account.kind,
-      namespace: this.namespace
-    }).then(response => {
-      if (this.validateRes(response) == 1) {
-        var itemtemp = response.data.items;
-        for (let i = 0; i < itemtemp.length; i++) {
-          var singleCloud = {};
-          singleCloud.logo = this.styleConfig[itemtemp[i].kind].logo;
-          //console.log()
-          singleCloud.router = this.styleConfig[
-            itemtemp[i].kind
-          ].router;
-          singleCloud.kindDes = this.styleConfig[
-            itemtemp[i].kind
-          ].kindDes;
-          singleCloud.button = this.styleConfig[
-            itemtemp[i].kind
-          ].button;
-          singleCloud.name = itemtemp[i].metadata.name;
-          this.cloudConfig.push(singleCloud);
+        kind: this.$route.query.account.kind,
+        namespace: this.namespace
+      }).then(response => {
+        if (this.validateRes(response) == 1) {
+          var itemtemp = response.data.items;
+          for (let i = 0; i < itemtemp.length; i++) {
+            var singleCloud = {};
+            singleCloud.logo = this.styleConfig[itemtemp[i].kind].logo;
+            //console.log()
+            singleCloud.router = this.styleConfig[itemtemp[i].kind].router;
+            singleCloud.kindDes = this.styleConfig[itemtemp[i].kind].kindDes;
+            singleCloud.button = this.styleConfig[itemtemp[i].kind].button;
+            singleCloud.name = itemtemp[i].metadata.name;
+            this.cloudConfig.push(singleCloud);
+          }
+          //console.log(this.cloudConfig)
         }
-        //console.log(this.cloudConfig)
-      }
-    });
+      });
 
       // this.cloudConfig = [
       //   {
@@ -282,7 +273,7 @@ export default {
         return 0;
       }
     },
-    
+
     handleDrag() {
       this.$refs.select.blur();
     },

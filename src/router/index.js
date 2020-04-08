@@ -119,6 +119,12 @@ export const constantRoutes = [
         name: 'monitor',
         meta: { title: '监控', icon: 'user', noCache: true }
       },
+      {
+        path: 'podTerminal',
+        component: () => import('@/views/resourceInfo/podTerminal'),
+        name: 'podTerminal',
+        meta: { title: 'pod远程', icon: 'user', noCache: true }
+      },
       // {
       //   path: 'kanban',
       //   component: () => import('@/views/task/kanban'),

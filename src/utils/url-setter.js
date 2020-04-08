@@ -1,4 +1,5 @@
-export const urlPrefix = process.env.VUE_APP_BACKEND
+//export const urlPrefix = process.env.VUE_APP_BACKEND
+export const urlPrefix = window.g.baseURL
 
 export function getListURL() {
   return urlPrefix+'kube/query'

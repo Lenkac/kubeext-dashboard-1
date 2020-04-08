@@ -251,6 +251,15 @@ export function getMockObj(data,url) {
   return res
 }
 
+export function getLog(data,url) {
+  var res = request({
+    url: '',
+    method: 'get',
+    params: data
+  })
+  return res
+}
+
 export function validateRes(res) {
   if (res.code == 20000) {
     return 1;

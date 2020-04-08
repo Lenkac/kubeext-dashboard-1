@@ -377,6 +377,7 @@ export default {
             getKV("projectNum").toLowerCase() +
             "-" +
             this.role.model["spec#roleName"];
+          createJson.metadata.namespace = getKV("projectNum").toLowerCase()
           createJson.spec["routes"] = newroutes;
           createObj({
             json: createJson,

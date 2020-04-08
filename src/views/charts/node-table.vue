@@ -25,14 +25,19 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       @sort-change="sortChange"
     >
-      <el-table-column v-for="item in columns" :key="item.key" :label="item.label" align="left">
+      <el-table-column
+        v-for="item in columns"
+        :key="item.key"
+        :label="item.label"
+        align="left"
+        :width="item.width"
+      >
         <template slot-scope="scope">
           <router-link
-            :to="{path:'/resourceInfo/metadataInfo',query:{kind: catalog_operator, name:getInputValue(scope.row.json,item.row)}}"
+            :to="{path:'/resourceInfo/metadataInfo',query:{kind: catalog_operator, name:scope.row.json}}"
             v-if="item.kind == 'a'"
             tag="a"
             class="link"
@@ -73,12 +78,44 @@
     <el-dialog
       v-el-drag-dialog
       :visible.sync="udialogTableVisible"
-      :title="this.catalog_operator"
+      :title="this.dialogTitle"
       @dragDialog="handleDrag"
     >
       <div class="card-editor-container">
-        <json-editor ref="jsonEditor" v-model="createJsonData" />
+        <json-editor v-if="otherOperation==false" ref="jsonEditor" v-model="createJsonData" />
       </div>
+      <el-table
+       v-if="otherOperation==true"
+        :data="Variables"
+        v-loading="listLoading"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;margin-top:20px"
+        @sort-change="sortChange"
+      >
+        <el-table-column label="key" align="center">
+          <template slot-scope="{row}">
+            <span>{{row.nameVariable}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="value" align="center">
+          <template slot-scope="{row}">
+            <el-radio-group v-if="row.placeholder == 'bool'" v-model="row.value">
+              <el-radio :label="true">true</el-radio>
+              <el-radio :label="false">false</el-radio>
+            </el-radio-group>
+            <input
+              style="border-radius:8px;border:1px solid grey;outline:none"
+              class="el-input"
+              v-if="row.placeholder != 'bool'"
+              :placeholder="row.placeholder"
+              :value="getInputValue(row,'value')"
+              @input="updateInputValue(row,'value',$event.target.value)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
       <div style="width:100%;height:50px;">
         <el-button
           type="primary"
@@ -88,54 +125,6 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="100px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item
-          v-for="efi in columns"
-          :key="efi.key"
-          :label="efi.label"
-          :prop="efi.row"
-          :style="efi.itemStyle"
-        >
-          <el-input
-            v-if="efi.type == 'input'"
-            v-model="temp[efi.row]"
-            :placeholder="efi.ph"
-            :style="efi.style"
-          />
-          <el-select
-            v-if="efi.type == 'select'"
-            v-model="temp[efi.row]"
-            :placeholder="efi.ph"
-            :style="efi.style"
-          >
-            <el-option
-              v-for="lds in littleDataSource[efi.dataSource]"
-              :key="lds.key"
-              :label="lds.label"
-              :value="lds.value"
-            />
-          </el-select>
-          <el-input
-            v-if="efi.type == undefined"
-            v-model="temp[efi.row]"
-            :placeholder="efi.ph"
-            :style="efi.style"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
-      </div>
-    </el-dialog>
     <el-dialog
       v-el-drag-dialog
       :visible.sync="dialogTableVisible"
@@ -143,8 +132,47 @@
       @dragDialog="handleDrag"
     >
       <div class="card-editor-container">
-        <p>请填写JSON格式（因版本兼容性约束，请使用以下的group和version信息创建资源）</p>
-        <json-editor ref="jsonEditor" v-model="createRSJson" />
+        <!-- <p>请填写JSON格式（因版本兼容性约束，请使用以下的group和version信息创建资源）</p> -->
+        <json-editor v-if="otherOperation==false" ref="jsonEditor" v-model="createRSJson" />
+        <div v-if="otherOperation==true">
+          请选择模版：
+        <el-select  v-model="createModel" @change="(handleModel($event))" placeholder="选择模版">
+          <el-option v-for="item in models" :key="item" :label="item" :value="item" />
+        </el-select>
+        </div>      
+        <el-table
+        v-if="otherOperation==true"
+          :data="CVariables"
+          v-loading="listLoading"
+          border
+          fit
+          highlight-current-row
+          style="width: 100%;margin-top:20px"
+          @sort-change="sortChange"
+        >
+          <el-table-column label="key" align="center">
+            <template slot-scope="{row}">
+              <span>{{row.nameVariable}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="value" align="center">
+            <template slot-scope="{row}">
+              <el-radio-group v-if="row.placeholder == 'bool'" v-model="row.value">
+                <el-radio :label="true">true</el-radio>
+                <el-radio :label="false">false</el-radio>
+              </el-radio-group>
+              <input
+                style="border-radius:8px;border:1px solid grey;outline:none"
+                class="el-input"
+                v-if="row.placeholder != 'bool'"
+                :placeholder="row.placeholder"
+                :value="getInputValue(row,'value')"
+                @input="updateInputValue(row,'value',$event.target.value)"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
+
         <div style="width:100%;height:50px;">
           <el-button
             type="primary"
@@ -186,6 +214,7 @@ import JsonEditor from "@/components/JsonEditor";
 import elDragDialog from "@/directive/el-drag-dialog";
 import { connectTerminal } from "@/api/commonKindMethod";
 import DynamicForm from "@/components/DynamicForm";
+import { getKV } from "@/utils/auth";
 
 export default {
   name: "nodeTable",
@@ -244,7 +273,14 @@ export default {
       udialogTableVisible: false,
       responseJson: {},
       formsearch_kind: "formsearch",
-      namespace: "default"
+      namespace: "default",
+      Variables: [],
+      CVariables: [],
+      container_kind: "Container",
+      otherOperation: false,
+      createModel: "",
+      models: "",
+      nameTempVariables:[]
     };
   },
   mounted() {
@@ -265,6 +301,8 @@ export default {
     this.catalog_operator = this.$route.name;
     this.responseJson = this.$route.meta.data;
 
+    this.dialogTitle = this.catalog_operator;
+
     getMeta({
       kind: this.catalog_operator
     }).then(response => {
@@ -274,7 +312,7 @@ export default {
     getObj({
       kind: this.frontend_kind,
       name: this.formsearch_kind + "-" + this.catalog_operator.toLowerCase(),
-      namespace: this.namespace
+      namespace: "default"
     }).then(response => {
       this.responseJson = response.data.spec.data;
     });
@@ -282,7 +320,7 @@ export default {
     getObj({
       kind: this.frontend_kind,
       name: this.table_kind + "-" + this.catalog_operator.toLowerCase(),
-      namespace: this.namespace
+      namespace: "default"
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
@@ -299,7 +337,7 @@ export default {
             getObj({
               kind: this.frontend_kind,
               name: "action-" + this.catalog_operator.toLowerCase(),
-              namespace: this.namespace
+              namespace: "default"
             }).then(response => {
               if (this.validateRes(response) == 1) {
                 if (response.hasOwnProperty("data")) {
@@ -334,6 +372,44 @@ export default {
         return 0;
       }
     },
+
+    handleModel(event) {
+      getObj({
+        kind: this.container_kind + "Template",
+        name: this.catalog_operator.toLowerCase() + "-create." + event
+      }).then(response => {
+        if (response.code == 20000) {
+          this.otherOperation = true;
+          this.createRSJson = response.data.spec.data.template;
+          this.CVariables = [];
+          if (response.hasOwnProperty("data")) {
+            var nameVariables = response.data.spec.data.values;
+            this.nameTempVariables = response.data.spec.data.values;
+            for (var i = 0; i < nameVariables.length; i++) {
+              this.CVariables.push({});
+              this.CVariables[i].nameVariable = nameVariables[i].name;
+              if (nameVariables[i].id.indexOf(",") > 0) {
+                this.CVariables[i].id = nameVariables[i].id.substring(
+                  0,
+                  nameVariables[i].id.indexOf(",")
+                );
+              }else{
+                this.CVariables[i].id = nameVariables[i].id
+              }
+              this.CVariables[i].type = nameVariables[i].type;
+              if (nameVariables[i].type == "bool") {
+                this.CVariables[i].value = true;
+                this.CVariables[i].placeholder = nameVariables[i].type;
+              } else {
+                this.CVariables[i].value = "";
+                this.CVariables[i].placeholder = nameVariables[i].type;
+              }
+            }
+          }
+        }
+      });
+    },
+
     deleteMenu() {
       // console.log(constantRoutes[9])
       // constantRoutes.splice(9,1)
@@ -356,7 +432,7 @@ export default {
         getObj({
           kind: this.frontend_kind,
           name: "action-" + this.catalog_operator.toLowerCase(),
-          namespace: this.namespace
+          namespace: "default"
         }).then(response => {
           if (this.validateRes(response) == 1) {
             if (response.hasOwnProperty("data")) {
@@ -392,7 +468,7 @@ export default {
           getObj({
             kind: this.frontend_kind,
             name: "action-" + this.catalog_operator.toLowerCase(),
-            namespace: this.namespace
+            namespace: "default"
           }).then(response => {
             if (this.validateRes(response) == 1) {
               if (response.hasOwnProperty("data")) {
@@ -461,11 +537,39 @@ export default {
       });
     },
     handleUpdate(event, row) {
+      this.otherOperation = false;
       this.operator = event;
       var name = row.metadata.name;
       if (row.metadata.namespace != undefined) {
         this.namespace = row.metadata.namespace;
       }
+
+      getObj({
+        kind: this.container_kind + "Template",
+        name: this.catalog_operator.toLowerCase() + "-" + event.toLowerCase()
+      }).then(response => {
+        if (response.code == 20000) {
+          this.dialogTitle = response.data.spec.data.key;
+          this.otherOperation = true;
+          this.Variables = [];
+          if (response.hasOwnProperty("data")) {
+            let nameVariables = response.data.spec.data.values;
+            for (var i = 0; i < nameVariables.length; i++) {
+              this.Variables.push({});
+              this.Variables[i].nameVariable = nameVariables[i].name;
+              this.Variables[i].id = nameVariables[i].id;
+              this.Variables[i].type = nameVariables[i].type;
+              if (nameVariables[i].type == "bool") {
+                this.Variables[i].value = true;
+                this.Variables[i].placeholder = nameVariables[i].type;
+              } else {
+                this.Variables[i].value = "";
+                this.Variables[i].placeholder = nameVariables[i].type;
+              }
+            }
+          }
+        }
+      });
 
       if (event == "delete") {
         removeObj({
@@ -474,7 +578,24 @@ export default {
           namespace: this.namespace
         }).then(response => {
           if (this.validateRes(response) == 1) {
-            this.handleDelete(row);
+            var deleteName = response.data.metadata.name;
+            this.listLoading = true;
+            var id = setInterval(
+              function() {
+                getObj({
+                  name: deleteName,
+                  kind: this.catalog_operator,
+                  namespace: this.namespace
+                }).then(response => {
+                  if (response.code == 50000) {
+                    this.handleDelete(row);
+                    this.refresh();
+                    clearInterval(id);
+                  }
+                });
+              }.bind(this),
+              2 * 1000
+            );
           }
         });
       } else if (event.slice(event.length - 8) == "Instance") {
@@ -542,9 +663,70 @@ export default {
     },
     create() {
       this.dialogTableVisible = false;
+
+      //console.log(createJsonDataTmp);
+      //this.createRSJson = JSON.parse(this.createRSJson);
+      for (let key in this.CVariables) {
+        //var createJsonDataTmp = this.createRSJson;
+        console.log(this.CVariables)
+        console.log(createJsonDataTmp);
+        if(this.nameTempVariables[key].id.indexOf(",") > 0) {
+var outerlongkey = this.nameTempVariables[key].id.split(",");
+        }else{
+          var outerlongkey = []
+          outerlongkey.push(this.nameTempVariables[key].id)
+          console.log(outerlongkey)
+        }
+        
+        
+        for (let j = 0; j < outerlongkey.length; j++) {
+          var createJsonDataTmp = this.createRSJson;
+          var longkey = outerlongkey[j].split(".");
+
+          //console.log(longkey)
+
+          for (let i = 0; i < longkey.length - 1; i++) {
+            //console.log(longkey[i]);
+            if (longkey[i].indexOf("[") > 0) {
+              createJsonDataTmp =
+                createJsonDataTmp[
+                  longkey[i].substring(0, longkey[i].indexOf("["))
+                ];
+              createJsonDataTmp =
+                createJsonDataTmp[
+                  parseInt(
+                    longkey[i].substring(
+                      longkey[i].indexOf("[") + 1,
+                      longkey[i].indexOf("]")
+                    )
+                  )
+                ];
+              //console.log(createJsonDataTmp);
+            } else {
+              createJsonDataTmp = createJsonDataTmp[longkey[i]];
+              //console.log(createJsonDataTmp);
+            }
+          }
+          if (this.CVariables[key].type == "integer") {
+            createJsonDataTmp[longkey[longkey.length - 1]] = Number(
+              this.CVariables[key].value
+            );
+          } else {
+            createJsonDataTmp[longkey[longkey.length - 1]] = this.CVariables[
+              key
+            ].value;
+console.log(key)
+            console.log(this.CVariables[
+              key
+            ].value)
+          }
+        }
+        //var longkey = this.CVariables[key].id.split(".");
+      }
+
       createObj({
-        json: JSON.parse(this.createRSJson),
-        kind: JSON.parse(this.createRSJson).kind
+        json: this.createRSJson,
+        kind: this.createRSJson.kind
       }).then(response => {
         if (this.validateRes(response) == 1) {
           if (response.code == 20000) {
@@ -558,6 +740,17 @@ export default {
     },
     createJson() {
       this.dialogTableVisible = true;
+
+      getObj({
+        kind: this.container_kind + "Template",
+        name: this.catalog_operator.toLowerCase() + "-" + "create"
+      }).then(response => {
+        if (response.code == 20000) {
+          this.otherOperation = true;
+          this.models = response.data.spec.data.support;
+        }
+      });
+
       //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
       //   this.value = response.data
       //   this.createPodJson = response.data
@@ -568,15 +761,14 @@ export default {
       getObj({
         kind: this.frontend_kind,
         name: this.table_kind + "-" + this.catalog_operator.toLowerCase(),
-        namespace: this.namespace
+        namespace: "default"
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.columns = response.data.spec.data;
           listAll({
             kind: this.catalog_operator,
             limit: this.listQuery.limit,
-            nextId: null,
-            namespace: this.namespace
+            nextId: null
           }).then(response => {
             if (this.validateRes(response) == 1) {
               this.listTemp = response.data.items;
@@ -585,7 +777,7 @@ export default {
               getObj({
                 kind: this.frontend_kind,
                 name: "action-" + this.catalog_operator.toLowerCase(),
-                namespace: this.namespace
+                namespace: "default"
               }).then(response => {
                 if (this.validateRes(response) == 1) {
                   if (response.hasOwnProperty("data")) {
@@ -610,7 +802,26 @@ export default {
     applyOperation() {
       this.udialogTableVisible = false;
 
+      var temp = {};
       this.createJsonData = JSON.parse(this.createJsonData);
+      var createJsonDataTmp = this.createJsonData;
+      for (let key in this.Variables) {
+        var longkey = this.Variables[key].id.split(".");
+        for (let i = 0; i < longkey.length - 1; i++) {
+          createJsonDataTmp = createJsonDataTmp[longkey[i]];
+          console.log(this.createJsonData);
+        }
+        if (this.Variables[key].type == "integer") {
+          createJsonDataTmp[longkey[longkey.length - 1]] = Number(
+            this.Variables[key].value
+          );
+        } else {
+          createJsonDataTmp[longkey[longkey.length - 1]] = this.Variables[
+            key
+          ].value;
+        }
+      }
+      //this.createJsonData = JSON.parse(this.createJsonData);
 
       updateObj({
         json: this.createJsonData,
@@ -618,6 +829,7 @@ export default {
         namespace: this.namespace
       }).then(response => {
         if (response.code == 20000) {
+          this.getList();
           for (var key in this.list) {
             this.list[key].val = "";
           }
@@ -636,7 +848,13 @@ export default {
     },
 
     openTerminal(row) {
-      connectTerminal("Pod", row);
+      if (this.catalog_operator == "Pod") {
+        this.$router.push({
+          path: "/resourceInfo/podTerminal",
+          query: { catalog_operator: this.catalog_operator, row: row }
+        });
+      }
+      connectTerminal(this.catalog_operator, row);
     },
 
     updateData() {},
@@ -647,8 +865,6 @@ export default {
         type: "success",
         duration: 2000
       });
-      const index = this.list.indexOf(row);
-      this.list.splice(index, 1);
     },
 
     formatJson(filterVal, jsonData) {
@@ -725,7 +941,7 @@ export default {
       }
       var keys = longKey.split(".");
       var obj = scope;
-      for (var i = 0; i < keys.length - 1; i++) {
+      for (var i = 0; i < keys.length; i++) {
         var element = keys[i];
         if (element.indexOf("[") > 0) {
           obj = obj[element.substring(0, element.indexOf("["))];
@@ -751,6 +967,7 @@ export default {
 <style scoped>
 .link {
   color: red;
+  cursor: pointer;
 }
 a:hover {
   text-decoration: underline;

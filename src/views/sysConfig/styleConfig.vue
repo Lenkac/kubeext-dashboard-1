@@ -84,7 +84,7 @@ export default {
   mounted() {},
   created() {
     listAll({
-      kind: this.frontend_kind,
+      kind: this.$route.name,
       namespace: this.namespace
     }).then(response => {
       if (this.validateRes(response) == 1) {

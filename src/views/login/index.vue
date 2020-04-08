@@ -99,8 +99,8 @@ export default {
     };
     return {
       loginForm: {
-        username: "ladder",
-        password: "111111",
+        username: "admin",
+        password: "admin",
         namespace: "default",
         projectNum: ""
       },
