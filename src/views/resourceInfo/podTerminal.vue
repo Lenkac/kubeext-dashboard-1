@@ -7,7 +7,7 @@
     <div class="down" >
       <p style="margin-top:10px;margin-left:18px;font-size:16px;font-weight:bold">日志</p>
         <!-- <json-editor ref="jsonEditor" v-model="value" /> -->
-        <iframe  class="iframe2" id="iframe2" style="color:white" src="http://39.106.124.113:8888/api/v1/namespaces/default/pods/guestbook-ui-65b878495d-fzcqm/log"></iframe>
+        <iframe  class="iframe2" id="iframe2" style="color:white" :src=logLink></iframe>
     </div>
   </div>
 </template>
@@ -23,12 +23,15 @@ export default {
   data() {
     return {
       podTerminalLink: "",
-      value: ""
+      value: "",
+      logLink:""
     };
   },
   mounted() {
-
-    
+    var name = this.$route.query.row.json.metadata.name
+    var namespace = this.$route.query.row.json.metadata.namespace
+    this.logLink = 'http://'+window.g.VUE_APP_MONITOR_HOST+':8888/api/v1/namespaces/'+namespace+'/pods/'+name+'/log'
+    console.log(this.logLink)
     this.podTerminalLink = connectTerminal(this.$route.query.catalog_operator, this.$route.query.row);
    
   },

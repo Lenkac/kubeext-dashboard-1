@@ -85,7 +85,7 @@
         <json-editor v-if="otherOperation==false" ref="jsonEditor" v-model="createJsonData" />
       </div>
       <el-table
-       v-if="otherOperation==true"
+        v-if="otherOperation==true"
         :data="Variables"
         v-loading="listLoading"
         border
@@ -136,12 +136,12 @@
         <json-editor v-if="otherOperation==false" ref="jsonEditor" v-model="createRSJson" />
         <div v-if="otherOperation==true">
           请选择模版：
-        <el-select  v-model="createModel" @change="(handleModel($event))" placeholder="选择模版">
-          <el-option v-for="item in models" :key="item" :label="item" :value="item" />
-        </el-select>
-        </div>      
+          <el-select v-model="createModel" @change="(handleModel($event))" placeholder="选择模版">
+            <el-option v-for="item in models" :key="item" :label="item" :value="item" />
+          </el-select>
+        </div>
         <el-table
-        v-if="otherOperation==true"
+          v-if="otherOperation==true"
           :data="CVariables"
           v-loading="listLoading"
           border
@@ -280,7 +280,7 @@ export default {
       otherOperation: false,
       createModel: "",
       models: "",
-      nameTempVariables:[]
+      nameTempVariables: []
     };
   },
   mounted() {
@@ -393,8 +393,8 @@ export default {
                   0,
                   nameVariables[i].id.indexOf(",")
                 );
-              }else{
-                this.CVariables[i].id = nameVariables[i].id
+              } else {
+                this.CVariables[i].id = nameVariables[i].id;
               }
               this.CVariables[i].type = nameVariables[i].type;
               if (nameVariables[i].type == "bool") {
@@ -668,17 +668,16 @@ export default {
       //this.createRSJson = JSON.parse(this.createRSJson);
       for (let key in this.CVariables) {
         //var createJsonDataTmp = this.createRSJson;
-        console.log(this.CVariables)
+        console.log(this.CVariables);
         console.log(createJsonDataTmp);
-        if(this.nameTempVariables[key].id.indexOf(",") > 0) {
-var outerlongkey = this.nameTempVariables[key].id.split(",");
-        }else{
-          var outerlongkey = []
-          outerlongkey.push(this.nameTempVariables[key].id)
-          console.log(outerlongkey)
+        if (this.nameTempVariables[key].id.indexOf(",") > 0) {
+          var outerlongkey = this.nameTempVariables[key].id.split(",");
+        } else {
+          var outerlongkey = [];
+          outerlongkey.push(this.nameTempVariables[key].id);
+          console.log(outerlongkey);
         }
-        
-        
+
         for (let j = 0; j < outerlongkey.length; j++) {
           var createJsonDataTmp = this.createRSJson;
           var longkey = outerlongkey[j].split(".");
@@ -707,7 +706,36 @@ var outerlongkey = this.nameTempVariables[key].id.split(",");
               //console.log(createJsonDataTmp);
             }
           }
-          if (this.CVariables[key].type == "integer") {
+
+          if (longkey[longkey.length - 1].indexOf("[") > 0) {
+            createJsonDataTmp =
+              createJsonDataTmp[
+                longkey[longkey.length - 1].substring(
+                  0,
+                  longkey[longkey.length - 1].indexOf("[")
+                )
+              ];
+
+            if (this.CVariables[key].type == "integer") {
+              createJsonDataTmp[
+                parseInt(
+                  longkey[longkey.length - 1].substring(
+                    longkey[longkey.length - 1].indexOf("[") + 1,
+                    longkey[longkey.length - 1].indexOf("]")
+                  )
+                )
+              ] = Number(this.CVariables[key].value);
+            } else {
+              createJsonDataTmp[
+                parseInt(
+                  longkey[longkey.length - 1].substring(
+                    longkey[longkey.length - 1].indexOf("[") + 1,
+                    longkey[longkey.length - 1].indexOf("]")
+                  )
+                )
+              ] = this.CVariables[key].value;
+            }
+          } else if (this.CVariables[key].type == "integer") {
             createJsonDataTmp[longkey[longkey.length - 1]] = Number(
               this.CVariables[key].value
             );
@@ -715,10 +743,8 @@ var outerlongkey = this.nameTempVariables[key].id.split(",");
             createJsonDataTmp[longkey[longkey.length - 1]] = this.CVariables[
               key
             ].value;
-console.log(key)
-            console.log(this.CVariables[
-              key
-            ].value)
+            console.log(key);
+            console.log(this.CVariables[key].value);
           }
         }
         //var longkey = this.CVariables[key].id.split(".");
@@ -803,7 +829,10 @@ console.log(key)
       this.udialogTableVisible = false;
 
       var temp = {};
-      this.createJsonData = JSON.parse(this.createJsonData);
+      if (typeof this.createJsonData == "string") {
+        this.createJsonData = JSON.parse(this.createJsonData);
+      }
+
       var createJsonDataTmp = this.createJsonData;
       for (let key in this.Variables) {
         var longkey = this.Variables[key].id.split(".");
