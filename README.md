@@ -53,7 +53,7 @@ vi /etc/kubernetes/manifests/kube-apiserver.yaml
 
 - 镜像插件
   - [镜像存储仓库]: docker run -d --restart=always -p 5000:5000 -v /var/lib/registry:/var/lib/registry registry.cn-beijing.aliyuncs.com/cloudplus-mirror/distribution:v2.7.1-arm64
-  - [镜像仓库管理]: docker run -d --restart=always -p 5001:8000 -v config.yml:/opt/config.yml:ro registry.cn-beijing.aliyuncs.com/cloudplus-mirror/docker-registry-ui:v0.9.1-arm64[修改本目录下config.yml]
+  - ~~[镜像仓库管理]: docker run -d --restart=always -p 5001:8000 -v config.yml:/opt/config.yml:ro registry.cn-beijing.aliyuncs.com/cloudplus-mirror/docker-registry-ui:v0.9.1-arm64[修改本目录下config.yml]~~
   - [镜像冗余分析]：docker run -d --restart=always -v /var/run/docker.sock:/var/run/docker.sock -p 5002:7001 registry.cn-beijing.aliyuncs.com/cloudplus-mirror/dive:v0.9.2-arm64
 - Web控制台
   - [物理机web访问]：docker run -d --restart=always -p 7001:2222 registry.cn-beijing.aliyuncs.com/cloudplus-mirror/webssh2:v0.3.1-arm64
