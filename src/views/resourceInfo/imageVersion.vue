@@ -1,8 +1,5 @@
 <template>
   <div class="app-container">
-    <div>
-      <dynamic-form :formData="responseJson" :kind="catalog_operator" @watchSearch="searchList"></dynamic-form>
-    </div>
     <el-table
       v-loading="listLoading"
       :data="listTemp"
@@ -12,20 +9,16 @@
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
     >
       <el-table-column
-        v-for="item in columns"
-        :key="item.key"
-        :label="item.label"
+        key="image"
+        label="镜像版本"
         align="left"
-        :width="item.width"
       >
         <template slot-scope="scope">
           <router-link
-            :to="{path:'/resourceInfo/imageVersion',query:{kind: catalog_operator, name:scope.row}}"
-            v-if="item.kind == 'a'"
+            :to="{path:'imageDetail',query:{kind: catalog_operator, name:scope.row}}"
             tag="a"
             class="link"
-          >{{ getInputValue(scope.row,item.row) }}</router-link>
-          <span v-if="item.kind == undefined">{{ scope.row.spec.versions.length }}</span>
+          >{{ name +':'+ scope.row.version}}</router-link>
         </template>
       </el-table-column>
     </el-table>
@@ -53,12 +46,12 @@ import DynamicForm from "@/components/DynamicForm";
 import { getKV } from "@/utils/auth";
 
 export default {
-  name: "imageHub",
+  name: "imageVersion",
   components: { Pagination, DynamicForm },
   data() {
     return {
       list: [],
-      listLoading: true,
+      listLoading: false,
       columns: [],
       listQuery: {
         page: 1,
@@ -73,46 +66,17 @@ export default {
       responseJson: {},
       formsearch_kind: "formsearch",
       namespace: "default",
+      name: ""
     };
   },
   mounted() {
-   
+   this.catalog_operator = this.$route.query.kind;
+    this.name = this.$route.query.name.metadata.name;
+    console.log(this.name)
+    this.listTemp = this.$route.query.name.spec.versions;
   },
   created() {
-    this.catalog_operator = this.$route.name;
-    this.responseJson = this.$route.meta.data;
-
-    getObj({
-      kind: this.frontend_kind,
-      name: this.formsearch_kind + "-" + this.catalog_operator.toLowerCase(),
-      namespace: "default"
-    }).then(response => {
-      this.responseJson = response.data.spec.data;
-    });
-
-    getObj({
-      kind: this.frontend_kind,
-      name: this.table_kind + "-" + this.catalog_operator.toLowerCase(),
-      namespace: "default"
-    }).then(response => {
-      if (this.validateRes(response) == 1) {
-        this.columns = response.data.spec.data;
-        listAll({
-          kind: this.catalog_operator,
-          limit: this.listQuery.limit,
-          nextId: this.listQuery.continue
-        }).then(response => {
-          if (this.validateRes(response) == 1) {
-            this.listTemp = response.data.items;
-            console.log(this.listTemp)
-            this.total = response.data.metadata.totalCount;
-            this.listQuery.continue = response.data.metadata.continue;
-            this.listLoading = false;
-              
-          }
-        });
-      }
-    });
+    
   },
   methods: {
     validateRes(res) {

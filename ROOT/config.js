@@ -1,0 +1,7 @@
+window.g = {
+    baseURL:"http://172.19.81.2:32000/kubesys/v1/",
+    VUE_APP_MONITOR_HOST:"172.19.81.2",
+    VUE_APP_MONITOR_HOST_GRAFANA:"172.19.81.2:31000",
+    VUE_APP_CONTAINER_HOST:"172.19.81.2",
+    VUE_APP_VNCHOST:"172.19.81.2"    
+}

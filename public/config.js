@@ -1,7 +1,8 @@
 window.g = {
-    baseURL:"http://39.106.124.113:30000/kubesys/v1/",
+    baseURL:"http://39.106.124.113:32000/kubesys/v1/",
     VUE_APP_MONITOR_HOST:"39.106.124.113",
     VUE_APP_MONITOR_HOST_GRAFANA:"39.106.124.113:31000",
     VUE_APP_CONTAINER_HOST:"39.106.124.113",
-    VUE_APP_VNCHOST:"39.106.124.113"    
+    VUE_APP_VNCHOST:"39.106.124.113",
+    registry:"http://39.106.124.113:5000"     
 }

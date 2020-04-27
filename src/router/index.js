@@ -84,6 +84,18 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
+        path: 'imageVersion',
+        component: () => import('@/views/resourceInfo/imageVersion'),
+        name: 'imageVersion',
+        meta: { title: 'imageVersion', icon: 'user', noCache: true }
+      },
+      {
+        path: 'imageDetail',
+        component: () => import('@/views/resourceInfo/imageDetail'),
+        name: 'imageDetail',
+        meta: { title: 'imageDetail', icon: 'user', noCache: true }
+      },
+      {
         path: 'nodeInfo',
         component: () => import('@/views/resourceInfo/nodeInfo'),
         name: 'nodeInfo',
@@ -125,6 +137,7 @@ export const constantRoutes = [
         name: 'podTerminal',
         meta: { title: 'pod远程', icon: 'user', noCache: true }
       },
+      
       // {
       //   path: 'kanban',
       //   component: () => import('@/views/task/kanban'),

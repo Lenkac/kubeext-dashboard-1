@@ -49,7 +49,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, namespace, projectNum } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: projectNum+"-"+username.trim(), password: password ,namespace: projectNum}).then(response => {
+      login({ username: projectNum.toLowerCase()+"-"+username.trim(), password: password ,namespace: projectNum.toLowerCase()}).then(response => {
         const { data } = response
         if(response.code == 50000){
           console.log("hhhhh")
@@ -59,10 +59,10 @@ const actions = {
         console.log(response)
         commit('SET_TOKEN', data.token)
         setToken(data.token)
-        commit('SET_PN', projectNum)
+        commit('SET_PN', projectNum.toLowerCase())
         commit('SET_NS', namespace)
         commit('SET_USERNAME', username)
-        setKV('projectNum', projectNum)
+        setKV('projectNum', projectNum.toLowerCase())
         setKV('username', username)
         console.log(getKV('projectNum'))
         resolve()

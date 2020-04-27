@@ -92,12 +92,15 @@ router.beforeEach(async (to, from, next) => {
           to.meta.data = data.spec
         }
 
-        if(to.path.indexOf("/Workloads") !=-1 ||to.path.indexOf("/Cluster") !=-1 || to.path.indexOf("/Discovery and Load Balancing key") !=-1 || to.path.indexOf("/ Config and Storage") !=-1 || to.path.indexOf("/Custom Resource Definitions") !=-1){
-          const { data } = await getObj({
-            kind: "Frontend",
-            name: "formsearch" + "-" + to.name.toLowerCase()
-            })
-          to.meta.data = data.spec.data
+        if(to.path.indexOf("/sysConfig") !=-1 || to.path.indexOf("/Workloads") !=-1 ||to.path.indexOf("/Cluster") !=-1 || to.path.indexOf("/Discovery and Load Balancing key") !=-1 || to.path.indexOf("/ Config and Storage") !=-1 || to.path.indexOf("/Custom Resource Definitions") !=-1){
+          if(to.name!=undefined) {
+            const { data } = await getObj({
+              kind: "Frontend",
+              name: "formsearch" + "-" + to.name.toLowerCase()
+              })
+            to.meta.data = data.spec.data
+          }
+          
         }
 
         if(to.path.indexOf("/cloudplatform") !=-1){

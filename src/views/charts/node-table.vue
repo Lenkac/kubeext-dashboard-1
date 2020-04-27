@@ -152,7 +152,12 @@
         >
           <el-table-column label="key" align="center">
             <template slot-scope="{row}">
-              <span>{{row.nameVariable}}</span>
+              <input
+                style="border-radius:8px;border:1px solid grey;outline:none"
+                class="el-input"
+                :placeholder="row.id"
+                v-model="row.id"
+              />
             </template>
           </el-table-column>
           <el-table-column label="value" align="center">
@@ -250,7 +255,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        continue: null
+        continue: 1
       },
       total: 0,
       rules: {},
@@ -423,10 +428,12 @@ export default {
       this.list = [];
       this.listTemp = "";
       //this.total = response3.total
+      console.log(message)
       this.listLoading = false;
       search({
         kind: this.catalog_operator,
-        fieldSelector: message
+        labels: message,
+        nextId: 1
       }).then(response => {
         this.listTemp = response.data.items;
         getObj({
@@ -457,7 +464,7 @@ export default {
       listAll({
         kind: this.catalog_operator,
         limit: this.listQuery.limit,
-        nextId: this.listQuery.continue
+        nextId: this.listQuery.page
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.listTemp = response.data.items;
@@ -670,11 +677,11 @@ export default {
         //var createJsonDataTmp = this.createRSJson;
         console.log(this.CVariables);
         console.log(createJsonDataTmp);
-        if (this.nameTempVariables[key].id.indexOf(",") > 0) {
-          var outerlongkey = this.nameTempVariables[key].id.split(",");
+        if (this.CVariables[key].id.indexOf(",") > 0) {
+          var outerlongkey = this.CVariables[key].id.split(",");
         } else {
           var outerlongkey = [];
-          outerlongkey.push(this.nameTempVariables[key].id);
+          outerlongkey.push(this.CVariables[key].id);
           console.log(outerlongkey);
         }
 
@@ -775,12 +782,7 @@ export default {
           this.otherOperation = true;
           this.models = response.data.spec.data.support;
         }
-      });
-
-      //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
-      //   this.value = response.data
-      //   this.createPodJson = response.data
-      //})
+      })
     },
     refresh() {
       this.list = [];
@@ -794,7 +796,7 @@ export default {
           listAll({
             kind: this.catalog_operator,
             limit: this.listQuery.limit,
-            nextId: null
+            nextId: this.listQuery.page
           }).then(response => {
             if (this.validateRes(response) == 1) {
               this.listTemp = response.data.items;
@@ -950,6 +952,7 @@ export default {
           if (res.hasOwnProperty(element)) {
             res = res[element];
             return res;
+            
             if (res == undefined) {
               res = "unknown";
             }
