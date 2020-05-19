@@ -152,12 +152,7 @@
         >
           <el-table-column label="key" align="center">
             <template slot-scope="{row}">
-              <input
-                style="border-radius:8px;border:1px solid grey;outline:none"
-                class="el-input"
-                :placeholder="row.id"
-                v-model="row.id"
-              />
+              <span>{{row.nameVariable}}</span>
             </template>
           </el-table-column>
           <el-table-column label="value" align="center">
@@ -678,11 +673,11 @@ export default {
         //var createJsonDataTmp = this.createRSJson;
         console.log(this.CVariables);
         console.log(createJsonDataTmp);
-        if (this.CVariables[key].id.indexOf(",") > 0) {
-          var outerlongkey = this.CVariables[key].id.split(",");
+        if (this.nameTempVariables[key].id.indexOf(",") > 0) {
+          var outerlongkey = this.nameTempVariables[key].id.split(",");
         } else {
           var outerlongkey = [];
-          outerlongkey.push(this.CVariables[key].id);
+          outerlongkey.push(this.nameTempVariables[key].id);
           console.log(outerlongkey);
         }
 
