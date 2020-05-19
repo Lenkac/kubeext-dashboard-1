@@ -336,7 +336,7 @@ export default {
         }).then(response => {
           if (this.validateRes(response) == 1) {
             this.listTemp = response.data.items;
-            this.total = response.data.metadata.remainingItemCount + 10;
+            this.total = response.data.metadata.totalCount;
             this.listQuery.continue = response.data.metadata.continue;
             this.listLoading = false;
             getObj({
@@ -436,6 +436,7 @@ export default {
         nextId: 1
       }).then(response => {
         this.listTemp = response.data.items;
+        this.total = response.data.metadata.totalCount;
         getObj({
           kind: this.frontend_kind,
           name: "action-" + this.catalog_operator.toLowerCase(),
@@ -757,6 +758,9 @@ export default {
         //var longkey = this.CVariables[key].id.split(".");
       }
 
+      if(typeof(this.createRSJson) == 'string'){
+        this.createRSJson = JSON.parse(this.createRSJson)
+      }
       createObj({
         json: this.createRSJson,
         kind: this.createRSJson.kind

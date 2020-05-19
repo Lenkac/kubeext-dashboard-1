@@ -93,7 +93,7 @@ router.beforeEach(async (to, from, next) => {
         }
 
         if(to.path.indexOf("/sysConfig") !=-1 || to.path.indexOf("/Workloads") !=-1 ||to.path.indexOf("/Cluster") !=-1 || to.path.indexOf("/Discovery and Load Balancing key") !=-1 || to.path.indexOf("/ Config and Storage") !=-1 || to.path.indexOf("/Custom Resource Definitions") !=-1){
-          if(to.name!=undefined) {
+          if(to.name!=undefined && to.name!='Frontend') {
             const { data } = await getObj({
               kind: "Frontend",
               name: "formsearch" + "-" + to.name.toLowerCase()

@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+      <p style="fontSize:16px;margin-left:15px;margin-bottom:10px;font-weight:bold;">Blobs</p>
     <el-table
       v-loading="listLoading"
       :data="listTemp"
@@ -22,7 +23,7 @@
         </template>
       </el-table-column>
     </el-table>
-
+<p style="fontSize:16px;margin-left:15px;margin-top:10px;font-weight:bold;">镜像历史</p>
     <el-card
       v-for="item in list"
       :key="item[Object.keys(item)[0]]"
@@ -58,9 +59,10 @@ import { getKV } from "@/utils/auth";
 import request from "@/utils/request";
 import axios from "axios";
 
+var base_URL = (process.env.NODE_ENV === 'development') ? '/v2':''
 const instance = axios.create({
-  baseURL: "/v2",
-  timeout: 1000,
+  baseURL: base_URL,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json;charset=utf-8",
     Accept: "application/vnd.docker.distribution.manifest.v2+json",
@@ -69,8 +71,8 @@ const instance = axios.create({
 });
 
 const historyInstance = axios.create({
-  baseURL: "/v2",
-  timeout: 1000
+  baseURL: base_URL,
+  timeout: 10000
 });
 
 export default {
@@ -112,19 +114,21 @@ export default {
         this.columns = response.data.spec.data;
         console.log(this.name.detail.header);
 
-        instance.get(this.name.overview.url, { params: {} }).then(res => {
+        historyInstance
+          .get(this.name.overview.url, { params: {time:1} })
+          .then(res => {
+            this.list = res.data.history;
+            console.log(this.list);
+          });
+
+        instance.get(this.name.overview.url, { params: {time:2} }).then(res => {
           this.listTemp = res.data.layers;
           console.log(res);
           console.log(this.listTemp);
           this.listLoading = false;
         });
 
-        historyInstance
-          .get(this.name.overview.url, { params: {} })
-          .then(res => {
-            this.list = res.data.history;
-            console.log(this.list);
-          });
+        
       }
     });
   },

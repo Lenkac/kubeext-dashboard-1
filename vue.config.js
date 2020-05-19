@@ -47,7 +47,7 @@ module.exports = {
       //   }
       // },
       '/v2': {
-                      target: 'http://39.106.124.113:5000',
+                      target: 'http://'+ process.env.VUE_APP_REGISTRY_API,
                       changeOrigin: true,
                       pathRewrite: {
                         '^/v2': '' 
