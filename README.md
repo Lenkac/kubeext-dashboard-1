@@ -25,10 +25,12 @@ This will automatically open http://localhost:9527
 
 
 ## 镜像运行
-
+修改config.js中的ip和端口
+将本机config.js挂载到容器中对应位置
+根据情况修改/root/kubeext-dashboard/public/config.js位置
 ```bash
 # 运行
-./build.sh   
+docker run -v /root/kubeext-dashboard/public/config.js:/home/kubeext-dashboard/public/config.js -d -p 9537:9537 -it registry.cn-beijing.aliyuncs.com/cloudplus-lab/kubeext-dashboard:v1.8.2-amd64   
 #修改本机host文件
 vi /etc/hosts   
 [host ip] dashboard.cloudplus.io    
