@@ -100,7 +100,7 @@ export default {
         listAll({
           kind: this.catalog_operator,
           limit: this.listQuery.limit,
-          nextId: this.listQuery.continue
+          page: this.listQuery.continue
         }).then(response => {
           if (this.validateRes(response) == 1) {
             this.listTemp = response.data.items;
@@ -138,7 +138,7 @@ export default {
       search({
         kind: this.catalog_operator,
         labels: message,
-        nextId: 1
+        page: 1
       }).then(response => {
         this.listTemp = response.data.items;
         getObj({
@@ -169,7 +169,7 @@ export default {
       listAll({
         kind: this.catalog_operator,
         limit: this.listQuery.limit,
-        nextId: this.listQuery.page
+        page: this.listQuery.page
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.listTemp = response.data.items;

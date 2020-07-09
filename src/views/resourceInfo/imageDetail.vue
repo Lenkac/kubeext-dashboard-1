@@ -159,7 +159,7 @@ export default {
       listAll({
         kind: this.catalog_operator,
         limit: this.listQuery.limit,
-        nextId: this.listQuery.page
+        page: this.listQuery.page
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.listTemp = response.data.items;

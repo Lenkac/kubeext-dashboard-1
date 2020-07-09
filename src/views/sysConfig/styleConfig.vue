@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+     <div>
+      <dynamic-form :formData="responseJson" :kind="catalog_operator" @watchSearch="searchList"></dynamic-form>
+    </div>
     <el-row :gutter="20" style="margin:5px;">
       <el-col
         :span="6"
@@ -44,21 +47,32 @@
         <!-- <el-button type="primary" style="float:right;margin-top:20px;height:40px;display:inline;margin-right:0px;" >取消</el-button> -->
       </div>
     </el-dialog>
+     <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
   </div>
 </template>
 
 <script>
 import elDragDialog from "@/directive/el-drag-dialog"; // base on element-ui
 import EditableJson from "@/components/EditableJson";
-import { getObj, updateObj, createObj, listAll } from "@/api/commonData";
+import { getObj, updateObj, createObj, listAll, search } from "@/api/commonData";
 import editorImage from "./components/EditorImage";
+import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import DynamicForm from "@/components/DynamicForm";
 
 export default {
   name: "Template",
   directives: { elDragDialog },
   components: {
     EditableJson,
-    editorImage
+    editorImage,
+    Pagination,
+    DynamicForm
   },
   props: {
     tabName: {
@@ -77,23 +91,77 @@ export default {
       height: "height: 200px",
       title: "",
       styleConfig: "",
-      namespace: "default"
+      namespace: "default",
+      total: 0,
+      listQuery: {
+        page: 1,
+        limit: 12,
+        continue: 1
+      },
+      responseJson: {},
+      formsearch_kind: "formsearch",
+      catalog_operator: "",
+      message: {}
     };
   },
 
   mounted() {},
   created() {
+    this.responseJson = this.$route.meta.data;
+    this.catalog_operator = this.$route.name;
+    console.log(this.responseJson)
+
+    getObj({
+      kind: this.frontend_kind,
+      name: this.formsearch_kind + "-" + this.catalog_operator.toLowerCase(),
+      namespace: "default"
+    }).then(response => {
+      this.responseJson = response.data.spec.data;
+    });
+
     listAll({
       kind: this.$route.name,
-      namespace: this.namespace
+      namespace: this.namespace,
+      limit: this.listQuery.limit
     }).then(response => {
       if (this.validateRes(response) == 1) {
         this.styleConfig = response.data.items;
+        this.total = response.data.metadata.totalCount;
       }
     });
   },
 
   methods: {
+    searchList(message) {   
+      this.message = message  
+      search({
+        kind: this.catalog_operator,
+        labels: message,
+        page: 1,
+        limit: 12
+      }).then(response => {
+        this.styleConfig = response.data.items;
+        this.total = response.data.metadata.totalCount;
+        this.listQuery.page = 1
+      });
+    },
+
+    getList() {
+      this.styleConfig = []
+      search({
+        kind: this.$route.name,
+        limit: this.listQuery.limit,
+        page: this.listQuery.page,
+        labels: this.message,
+      }).then(response => {
+        if (this.validateRes(response) == 1) {
+          this.styleConfig = response.data.items;
+          //this.total = response.data.metadata.remainingItemCount + 10
+          //this.listQuery.page = this.listQuery.page + 1
+          this.listQuery.continue = response.data.metadata.continue;
+        }
+      });
+    },
     validateRes(res) {
       if (res.code == 20000) {
         return 1;

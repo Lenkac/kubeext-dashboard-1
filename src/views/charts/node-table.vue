@@ -280,7 +280,8 @@ export default {
       otherOperation: false,
       createModel: "",
       models: "",
-      nameTempVariables: []
+      nameTempVariables: [],
+      message: {}
     };
   },
   mounted() {
@@ -327,7 +328,7 @@ export default {
         listAll({
           kind: this.catalog_operator,
           limit: this.listQuery.limit,
-          nextId: this.listQuery.continue
+          page: this.listQuery.continue
         }).then(response => {
           if (this.validateRes(response) == 1) {
             this.listTemp = response.data.items;
@@ -420,6 +421,7 @@ export default {
     },
 
     searchList(message) {
+      this.message = message
       this.list = [];
       this.listTemp = "";
       //this.total = response3.total
@@ -428,7 +430,7 @@ export default {
       search({
         kind: this.catalog_operator,
         labels: message,
-        nextId: 1
+        page: 1
       }).then(response => {
         this.listTemp = response.data.items;
         this.total = response.data.metadata.totalCount;
@@ -457,10 +459,11 @@ export default {
     getList() {
       this.listLoading = true;
       this.list = [];
-      listAll({
+      search({
         kind: this.catalog_operator,
         limit: this.listQuery.limit,
-        nextId: this.listQuery.page
+        page: this.listQuery.page,
+        labels: this.message
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.listTemp = response.data.items;
@@ -590,7 +593,7 @@ export default {
                   kind: this.catalog_operator,
                   namespace: this.namespace
                 }).then(response => {
-                  if (response.code == 50000) {
+                  if (response.code == 20000) {
                     this.handleDelete(row);
                     this.refresh();
                     clearInterval(id);
@@ -795,7 +798,7 @@ export default {
           listAll({
             kind: this.catalog_operator,
             limit: this.listQuery.limit,
-            nextId: this.listQuery.page
+            page: this.listQuery.page
           }).then(response => {
             if (this.validateRes(response) == 1) {
               this.listTemp = response.data.items;

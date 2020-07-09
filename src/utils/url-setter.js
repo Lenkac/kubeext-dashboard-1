@@ -62,31 +62,31 @@ export function getScheduleURL() {
 }
 
 export function create() {
-  return urlPrefix + 'kubernetes/create'
+  return urlPrefix + 'atomic/create'
 }
 
 export function update() {
-  return urlPrefix + 'kubernetes/update'
+  return urlPrefix + 'atomic/update'
 }
 
 export function remove() {
-  return urlPrefix + 'kubernetes/delete'
+  return urlPrefix + 'atomic/delete'
 }
 
 export function get() {
-  return urlPrefix + 'kubernetes/get'
+  return urlPrefix + 'atomic/get'
 }
 
 export function list() {
-  return urlPrefix + 'kubernetes/query'
+  return urlPrefix + 'atomic/query'
 }
 
 export function metaURL() {
-  return urlPrefix + 'kubernetes/getMeta'
+  return urlPrefix + 'atomic/getMeta'
 }
 
 export function sysInfoURL() {
-  return urlPrefix + 'kubernetes/getSysInfo'
+  return urlPrefix + 'atomic/getSysInfo'
 }
 
 
