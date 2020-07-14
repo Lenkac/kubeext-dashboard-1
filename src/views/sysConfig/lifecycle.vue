@@ -38,7 +38,7 @@
                 <el-col
                   :span="6"
                   v-for="(item,index) in value"
-                  :key="item.name"
+                  :key="item.metadata.name"
                   style="margin-bottom:30px"
                 >
                   <el-card class="box-card" :style="height">
@@ -165,7 +165,7 @@ export default {
               namespace: this.namespace
             }).then(response => {
               if (this.validateRes(response) == 1) {
-                this.value = response.data.items;
+                this.value = response.data;
                 console.log(this.value);
               }
             });
@@ -195,6 +195,7 @@ export default {
       this.test = "hh";
     },
     childByValue: function(childValue) {
+      console.log(childValue)
       if (childValue == "hh") {
         this.test = "hhh";
         this.analyzeTemplete();
@@ -205,7 +206,7 @@ export default {
         kind: this.activeName + this.lifecycle_kind,
         namespace: this.namespace
       }).then(response => {
-        this.value = response.data.items;
+        this.value = response.data;
         console.log(this.value);
       });
       this.parentMessage = "bbb";
@@ -224,7 +225,7 @@ export default {
           kind: this.activeName + this.lifecycle_kind,
           namespace: this.namespace
         }).then(response => {
-          this.value = response.data.items;
+          this.value = response.data;
           if (this.activeName == "virtualmachine") {
             this.height = "height: 240px";
           } else if (this.activeName == "container") {

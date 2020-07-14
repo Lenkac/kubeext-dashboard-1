@@ -262,8 +262,9 @@ $cursor: black;
     .el-input {
       width: 100%;
       .el-input__inner {
-        font-size: 20px;
+        font-size: 18px;
         width: 100%;
+        text-align: center;
       }
     }
   }
@@ -271,7 +272,7 @@ $cursor: black;
   .el-input {
     display: inline-block;
     height: 47px;
-    width: 84%;
+    width: 91%;
     margin-right: 0px;
 
     .el-input__inner {
@@ -315,7 +316,7 @@ $light_gray: #eee;
 
   .login-form {
     position: absolute;
-    width: 330px;
+    width: 440px;
     height: 300px;
     max-width: 100%;
     padding: 20px 35px 0;
