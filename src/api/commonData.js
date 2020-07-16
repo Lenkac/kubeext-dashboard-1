@@ -168,7 +168,7 @@ export function getTemp(query) {
 }
 
 // new version
-import {create, remove, update, list, get, metaURL, sysInfoURL} from '@/utils/url-setter'
+import {create, remove, update, list, get, metaURL, sysInfoURL, getAllKinds} from '@/utils/url-setter'
 
 export function createObj(data) {
   var res = request({
@@ -236,6 +236,15 @@ export function getMeta(data) {
 export function getsysInfo(data) {
   var res = request({
     url: sysInfoURL(),
+    method: 'get',
+    params: data
+  })
+  return res
+}
+
+export function getKinds(data) {
+  var res = request({
+    url: getAllKinds(),
     method: 'get',
     params: data
   })

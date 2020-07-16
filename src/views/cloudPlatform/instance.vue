@@ -300,6 +300,86 @@ export default {
           button: "显示实例",
           router: "/resourceInfo/instance",
           kind: "JDCloudVM"
+        },
+        AzureVM: {
+          logo: "azure.png",
+          kindDes: "Azure Cloud",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "AzureVM"
+        },
+        CloudStack: {
+          logo: "cloudstack.png",
+          kindDes: "CloudStack",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "CloudStack"
+        },
+        GoogleVM: {
+          logo: "google.jpg",
+          kindDes: "Google Cloud",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "GoogleVM"
+        },
+        OpenStack: {
+          logo: "openstack.png",
+          kindDes: "OpenStack",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "OpenStack"
+        },
+        Cloudscale: {
+          logo: "cloudscale.png",
+          kindDes: "Cloudscale",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "Cloudscale"
+        },
+        GridScale: {
+          logo: "gridscale.png",
+          kindDes: "GridScale",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "GridScale"
+        },
+        DigitalOcean: {
+          logo: "digitalocean.png",
+          kindDes: "DigitalOcean",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "DigitalOcean"
+        },
+        Gandi: {
+          logo: "gandi.png",
+          kindDes: "Gandi",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "Gandi"
+        },
+        Libvirt: {
+          logo: "libvirt.png",
+          kindDes: "Libvirt",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "Libvirt"
+        },
+        vCloud: {
+          logo: "vcloud.png",
+          kindDes: "vCloud",
+          name: "Omicron",
+          button: "显示实例",
+          router: "/resourceInfo/instance",
+          kind: "vCloud"
         }
       };
     this.catalog_operator = this.$route.name;
@@ -319,9 +399,7 @@ export default {
       if (this.validateRes(response) == 1) {
         this.columns = response.data.spec.data;
         listAll({
-          kind: this.catalog_operator,
-          limit: this.listQuery.limit,
-          nextId: this.listQuery.continue
+          kind: this.catalog_operator
         }).then(response => {
           if (this.validateRes(response) == 1) {
             this.listTemp = response.data.items;

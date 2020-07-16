@@ -89,6 +89,11 @@ export function sysInfoURL() {
   return urlPrefix + 'atomic/getSysInfo'
 }
 
+export function getAllKinds() {
+  return urlPrefix + 'atomic/getKinds'
+}
+
+
 
 
 
