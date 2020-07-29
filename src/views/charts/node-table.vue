@@ -276,7 +276,7 @@ export default {
       namespace: "default",
       Variables: [],
       CVariables: [],
-      container_kind: "Container",
+      container_kind: "Wizard",
       otherOperation: false,
       createModel: "",
       models: "",
@@ -775,6 +775,7 @@ export default {
     },
     createJson() {
       this.dialogTableVisible = true;
+      console.log('ggg')
 
       getObj({
         kind: this.container_kind + "Template",

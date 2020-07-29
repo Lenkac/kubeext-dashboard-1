@@ -140,8 +140,46 @@
       @dragDialog="handleDrag"
     >
       <div class="card-editor-container">
-        <p>请填写JSON格式（因版本兼容性约束，请使用以下的group和version信息创建资源）</p>
-        <json-editor ref="jsonEditor" v-model="createRSJson" />
+        <!-- <p>请填写JSON格式（因版本兼容性约束，请使用以下的group和version信息创建资源）</p> -->
+        <json-editor v-if="otherOperation==false" ref="jsonEditor" v-model="createRSJson" />
+        <div v-if="otherOperation==true">
+          请选择模版：
+          <el-select v-model="createModel" @change="(handleModel($event))" placeholder="选择模版">
+            <el-option v-for="item in models" :key="item" :label="item" :value="item" />
+          </el-select>
+        </div>
+        <el-table
+          v-if="otherOperation==true"
+          :data="CVariables"
+          v-loading="listLoading"
+          border
+          fit
+          highlight-current-row
+          style="width: 100%;margin-top:20px"
+          @sort-change="sortChange"
+        >
+          <el-table-column label="key" align="center">
+            <template slot-scope="{row}">
+              <span>{{row.nameVariable}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="value" align="center">
+            <template slot-scope="{row}">
+              <el-radio-group v-if="row.placeholder == 'bool'" v-model="row.value">
+                <el-radio :label="true">true</el-radio>
+                <el-radio :label="false">false</el-radio>
+              </el-radio-group>
+              <input
+                style="border-radius:8px;border:1px solid grey;outline:none"
+                class="el-input"
+                v-if="row.placeholder != 'bool'"
+                :placeholder="row.placeholder"
+                :value="getInputValue(row,'value')"
+                @input="updateInputValue(row,'value',$event.target.value)"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
         <div style="width:100%;height:50px;">
           <el-button
             type="primary"
@@ -242,7 +280,15 @@ export default {
       responseJson: {},
       formsearch_kind: "formsearch",
       namespace: "default",
-      styleConfig: {}
+      styleConfig: {},
+      Variables: [],
+      CVariables: [],
+      container_kind: "Wizard",
+      otherOperation: false,
+      models: "",
+      createModel: "",
+      nameTempVariables: [],
+      message: {}
     };
   },
   mounted() {
@@ -570,6 +616,44 @@ export default {
         }
       });
     },
+
+    handleModel(event) {
+      getObj({
+        kind: this.container_kind + "Template",
+        name: this.catalog_operator.toLowerCase() + "-create." + event
+      }).then(response => {
+        if (response.code == 20000) {
+          this.otherOperation = true;
+          this.createRSJson = response.data.spec.data.template;
+          this.CVariables = [];
+          if (response.hasOwnProperty("data")) {
+            var nameVariables = response.data.spec.data.values;
+            this.nameTempVariables = response.data.spec.data.values;
+            for (var i = 0; i < nameVariables.length; i++) {
+              this.CVariables.push({});
+              this.CVariables[i].nameVariable = nameVariables[i].name;
+              if (nameVariables[i].id.indexOf(",") > 0) {
+                this.CVariables[i].id = nameVariables[i].id.substring(
+                  0,
+                  nameVariables[i].id.indexOf(",")
+                );
+              } else {
+                this.CVariables[i].id = nameVariables[i].id;
+              }
+              this.CVariables[i].type = nameVariables[i].type;
+              if (nameVariables[i].type == "bool") {
+                this.CVariables[i].value = true;
+                this.CVariables[i].placeholder = nameVariables[i].type;
+              } else {
+                this.CVariables[i].value = "";
+                this.CVariables[i].placeholder = nameVariables[i].type;
+              }
+            }
+          }
+        }
+      });
+    },
+    
     handleUpdate(event, row) {
       this.operator = event;
       var name = row.metadata.name;
@@ -652,9 +736,99 @@ export default {
     },
     create() {
       this.dialogTableVisible = false;
+
+      //console.log(createJsonDataTmp);
+      //this.createRSJson = JSON.parse(this.createRSJson);
+      for (let key in this.CVariables) {
+        //var createJsonDataTmp = this.createRSJson;
+        console.log(this.CVariables);
+        console.log(createJsonDataTmp);
+        if (this.nameTempVariables[key].id.indexOf(",") > 0) {
+          var outerlongkey = this.nameTempVariables[key].id.split(",");
+        } else {
+          var outerlongkey = [];
+          outerlongkey.push(this.nameTempVariables[key].id);
+          console.log(outerlongkey);
+        }
+
+        for (let j = 0; j < outerlongkey.length; j++) {
+          var createJsonDataTmp = this.createRSJson;
+          var longkey = outerlongkey[j].split(".");
+
+          //console.log(longkey)
+
+          for (let i = 0; i < longkey.length - 1; i++) {
+            //console.log(longkey[i]);
+            if (longkey[i].indexOf("[") > 0) {
+              createJsonDataTmp =
+                createJsonDataTmp[
+                  longkey[i].substring(0, longkey[i].indexOf("["))
+                ];
+              createJsonDataTmp =
+                createJsonDataTmp[
+                  parseInt(
+                    longkey[i].substring(
+                      longkey[i].indexOf("[") + 1,
+                      longkey[i].indexOf("]")
+                    )
+                  )
+                ];
+              //console.log(createJsonDataTmp);
+            } else {
+              createJsonDataTmp = createJsonDataTmp[longkey[i]];
+              //console.log(createJsonDataTmp);
+            }
+          }
+
+          if (longkey[longkey.length - 1].indexOf("[") > 0) {
+            createJsonDataTmp =
+              createJsonDataTmp[
+                longkey[longkey.length - 1].substring(
+                  0,
+                  longkey[longkey.length - 1].indexOf("[")
+                )
+              ];
+
+            if (this.CVariables[key].type == "integer") {
+              createJsonDataTmp[
+                parseInt(
+                  longkey[longkey.length - 1].substring(
+                    longkey[longkey.length - 1].indexOf("[") + 1,
+                    longkey[longkey.length - 1].indexOf("]")
+                  )
+                )
+              ] = Number(this.CVariables[key].value);
+            } else {
+              createJsonDataTmp[
+                parseInt(
+                  longkey[longkey.length - 1].substring(
+                    longkey[longkey.length - 1].indexOf("[") + 1,
+                    longkey[longkey.length - 1].indexOf("]")
+                  )
+                )
+              ] = this.CVariables[key].value;
+            }
+          } else if (this.CVariables[key].type == "integer") {
+            createJsonDataTmp[longkey[longkey.length - 1]] = Number(
+              this.CVariables[key].value
+            );
+          } else {
+            createJsonDataTmp[longkey[longkey.length - 1]] = this.CVariables[
+              key
+            ].value;
+            console.log(key);
+            console.log(this.CVariables[key].value);
+          }
+        }
+        //var longkey = this.CVariables[key].id.split(".");
+      }
+
+      if(typeof(this.createRSJson) == 'string'){
+        this.createRSJson = JSON.parse(this.createRSJson)
+      }
       createObj({
-        json: JSON.parse(this.createRSJson),
-        kind: JSON.parse(this.createRSJson).kind
+        json: this.createRSJson,
+        kind: this.createRSJson.kind
       }).then(response => {
         if (this.validateRes(response) == 1) {
           if (response.code == 20000) {
@@ -668,6 +842,15 @@ export default {
     },
     createJson() {
       this.dialogTableVisible = true;
+      getObj({
+        kind: this.container_kind + "Template",
+        name: this.catalog_operator.toLowerCase() + "-" + "create"
+      }).then(response => {
+        if (response.code == 20000) {
+          this.otherOperation = true;
+          this.models = response.data.spec.data.support;
+        }
+      })
       //   getJsonData({kind: this.kind ,operator: 'create'}).then(response => {
       //   this.value = response.data
       //   this.createPodJson = response.data
@@ -720,7 +903,29 @@ export default {
     applyOperation() {
       this.udialogTableVisible = false;
 
-      this.createJsonData = JSON.parse(this.createJsonData);
+      var temp = {};
+      if (typeof this.createJsonData == "string") {
+        this.createJsonData = JSON.parse(this.createJsonData);
+      }
+
+      var createJsonDataTmp = this.createJsonData;
+      for (let key in this.Variables) {
+        var longkey = this.Variables[key].id.split(".");
+        for (let i = 0; i < longkey.length - 1; i++) {
+          createJsonDataTmp = createJsonDataTmp[longkey[i]];
+          console.log(this.createJsonData);
+        }
+        if (this.Variables[key].type == "integer") {
+          createJsonDataTmp[longkey[longkey.length - 1]] = Number(
+            this.Variables[key].value
+          );
+        } else {
+          createJsonDataTmp[longkey[longkey.length - 1]] = this.Variables[
+            key
+          ].value;
+        }
+      }
+      //this.createJsonData = JSON.parse(this.createJsonData);
 
       updateObj({
         json: this.createJsonData,
@@ -728,6 +933,7 @@ export default {
         namespace: this.namespace
       }).then(response => {
         if (response.code == 20000) {
+          this.getList();
           for (var key in this.list) {
             this.list[key].val = "";
           }

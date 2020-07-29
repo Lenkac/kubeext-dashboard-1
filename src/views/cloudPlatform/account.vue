@@ -243,7 +243,8 @@ export default {
     }).then(response => {
       this.columns = response.data.spec.data;
       listAll({
-        kind: this.cloudController_kind
+        kind: this.cloudController_kind,
+        limit: 15
       }).then(response => {
         if (this.validateRes(response) == 1) {
           this.rolesList = response.data.items;
