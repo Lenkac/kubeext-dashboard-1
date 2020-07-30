@@ -95,12 +95,20 @@ cd /home/iscas/VM-terminal/websockify
 ./websockify.py --web ../ --target-config=./token/token.conf 6080
 ```
 
+### 打包运行
+
+```
+docker build -t registry.cn-hangzhou.aliyuncs.com/cloudplus-lab/kubeext-dashboard:v1.8.3-amd64 .
+```
+
 ## 支持界面
 
 - [Kubernetes UI](https://github.com/kubernetes/dashboard)
 - DevOps: [team ](https://beta.vilson.xyz/)+ [CI/CD](https://github.com/argoproj/argo-cd)
 - PaaS: [Basic](https://demo.kubesphere.io) + [mircoservice](https://github.com/istio/istio) + [bigdata](https://gitee.com/WeBank/Linkis)
 - [CMP](https://app.hpcdlab.com)
+
+
 
 ## License
 
