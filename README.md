@@ -77,7 +77,7 @@ It includes three projects:
 ## Online Demo
 
 [Preview](https://panjiachen.github.io/vue-element-admin)
-[Demo](http://39.106.124.113:9537/), (admin/admin)
+[Demo](http://39.106.40.190:30310/), (admin/admin)
 
 ## vm-terminal    
 ### 镜像运行    
